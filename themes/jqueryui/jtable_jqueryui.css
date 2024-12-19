@@ -1,4 +1,4 @@
-﻿div.jtable-main-container {
+div.jtable-main-container {
   position: relative;
 }
 div.jtable-main-container div.jtable-title {
@@ -194,11 +194,9 @@ form.jtable-dialog-form div.jtable-input {
 }
 form.jtable-dialog-form div.jtable-date-input {
   /* No additional style */
-
 }
 form.jtable-dialog-form div.jtable-text-input {
   /* No additional style */
-
 }
 form.jtable-dialog-form span.jtable-option-text-clickable {
   position: relative;
@@ -219,7 +217,7 @@ form.jtable-dialog-form span.jtable-option-text-clickable {
 }
 div.jtable-busy-panel-background {
   opacity: 0.1;
-  filter: alpha(opacity=50);
+  filter: alpha(opacity=10);
   z-index: 998;
   position: absolute;
   background-color: #000;
@@ -241,6 +239,26 @@ div.jtable-contextmenu-overlay {
   height: 100%;
   z-index: 100;
 }
+.jtable-table-div {
+  display: block;
+  overflow-x: auto;
+}
+.jtable-table-div > table {
+  overflow: hidden;
+}
+.jtable-modal-dialog {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: fit-content;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
 div.jtable-main-container div.jtable-title {
   position: relative;
   line-height: 34px;
@@ -252,14 +270,14 @@ div.jtable-main-container div.jtable-title .jtable-close-button {
   bottom: 6px;
   position: absolute;
   opacity: 0.8;
-  filter: alpha(opacity=50);
+  filter: alpha(opacity=80);
   background: url('close.png') no-repeat;
   width: 22px;
   height: 22px;
 }
 div.jtable-main-container div.jtable-title .jtable-close-button:hover {
   opacity: 1;
-  filter: alpha(opacity=50);
+  filter: alpha(opacity=100);
 }
 div.jtable-main-container div.jtable-title div.jtable-toolbar {
   bottom: 0px;
