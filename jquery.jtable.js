@@ -2119,7 +2119,7 @@ THE SOFTWARE.
             //Create a div for dialog and add to container element
             self._$addRecordDiv = $('<div />').addClass('jtable-modal-dialog').attr('role', 'dialog').attr('aria-labelledby', 'addDialogTitle').appendTo(self._$mainContainer);
 
-            $('<h2 id="addDialogTitle"></h2>').css({padding: '0px'}).text(self.options.messages.addRecord).appendTo(self._$addRecordDiv);
+            $('<h2 id="addDialogTitle"></h2>').css({padding: '0px'}).text(self.options.messages.addNewRecord).appendTo(self._$addRecordDiv);
             const $cancelButton = $('<button class="jtable-dialog-cancelbutton">' + self.options.messages.cancel + '</button> ').on('click', function () {
 		    self._closeCreateForm();
             });
@@ -2333,10 +2333,11 @@ THE SOFTWARE.
                 return false;
             });
 
-	    // remove any existing form
+	    // Remove any existing form
             self._$addRecordDiv.find('form:first').remove();
-            // Open the form
-            self._$addRecordDiv.append($addRecordForm).show();
+            // Show the form
+            self._$addRecordDiv.find('#addDialogTitle:first').after($addRecordForm);
+            self._$addRecordDiv.show();
             self._$mainContainer.trigger("formCreated", { form: $addRecordForm, formType: 'create' });
         },
 
@@ -2723,11 +2724,13 @@ THE SOFTWARE.
                 return false;
             });
 
-	    // remove any existing form
-	    self._$editDiv.find('form:first').remove();
-            //Open dialog
+	    // Store the row being edited
             self._$editingRow = $tableRow;
-            self._$editDiv.append($editForm).show();
+	    // Remove any existing form
+	    self._$editDiv.find('form:first').remove();
+            // Show the form
+            self._$editDiv.find('#editDialogTitle:first').after($editForm);
+            self._$editDiv.show();
             self._$mainContainer.trigger("formCreated", { form: $editForm, formType: 'edit', record: record, row: $tableRow });
         },
 
