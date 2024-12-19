@@ -1,4 +1,5 @@
 * rewritten without jquery-ui
+* fully use html5 modals
 * visibility can be "hidden", "visible" (the default), or "separator" (in
 which case the value will be bold, but not selectable nor a real column, just
 a bold-entry in the vibility selection)
@@ -10,22 +11,6 @@ a bold-entry in the vibility selection)
 }
 .jtable-table-div > table {
     overflow:hidden;
-}
-```
-* the dialog is styled like this (css included in all themes):
-```
-.jtable-modal-dialog {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    width: fit-content;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
 }
 ```
 * added listQueryParams to jtable-call, to indicate parameters to be loaded on
