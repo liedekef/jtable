@@ -381,7 +381,7 @@ THE SOFTWARE.
         _createErrorDialogDiv: function () {
             let self = this;
 
-            self._$errorDialogDiv = $('<div />').addClass('jtable-modal-dialog').attr('role', 'dialog').attr('aria-labelledby', 'errorDialogTitle').appendTo(self._$mainContainer);
+            self._$errorDialogDiv = $('<div />').addClass('jtable-modal-dialog').attr('role', 'dialog').attr('aria-labelledby', 'errorDialogTitle').attr('aria-hidden','true').appendTo(self._$mainContainer);
 
             $('<h2 id="errorDialogTitle"></h2>').css({padding: '0px'}).text(self.options.messages.error).appendTo(self._$errorDialogDiv);
             $('<div><p><span class="jtable-error-message"></span></p></div>').appendTo(self._$errorDialogDiv);
@@ -401,7 +401,7 @@ THE SOFTWARE.
         },
 
 	_closeErrorDialogDiv() {
-		this._$errorDialogDiv.hide();
+		this._$errorDialogDiv.hide().attr('aria-hidden','true');
         },
 
         /************************************************************************
@@ -1123,7 +1123,7 @@ THE SOFTWARE.
         *************************************************************************/
         _showError: function (message) {
 		this._$errorDialogDiv.find(".jtable-error-message").html(message);
-		this._$errorDialogDiv.show();
+		this._$errorDialogDiv.show().attr('aria-hidden','false');
         },
 
         /* BUSY PANEL ***********************************************************/
@@ -2117,7 +2117,7 @@ THE SOFTWARE.
             let self = this;
 
             //Create a div for dialog and add to container element
-            self._$addRecordDiv = $('<div />').addClass('jtable-modal-dialog').attr('role', 'dialog').attr('aria-labelledby', 'addDialogTitle').appendTo(self._$mainContainer);
+            self._$addRecordDiv = $('<div />').addClass('jtable-modal-dialog').attr('role', 'dialog').attr('aria-labelledby', 'addDialogTitle').attr('aria-hidden','true').appendTo(self._$mainContainer);
 
             $('<h2 id="addDialogTitle"></h2>').css({padding: '0px'}).text(self.options.messages.addNewRecord).appendTo(self._$addRecordDiv);
             const $cancelButton = $('<button class="jtable-dialog-cancelbutton">' + self.options.messages.cancel + '</button> ').on('click', function () {
@@ -2472,7 +2472,7 @@ THE SOFTWARE.
             let self = this;
 
             //Create a div for dialog and add to container element
-            self._$editDiv = $('<div />').addClass('jtable-modal-dialog').attr('role', 'dialog').attr('aria-labelledby', 'editDialogTitle').appendTo(self._$mainContainer);
+            self._$editDiv = $('<div />').addClass('jtable-modal-dialog').attr('role', 'dialog').attr('aria-labelledby', 'editDialogTitle').attr('aria-hidden','true').appendTo(self._$mainContainer);
 
             $('<h2 id="editDialogTitle"></h2>').css({padding: '0px'}).text(self.options.messages.editRecord).appendTo(self._$editDiv);
             const $cancelButton = $('<button class="jtable-dialog-cancelbutton">' + self.options.messages.cancel + '</button> ').on('click', function () {
@@ -2514,7 +2514,7 @@ THE SOFTWARE.
 
         _closeEditForm: function () {
 		let self = this;
-		self._$editDiv.hide();
+		self._$editDiv.hide().attr('aria-hidden','true');
 		let $editForm = self._$editDiv.find('form:first');
 		let $saveButton = self._$editDiv.parent().find('#EditDialogSaveButton');
 		self._$mainContainer.trigger("formClosed", { form: $editForm, formType: 'edit', row: self._$editingRow });
@@ -2730,7 +2730,7 @@ THE SOFTWARE.
 	    self._$editDiv.find('form:first').remove();
             // Show the form
             self._$editDiv.find('#editDialogTitle:first').after($editForm);
-            self._$editDiv.show();
+            self._$editDiv.show().attr('aria-hidden','false');
             self._$mainContainer.trigger("formCreated", { form: $editForm, formType: 'edit', record: record, row: $tableRow });
         },
 
@@ -2932,7 +2932,7 @@ THE SOFTWARE.
             }
 
             //Create div element for delete confirmation dialog
-            self._$deleteDialogDiv = $('<div />').addClass('jtable-modal-dialog').attr('role', 'dialog').attr('aria-labelledby', 'deleteDialogTitle').appendTo(self._$mainContainer);
+            self._$deleteDialogDiv = $('<div />').addClass('jtable-modal-dialog').attr('role', 'dialog').attr('aria-labelledby', 'deleteDialogTitle').attr('aria-hidden','true').appendTo(self._$mainContainer);
 
             $('<h2 id="deleteDialogTitle"></h2>').css({padding: '0px'}).text(self.options.messages.areYouSure).appendTo(self._$deleteDialogDiv);
             $('<div><p><span class="alert-icon" style="float:left; margin:0 7px 20px 0;"></span><span class="jtable-delete-confirm-message"></span></p></div>').appendTo(self._$deleteDialogDiv);
@@ -2973,7 +2973,7 @@ THE SOFTWARE.
         },
 	    
         _closeDeleteDialogDiv: function () {
-		this._$deleteDialogDiv.hide();
+		this._$deleteDialogDiv.hide().attr('aria-hidden','true');
 	},
 
         /************************************************************************
@@ -3192,7 +3192,7 @@ THE SOFTWARE.
         _showDeleteDialog: function ($row, deleteConfirmMessage) {
             this._$deletingRow = $row;
             this._$deleteDialogDiv.find('.jtable-delete-confirm-message').html(deleteConfirmMessage);
-            this._$deleteDialogDiv.show();
+            this._$deleteDialogDiv.show().attr('aria-hidden','false');
         },
 
         /* Performs an ajax call to server to delete record
