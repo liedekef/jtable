@@ -2333,7 +2333,9 @@ THE SOFTWARE.
                 return false;
             });
 
-            //Open the form
+	    // remove any existing form
+            self._$addRecordDiv.find('form:first').remove();
+            // Open the form
             self._$addRecordDiv.append($addRecordForm).show();
             self._$mainContainer.trigger("formCreated", { form: $addRecordForm, formType: 'create' });
         },
@@ -2721,6 +2723,8 @@ THE SOFTWARE.
                 return false;
             });
 
+	    // remove any existing form
+	    self._$editDiv.find('form:first').remove();
             //Open dialog
             self._$editingRow = $tableRow;
             self._$editDiv.append($editForm).show();
