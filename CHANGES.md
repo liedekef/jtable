@@ -1,7 +1,8 @@
+* rewritten without jquery-ui
 * visibility can be "hidden", "visible" (the default), or "separator" (in
 which case the value will be bold, but not selectable nor a real column, just
 a bold-entry in the vibility selection)
-* added div around the internal table, using css this is now responsive:
+* added div around the internal table, using css this is now responsive (css included in all themes):
 ```js
 .jtable-table-div {
     display: block;
@@ -11,7 +12,7 @@ a bold-entry in the vibility selection)
     overflow:hidden;
 }
 ```
-* the dialog is styled like this:
+* the dialog is styled like this (css included in all themes):
 ```
 .jtable-modal-dialog {
     display: none;
@@ -61,4 +62,3 @@ every load-call, can be a function
 ```
 * the queryparams for paging and sorting are now also added to the GET/POST as
 regular params, no more forced to the url as GET params
-* rewritten without jquery-ui
