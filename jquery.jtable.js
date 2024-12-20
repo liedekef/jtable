@@ -1,6 +1,6 @@
 ﻿/* 
 
-jTable (edited by Franky Van Liedekerke)
+jTable 1.0.0 (edited by Franky Van Liedekerke)
 http://www.jtable.org
 
 ---------------------------------------------------------------------------

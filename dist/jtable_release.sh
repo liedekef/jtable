@@ -21,6 +21,7 @@ pwd
 zip -r jtable.zip jtable -x '*.git*' '*.less' -x 'jtable/dist*' -x 'jtable/*json' -x 'jtable/.npmignore' -x 'jtable/themes/update_css.sh'
 mv jtable.zip $basedir/dist/
 
+cd $basedir
 git commit -m "release $release" -a
 git push
 gh release create "v${release}" --generate-notes ./dist/*.zip
