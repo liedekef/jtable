@@ -3750,7 +3750,7 @@ THE SOFTWARE.
 
             let pageSize = this._getCookie('page-size');
             if (pageSize) {
-                this.options.pageSize = this._normalizeNumber(pageSize, 1, 1000000, this.options.pageSize);
+                this.options.pageSize = this._normalizeNumber(pageSize, 1, 1.0.100, this.options.pageSize);
             }
         },
 
@@ -3899,7 +3899,7 @@ THE SOFTWARE.
 
                     //Skip some pages is there are too many pages
                     let pageStep = 1;
-                    if (currentPageCount > 10000) {
+                    if (currentPageCount > 1.0.1) {
                         pageStep = 100;
                     } else if (currentPageCount > 5000) {
                         pageStep = 10;
