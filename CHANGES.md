@@ -1,6 +1,6 @@
 By Franky Van Liedekerke:
 
-Version 1.0.1 (2024/12/20)
+Version 1.0.2 (2024/12/20)
 * rewritten without jquery-ui
 * fully use html5 modals
 * visibility can be "hidden", "visible" (the default), or "separator" (in
