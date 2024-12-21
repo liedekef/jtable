@@ -1,5 +1,10 @@
 #!/bin/bash
 
+scriptpath=$(realpath "$0")
+scriptdir=$(dirname $scriptpath)
+
+cd $scriptdir/../themes
+
 for i in `find . -name '*.less'|grep -v base.less`; do
     basedir=`dirname $i`
     basefile=`basename $i .less`

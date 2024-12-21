@@ -18,7 +18,7 @@ sed -i "s/$old_release/$release/" CHANGES.md
 # now create a zip of the new release
 cd $basedir/..
 pwd
-zip -r jtable.zip jtable -x '*.git*' '*.less' -x 'jtable/dist*' -x 'jtable/*json' -x 'jtable/.npmignore' -x 'jtable/themes/update_css.sh'
+zip -r jtable.zip jtable -x '*.git*' '*.less' -x 'jtable/dist*' -x 'jtable/script*' -x 'jtable/*json' -x 'jtable/.npmignore' -x 'jtable/themes/update_css.sh'
 mv jtable.zip $basedir/dist/
 
 cd $basedir
