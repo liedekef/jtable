@@ -1,7 +1,6 @@
 #/bin/bash
 
-old_release=$1
-release=$2
+release=$1
 if [ -z "$release" ]; then
        echo "Usage: $0 <old version number> <new version number>"
        exit
