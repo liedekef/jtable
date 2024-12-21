@@ -101,7 +101,6 @@ THE SOFTWARE.
         /************************************************************************
          * PRIVATE FIELDS                                                        *
          *************************************************************************/
-
         _$mainContainer: null, // Reference to the main container of all elements that are created by this plug-in (jQuery object)
 
         _$titleDiv: null, // Reference to the title div (jQuery object)
@@ -2018,7 +2017,6 @@ THE SOFTWARE.
         /* Sets enabled/disabled state of a dialog button.
          *************************************************************************/
         _setEnabledOfDialogButton: function ($button, enabled, buttonText) {
-		console.log($button);
             if (!$button) {
                 return;
             }
@@ -2077,7 +2075,6 @@ THE SOFTWARE.
         /************************************************************************
          * PRIVATE FIELDS                                                        *
          *************************************************************************/
-
         _$addRecordDialog: null, // Reference to the adding new record dialog div (jQuery object)
 
         /************************************************************************
@@ -2107,21 +2104,20 @@ THE SOFTWARE.
             // the close event is called upon close-call or pressing escape
             self._$addRecordDialog.on('close', function () {
                 let $addRecordForm = self._$addRecordDialog.find('form').first();
-                let $saveButton = self._$addRecordDialog.find('#AddRecordDialogSaveButton');
                 self._$mainContainer.trigger("formClosed", { form: $addRecordForm, formType: 'create' });
-                self._setEnabledOfDialogButton($saveButton, true, self.options.messages.save);
                 $addRecordForm.remove();
             });
 
             $('<h2 id="addRecordDialogTitle"></h2>').css({padding: '0px'}).text(self.options.messages.addNewRecord).appendTo(self._$addRecordDialog);
             const $cancelButton = $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button> ')
+                .attr('id', 'AddRecordDialogCancelButton')
                 .html('<span>' + self.options.messages.cancel + '</span>')
                 .on('click', function () {
                     self._closeCreateForm();
                 });
 
             let $saveButton = $('<button class="jtable-dialog-button jtable-dialog-savebutton"></button>')
-		.attr('id', 'AddRecordDialogSaveButton')
+                .attr('id', 'AddRecordDialogSaveButton')
                 .html('<span>' + self.options.messages.save + '</span>')
                 .on('click', function () {
                     self._onSaveClickedOnCreateForm();
@@ -2321,6 +2317,11 @@ THE SOFTWARE.
 
             // Remove any existing form
             self._$addRecordDialog.find('form:first').remove();
+
+            // Make sure people can click on the save button
+            let $saveButton = self._$editRecordDialog.find('#EditDialogSaveButton');
+            self._setEnabledOfDialogButton($saveButton, true, self.options.messages.save);
+
             // Show the form
             self._$addRecordDialog.find('#addRecordDialogTitle:first').after($addRecordForm);
             self._$addRecordDialog[0].showModal();
@@ -2335,13 +2336,11 @@ THE SOFTWARE.
             let completeAddRecord = function (data) {
                 if (data.Result != 'OK') {
                     self._showError(data.Message);
-                    self._setEnabledOfDialogButton($saveButton, true, self.options.messages.save);
                     return;
                 }
 
                 if (!data.Record) {
                     self._logError('Server must return the created Record object.');
-                    self._setEnabledOfDialogButton($saveButton, true, self.options.messages.save);
                     return;
                 }
 
@@ -2368,7 +2367,6 @@ THE SOFTWARE.
                         completeAddRecord(data);
                     }).fail(function () {
                         self._showError(self.options.messages.serverCommunicationError);
-                        self._setEnabledOfDialogButton($saveButton, true, self.options.messages.save);
                     });
                 } else { // assume it returned the creation result
                     completeAddRecord(funcResult);
@@ -2385,7 +2383,6 @@ THE SOFTWARE.
                     },
                     function () {
                         self._showError(self.options.messages.serverCommunicationError);
-                        self._setEnabledOfDialogButton($saveButton, true, self.options.messages.save);
                     });
             }
         },
@@ -2432,7 +2429,6 @@ THE SOFTWARE.
         /************************************************************************
          * PRIVATE FIELDS                                                        *
          *************************************************************************/
-
         _$editRecordDialog: null, // Reference to the editing dialog div (jQuery object)
         _$editingRow: null, // Reference to currently editing row (jQuery object)
 
@@ -2463,21 +2459,20 @@ THE SOFTWARE.
             // the close event is called upon close-call or pressing escape
             self._$editRecordDialog.on('close', function () {
                 let $editForm = self._$editRecordDialog.find('form:first');
-                let $saveButton = self._$editRecordDialog.find('#EditDialogSaveButton');
                 self._$mainContainer.trigger("formClosed", { form: $editForm, formType: 'edit', row: self._$editingRow });
-                self._setEnabledOfDialogButton($saveButton, true, self.options.messages.save);
                 $editForm.remove();
             });
 
             $('<h2 id="editDialogTitle"></h2>').css({padding: '0px'}).text(self.options.messages.editRecord).appendTo(self._$editRecordDialog);
             const $cancelButton = $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button> ')
+                .attr('id', 'EditRecordDialogCancelButton')
                 .html('<span>' + self.options.messages.cancel + '</span>')
                 .on('click', function () {
                     self._closeEditForm();
                 });
 
             let $saveButton = $('<button class="jtable-dialog-button jtable-dialog-savebutton"></button>')
-		.attr('id', 'EditDialogSaveButton')
+                .attr('id', 'EditDialogSaveButton')
                 .html('<span>' + self.options.messages.save + '</span>')
                 .on('click', function () {
                     self._onSaveClickedOnEditForm();
@@ -2716,6 +2711,11 @@ THE SOFTWARE.
             self._$editingRow = $tableRow;
             // Remove any existing form
             self._$editRecordDialog.find('form:first').remove();
+ 
+            // Make sure people can click on the save button
+            let $saveButton = self._$editRecordDialog.find('#EditDialogSaveButton');
+            self._setEnabledOfDialogButton($saveButton, true, self.options.messages.save);
+
             // Show the form
             self._$editRecordDialog.find('#editDialogTitle:first').after($editForm);
             self._$editRecordDialog[0].showModal();
@@ -2730,7 +2730,6 @@ THE SOFTWARE.
             let completeEdit = function (data) {
                 if (data.Result != 'OK') {
                     self._showError(data.Message);
-                    self._setEnabledOfDialogButton($saveButton, true, self.options.messages.save);
                     return;
                 }
 
@@ -2765,7 +2764,6 @@ THE SOFTWARE.
                         completeEdit(data);
                     }).fail(function () {
                         self._showError(self.options.messages.serverCommunicationError);
-                        self._setEnabledOfDialogButton($saveButton, true, self.options.messages.save);
                     });
                 } else { // assume it returned the creation result
                     completeEdit(funcResult);
@@ -2782,7 +2780,6 @@ THE SOFTWARE.
                     },
                     function() {
                         self._showError(self.options.messages.serverCommunicationError);
-                        self._setEnabledOfDialogButton($saveButton, true, self.options.messages.save);
                     });
             }
 
@@ -2894,7 +2891,6 @@ THE SOFTWARE.
         /************************************************************************
          * PRIVATE FIELDS                                                        *
          *************************************************************************/
-
         _$deleteDialog: null, // Reference to the delete record dialog div (jQuery object)
         _$deletingRow: null, // Reference to currently deleting row (jQuery object)
 
@@ -2930,12 +2926,14 @@ THE SOFTWARE.
             $('<div><p><span class="alert-icon" style="float:left; margin:0 7px 20px 0;"></span><span class="jtable-delete-confirm-message"></span></p></div>').appendTo(self._$deleteDialog);
 
             const $cancelButton = $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button> ')
+                .attr('id', 'DeleteDialogCancelButton')
                 .html('<span>' + self.options.messages.cancel + '</span>')
                 .on('click', function () {
                     self._closeDeleteDialog();
                 });
 
             let $deleteButton = $('<button class="jtable-dialog-button jtable-dialog-deletebutton"></button>')
+                .attr('id', 'DeleteDialogDeleteButton')
                 .html('<span>' + self.options.messages.deleteText + '</span>')
                 .on('click', function () {
                     // row may be removed by another source, if so, do nothing
@@ -2949,12 +2947,10 @@ THE SOFTWARE.
                         self._$deletingRow,
                         function () {
                             self._removeRowsFromTableWithAnimation(self._$deletingRow);
-                            self._setEnabledOfDialogButton($deleteButton, true, self.options.messages.deleteText);
                             self._closeDeleteDialog();
                         },
                         function (message) { // error
                             self._showError(message);
-                            self._setEnabledOfDialogButton($deleteButton, true, self.options.messages.deleteText);
                         }
                     );
                 });
@@ -3182,6 +3178,8 @@ THE SOFTWARE.
         _showDeleteDialog: function ($row, deleteConfirmMessage) {
             this._$deletingRow = $row;
             this._$deleteDialog.find('.jtable-delete-confirm-message').html(deleteConfirmMessage);
+            let $deleteButton = self._$editRecordDialog.find('#DeleteDialogDeleteButton');
+            this._setEnabledOfDialogButton($deleteButton, true, self.options.messages.deleteText);
             this._$deleteDialog[0].showModal();
         },
 
@@ -3323,7 +3321,6 @@ THE SOFTWARE.
         /************************************************************************
          * PRIVATE FIELDS                                                        *
          *************************************************************************/
-
         _selectedRecordIdsBeforeLoad: null, // This array is used to store selected row Id's to restore them after a page refresh (string array).
         _$selectAllCheckbox: null, // Reference to the 'select/deselect all' checkbox (jQuery object)
         _shiftKeyDown: false, // True, if shift key is currently down.
@@ -3713,7 +3710,6 @@ THE SOFTWARE.
         /************************************************************************
          * PRIVATE FIELDS                                                        *
          *************************************************************************/
-
         _$bottomPanel: null, // Reference to the panel at the bottom of the table (jQuery object)
         _$pagingListArea: null, // Reference to the page list area in to bottom panel (jQuery object)
         _$pageSizeChangeArea: null, // Reference to the page size change area in to bottom panel (jQuery object)
@@ -4513,7 +4509,6 @@ THE SOFTWARE.
         /************************************************************************
          * PRIVATE FIELDS                                                        *
          *************************************************************************/
-
         _$columnSelectionDiv: null,
         _$columnResizeBar: null,
         _cookieKeyPrefix: null,
