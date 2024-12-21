@@ -386,7 +386,7 @@ THE SOFTWARE.
  
             $('<h2 id="errorDialogTitle"></h2>').css({padding: '0px'}).html(self.options.messages.error).appendTo(self._$errorDialog);
             $('<div><p><span class="jtable-error-message"></span></p></div>').appendTo(self._$errorDialog);
-            $('<button class="jtable-dialog-cancelbutton"></button>')
+            $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button>')
                 .html('<span>' + self.options.messages.close + '</span>')
                 .on('click', function () {
                     self._closeErrorDialog();
@@ -2114,13 +2114,13 @@ THE SOFTWARE.
             });
 
             $('<h2 id="addRecordDialogTitle"></h2>').css({padding: '0px'}).text(self.options.messages.addNewRecord).appendTo(self._$addRecordDialog);
-            const $cancelButton = $('<button class="jtable-dialog-cancelbutton"></button> ')
+            const $cancelButton = $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button> ')
                 .html('<span>' + self.options.messages.cancel + '</span>')
                 .on('click', function () {
                     self._closeCreateForm();
                 });
 
-            let $saveButton = $('<button class="jtable-dialog-savebutton"></button>')
+            let $saveButton = $('<button class="jtable-dialog-button jtable-dialog-savebutton"></button>')
 		.attr('id', 'AddRecordDialogSaveButton')
                 .html('<span>' + self.options.messages.save + '</span>')
                 .on('click', function () {
@@ -2470,13 +2470,13 @@ THE SOFTWARE.
             });
 
             $('<h2 id="editDialogTitle"></h2>').css({padding: '0px'}).text(self.options.messages.editRecord).appendTo(self._$editRecordDialog);
-            const $cancelButton = $('<button class="jtable-dialog-cancelbutton"></button> ')
+            const $cancelButton = $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button> ')
                 .html('<span>' + self.options.messages.cancel + '</span>')
                 .on('click', function () {
                     self._closeEditForm();
                 });
 
-            let $saveButton = $('<button class="jtable-dialog-savebutton"></button>')
+            let $saveButton = $('<button class="jtable-dialog-button jtable-dialog-savebutton"></button>')
 		.attr('id', 'EditDialogSaveButton')
                 .html('<span>' + self.options.messages.save + '</span>')
                 .on('click', function () {
@@ -2929,13 +2929,13 @@ THE SOFTWARE.
             $('<h2 id="deleteDialogTitle"></h2>').css({padding: '0px'}).text(self.options.messages.areYouSure).appendTo(self._$deleteDialog);
             $('<div><p><span class="alert-icon" style="float:left; margin:0 7px 20px 0;"></span><span class="jtable-delete-confirm-message"></span></p></div>').appendTo(self._$deleteDialog);
 
-            const $cancelButton = $('<button class="jtable-dialog-cancelbutton"></button> ')
+            const $cancelButton = $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button> ')
                 .html('<span>' + self.options.messages.cancel + '</span>')
                 .on('click', function () {
                     self._closeDeleteDialog();
                 });
 
-            let $deleteButton = $('<button class="jtable-dialog-deletebutton"></button>')
+            let $deleteButton = $('<button class="jtable-dialog-button jtable-dialog-deletebutton"></button>')
                 .html('<span>' + self.options.messages.deleteText + '</span>')
                 .on('click', function () {
                     // row may be removed by another source, if so, do nothing
