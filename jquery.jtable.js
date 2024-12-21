@@ -1,6 +1,6 @@
 ﻿/* 
 
-jTable (edited by Franky Van Liedekerke)
+jTable 1.0.2 (edited by Franky Van Liedekerke)
 http://www.jtable.org
 
 ---------------------------------------------------------------------------
@@ -2019,6 +2019,7 @@ THE SOFTWARE.
         /* Sets enabled/disabled state of a dialog button.
          *************************************************************************/
         _setEnabledOfDialogButton: function ($button, enabled, buttonText) {
+		console.log($button);
             if (!$button) {
                 return;
             }
@@ -3749,7 +3750,7 @@ THE SOFTWARE.
 
             let pageSize = this._getCookie('page-size');
             if (pageSize) {
-                this.options.pageSize = this._normalizeNumber(pageSize, 1, 1.0.200, this.options.pageSize);
+                this.options.pageSize = this._normalizeNumber(pageSize, 1, 1000000, this.options.pageSize);
             }
         },
 
@@ -3898,7 +3899,7 @@ THE SOFTWARE.
 
                     //Skip some pages is there are too many pages
                     let pageStep = 1;
-                    if (currentPageCount > 1.0.2) {
+                    if (currentPageCount > 10000) {
                         pageStep = 100;
                     } else if (currentPageCount > 5000) {
                         pageStep = 10;
