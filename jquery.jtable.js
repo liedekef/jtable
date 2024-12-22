@@ -3178,8 +3178,8 @@ THE SOFTWARE.
         _showDeleteDialog: function ($row, deleteConfirmMessage) {
             this._$deletingRow = $row;
             this._$deleteDialog.find('.jtable-delete-confirm-message').html(deleteConfirmMessage);
-            let $deleteButton = self._$editRecordDialog.find('#DeleteDialogDeleteButton');
-            this._setEnabledOfDialogButton($deleteButton, true, self.options.messages.deleteText);
+            let $deleteButton = this._$deleteDialog.find('#DeleteDialogDeleteButton');
+            this._setEnabledOfDialogButton($deleteButton, true, this.options.messages.deleteText);
             this._$deleteDialog[0].showModal();
         },
 
