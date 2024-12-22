@@ -1436,7 +1436,7 @@ THE SOFTWARE.
             }
         },
 
-        /* Finds index of an element in an array according to given comparision function
+        /* Finds index of an element in an array according to given comparison function
          *************************************************************************/
         _findIndexInArray: function (value, array, compareFunc) {
 
@@ -1631,6 +1631,8 @@ THE SOFTWARE.
             // Create input according to field type
             if (field.type == 'date') {
                 return this._createDateInputForField(field, fieldName, value);
+            } else if (field.type == 'dateJS') {
+                return this._createDateJSInputForField(field, fieldName, value);
             } else if (field.type == 'textarea') {
                 return this._createTextAreaForField(field, fieldName, value);
             } else if (field.type == 'password') {
@@ -1658,9 +1660,22 @@ THE SOFTWARE.
                 .val(value);
         },
 
-        /* Creates a date input for a field.
+        /* Creates a datepicker input for a field.
          *************************************************************************/
         _createDateInputForField: function (field, fieldName, value) {
+            let $input = $('<input class="' + field.inputClass + '" id="Edit-' + fieldName + '" type="date" name="' + fieldName + '"></input>');
+            if(value != undefined) {
+                $input.val(value);
+            }
+
+            return $('<div />')
+                .addClass('jtable-input jtable-date-input')
+                .append($input);
+        },
+
+        /* Creates a datepicker input for a field.
+         *************************************************************************/
+        _createDateJSInputForField: function (field, fieldName, value) {
             let $input = $('<input class="' + field.inputClass + '" id="Edit-' + fieldName + '" type="text" name="' + fieldName + '"></input>');
             if(value != undefined) {
                 $input.val(value);
@@ -1676,7 +1691,7 @@ THE SOFTWARE.
         /* Creates a textarea element for a field.
          *************************************************************************/
         _createTextAreaForField: function (field, fieldName, value) {
-            let $textArea = $('<textarea class="' + field.inputClass + '" id="Edit-' + fieldName + '" name="' + fieldName + '"></textarea>');
+            let $textArea = $('<textarea class="' + field.inputClass + '" placeholder="' + field.placeholder + '" id="Edit-' + fieldName + '" name="' + fieldName + '"></textarea>');
             if (value != undefined) {
                 $textArea.val(value);
             }
