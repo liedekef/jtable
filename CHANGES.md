@@ -4,6 +4,7 @@ Version 1.0.6 (2025//)
 * Included PR https://github.com/volosoft/jtable/pull/2246
 * Included PR https://github.com/volosoft/jtable/pull/1931
 * Made Date-field a HTML5 date-field. The old datepicker can be restored using DateJS as type
+* remove deprecated method `_addRowToTable` and renamed `_addRow` to `_addRowToTable`
 
 Version 1.0.5 (2024/12/21)
 * roomForSortableIcon is true by default, set to false to regain old behavior
