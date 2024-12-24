@@ -2057,6 +2057,9 @@ THE SOFTWARE.
          ************************************************************************/
         options: {
 
+            // Options
+            formDialogWidth: '',
+
             // Events
             recordAdded: function (event, data) { },
 
@@ -2094,6 +2097,9 @@ THE SOFTWARE.
 
             // Create a div for dialog and add to container element
             self._$addRecordDialog = $('<dialog />').addClass('jtable-modal-dialog').appendTo(self._$mainContainer);
+            if (self.options.formDialogWidth) {
+                self._$addRecordDialog.css({width: self.options.formDialogWidth});
+            }
 
             // the close event is called upon close-call or pressing escape
             self._$addRecordDialog.on('close', function () {
@@ -2449,6 +2455,9 @@ THE SOFTWARE.
 
             // Create a div for dialog and add to container element
             self._$editRecordDialog = $('<dialog />').addClass('jtable-modal-dialog').appendTo(self._$mainContainer);
+            if (self.options.formDialogWidth) {
+                self._$editRecordDialog.css({width: self.options.formDialogWidth});
+            }
 
             // the close event is called upon close-call or pressing escape
             self._$editRecordDialog.on('close', function () {
