@@ -3379,12 +3379,19 @@ THE SOFTWARE.
         /* Makes row/rows 'selected'.
          ************************************************************************/
         selectRows: function ($rows) {
-            old_selected = this._getSelectedRows();
+            old_selected = this._getSelectedRowIds().sort();
             this._selectRows($rows);
-            new_selected = this._getSelectedRows();
-            if (old_selected != new_selected) {
-                this._onSelectionChanged();
-            }
+            new_selected = this._getSelectedRowIds().sort();
+	    if (old_selected.length != new_selected.length) {
+		  this._onSelectionChanged();
+		    return;
+	    }
+            for (let i = 0; i < old_selected.length; i++) {
+               if (old_selected[i] != new_selected[i]) {
+		  this._onSelectionChanged();
+                  return;
+               }
+	    }
         },
 
         /************************************************************************
@@ -3529,6 +3536,17 @@ THE SOFTWARE.
         _getSelectedRows: function () {
             return this._$tableBody
                 .find('>tr.jtable-row-selected');
+        },
+
+        /* Gets all selected rows Ids.
+         ************************************************************************/
+        _getSelectedRowIds: function () {
+            let self = this;
+            let IDs = [];
+            self._getSelectedRows().each(function () {
+                IDs.push(self._getKeyValueOfRecord($(this).data('record')));
+            });
+	    return IDs;
         },
 
         /* Adds selectable feature to a row.
