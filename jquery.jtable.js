@@ -4762,6 +4762,10 @@ THE SOFTWARE.
             $('<div />')
                 .addClass('jtable-column-resize-handler')
                 .appendTo($columnHeader.find('.jtable-column-header-container')) // Append the handler to the column
+                .click(function (e) { // reset/prevent click event from parent th, otherwise unwanted sorting can happen
+                    e.preventDefault();
+                    e.stopPropagation();
+                })
                 .mousedown(function (downevent) { // handle mousedown event for the handler
                     downevent.preventDefault();
                     downevent.stopPropagation();
