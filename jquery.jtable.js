@@ -929,7 +929,7 @@ THE SOFTWARE.
                 return;
             }
 
-            // Determine using value of text
+            // Determine using value or text
             let dataSelector;
             if (sorting.indexOf('value') == 0) {
                 dataSelector = function (option) {
@@ -942,13 +942,15 @@ THE SOFTWARE.
             }
 
             let compareFunc;
-            if ($.type(dataSelector(options[0])) == 'string') {
-                compareFunc = function (option1, option2) {
-                    return dataSelector(option1).localeCompare(dataSelector(option2));
-                };
-            } else { // assume as numeric
+            if ($.isNumeric(dataSelector(options[0]))) {
+                // assume the option values are numeric
                 compareFunc = function (option1, option2) {
                     return dataSelector(option1) - dataSelector(option2);
+                };
+            } else {
+                // assume the option values are strings, so do stringcompare
+                compareFunc = function (option1, option2) {
+                    return dataSelector(option1).localeCompare(dataSelector(option2));
                 };
             }
 
