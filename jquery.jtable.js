@@ -172,6 +172,9 @@ THE SOFTWARE.
             if (props.placeholder == undefined) {
                 props.placeholder = '';
             }
+            if (props.type == undefined) {
+                props.type = 'text';
+            }
 
             // Convert dependsOn to array if it's a comma seperated lists
             if (props.dependsOn && $.type(props.dependsOn) === 'string') {
@@ -771,7 +774,7 @@ THE SOFTWARE.
             if(extraFieldType && extraFieldType.creator){
                 return extraFieldType.creator(record, field);
             }
-            else if (field.type == 'date') {
+            else if (field.type == 'date' || field.type == 'dateJS') {
                 return this._getDisplayTextForDateRecordField(field, fieldValue);
             } else if (field.type == 'checkbox') {
                 return this._getCheckBoxTextForFieldByValue(fieldName, fieldValue);
@@ -828,9 +831,13 @@ THE SOFTWARE.
                 return '';
             }
 
-            let displayFormat = field.displayFormat || this.options.defaultDateFormat;
-            let date = this._parseDate(fieldValue);
-            return $.datepicker.formatDate(displayFormat, date);
+            if (typeof $.fn.datepicker == 'function') {
+                let displayFormat = field.displayFormat || this.options.defaultDateFormat;
+                let date = this._parseDate(fieldValue);
+                return $.datepicker.formatDate(displayFormat, date);
+            } else {
+                return fieldValue;
+            }
         },
 
         /* Gets options for a field according to user preferences.
@@ -1633,8 +1640,6 @@ THE SOFTWARE.
                 return this._createDateInputForField(field, fieldName, value);
             } else if (field.type == 'textarea') {
                 return this._createTextAreaForField(field, fieldName, value);
-            } else if (field.type == 'password') {
-                return this._createPasswordInputForField(field, fieldName, value);
             } else if (field.type == 'checkbox') {
                 return this._createCheckboxForField(field, fieldName, value);
             } else if (field.options) {
@@ -1644,7 +1649,7 @@ THE SOFTWARE.
                     return this._createDropDownListForField(field, fieldName, value, record, formType, form);
                 }
             } else {
-                return this._createTextInputForField(field, fieldName, value);
+                return this._createInputForField(field, fieldName, value);
             }
         },
 
@@ -1661,13 +1666,18 @@ THE SOFTWARE.
         /* Creates a date input for a field.
          *************************************************************************/
         _createDateInputForField: function (field, fieldName, value) {
-            let $input = $('<input class="' + field.inputClass + '" id="Edit-' + fieldName + '" type="text" name="' + fieldName + '"></input>');
+            let $input = '';
+            if (typeof $.fn.datepicker == 'function') {
+                let displayFormat = field.displayFormat || this.options.defaultDateFormat;
+                $input = $('<input class="' + field.inputClass + '" id="Edit-' + fieldName + '" type="text" name="' + fieldName + '"></input>');
+                $input.datepicker({ dateFormat: displayFormat });
+            } else {
+                $input = $('<input class="' + field.inputClass + '" id="Edit-' + fieldName + '" type="date" name="' + fieldName + '"></input>');
+            }
             if(value != undefined) {
                 $input.val(value);
             }
 
-            let displayFormat = field.displayFormat || this.options.defaultDateFormat;
-            $input.datepicker({ dateFormat: displayFormat });
             return $('<div />')
                 .addClass('jtable-input jtable-date-input')
                 .append($input);
@@ -1686,29 +1696,17 @@ THE SOFTWARE.
                 .append($textArea);
         },
 
-        /* Creates a standart textbox for a field.
+        /* Creates any type input for a field (text/password/range/week/datetime-local/...).
          *************************************************************************/
-        _createTextInputForField: function (field, fieldName, value) {
-            let $input = $('<input class="' + field.inputClass + '" placeholder="' + field.placeholder + '" id="Edit-' + fieldName + '" type="text" name="' + fieldName + '"></input>');
-            if (value != undefined) {
+        _createInputForField: function (field, fieldName, value) {
+            let $input = $('<input class="' + field.inputClass + '" placeholder="' + field.placeholder + '" id="Edit-' + fieldName + '" type="' + field.type + '" name="' + fieldName + '"></input>');
+
+            if(value != undefined) {
                 $input.val(value);
             }
 
             return $('<div />')
-                .addClass('jtable-input jtable-text-input')
-                .append($input);
-        },
-
-        /* Creates a password input for a field.
-         *************************************************************************/
-        _createPasswordInputForField: function (field, fieldName, value) {
-            let $input = $('<input class="' + field.inputClass + '" placeholder="' + field.placeholder + '" id="Edit-' + fieldName + '" type="password" name="' + fieldName + '"></input>');
-            if (value != undefined) {
-                $input.val(value);
-            }
-
-            return $('<div />')
-                .addClass('jtable-input jtable-password-input')
+                .addClass('jtable-input jtable-' + field.inputClass + '-input')
                 .append($input);
         },
 
@@ -1989,13 +1987,17 @@ THE SOFTWARE.
                     let dateVal = $inputElement.val();
                     if (dateVal) {
                         let displayFormat = field.displayFormat || this.options.defaultDateFormat;
-                        try {
-                            let date = $.datepicker.parseDate(displayFormat, dateVal);
-                            record[fieldName] = '/Date(' + date.getTime() + ')/';
-                        } catch (e) {
-                            // TODO: Handle incorrect/different date formats
-                            this._logWarn('Date format is incorrect for field ' + fieldName + ': ' + dateVal);
-                            record[fieldName] = undefined;
+                        if (typeof $.fn.datepicker == 'function') {
+                            try {
+                                let date = $.datepicker.parseDate(displayFormat, dateVal);
+                                record[fieldName] = '/Date(' + date.getTime() + ')/';
+                            } catch (e) {
+                                // TODO: Handle incorrect/different date formats
+                                this._logWarn('Date format is incorrect for field ' + fieldName + ': ' + dateVal);
+                                record[fieldName] = undefined;
+                            }
+                        } else {
+                            record[fieldName] = $inputElement.val();
                         }
                     } else {
                         this._logDebug('Date is empty for ' + fieldName);
