@@ -4814,32 +4814,34 @@ THE SOFTWARE.
 
                         // Calculate new widths in pixels
                         let mouseChangeX = upevent.pageX - self._currentResizeArgs.mouseStartX;
-                        let currentColumnFinalWidth = self._normalizeNumber(self._currentResizeArgs.currentColumnStartWidth + mouseChangeX, self._currentResizeArgs.minWidth, self._currentResizeArgs.maxWidth);
+                        if (mouseChangeX != 0) {
+                            let currentColumnFinalWidth = self._normalizeNumber(self._currentResizeArgs.currentColumnStartWidth + mouseChangeX, self._currentResizeArgs.minWidth, self._currentResizeArgs.maxWidth);
 
-                        // Now resize the column by setting width
-                        // Calculate widths as percent
-                        let pixelToPercentRatio = $columnHeader.data('width-in-percent') / self._currentResizeArgs.currentColumnStartWidth;
-                        $columnHeader.data('width-in-percent', currentColumnFinalWidth * pixelToPercentRatio);
-                        // Set new widths to columns (resize!)
-                        $columnHeader.css('width', $columnHeader.data('width-in-percent') + '%');
+                            // Now resize the column by setting width
+                            // Calculate widths as percent
+                            let pixelToPercentRatio = $columnHeader.data('width-in-percent') / self._currentResizeArgs.currentColumnStartWidth;
+                            $columnHeader.data('width-in-percent', currentColumnFinalWidth * pixelToPercentRatio);
+                            // Set new widths to columns (resize!)
+                            $columnHeader.css('width', $columnHeader.data('width-in-percent') + '%');
 
-                        // now do the same for the next column if present
-                        if ($nextColumnHeader.length) {
-                            let nextColumnFinalWidth = nextColumnOuterWidth + (self._currentResizeArgs.currentColumnStartWidth - currentColumnFinalWidth);
-                            $nextColumnHeader.data('width-in-percent', nextColumnFinalWidth * pixelToPercentRatio);
-                            $nextColumnHeader.css('width', $nextColumnHeader.data('width-in-percent') + '%');
+                            // now do the same for the next column if present
+                            if ($nextColumnHeader.length) {
+                                let nextColumnFinalWidth = nextColumnOuterWidth + (self._currentResizeArgs.currentColumnStartWidth - currentColumnFinalWidth);
+                                $nextColumnHeader.data('width-in-percent', nextColumnFinalWidth * pixelToPercentRatio);
+                                $nextColumnHeader.css('width', $nextColumnHeader.data('width-in-percent') + '%');
+                            }
+
+                            // Normalize all column widths
+                            self._normalizeColumnWidths();
+
+                            // Save current preferences
+                            if (self.options.saveUserPreferences) {
+                                self._saveColumnSettings();
+                            }
                         }
-
-                        // Normalize all column widths
-                        self._normalizeColumnWidths();
 
                         // Finish resizing
                         self._currentResizeArgs = null;
-
-                        // Save current preferences
-                        if (self.options.saveUserPreferences) {
-                            self._saveColumnSettings();
-                        }
                     };
 
                     // Show vertical resize bar
