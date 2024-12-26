@@ -6,6 +6,7 @@ Short changes:
   True by default
 * Added option "formDialogWidth", which takes a css-width as value, to change the auto-width of the create/edit dialog to something else
 * Made Date-field a HTML5 date-field. The old datepicker can be restored using DateJS as type
+* Better logic for resize of columns (resize bar is now full height of header column) and sorting (now sorting goes from nothing => ASC => DESC => nothing)
 * added listQueryParams to jtable-call, to indicate parameters to be loaded on
 every load-call, can be a function
   Examples:

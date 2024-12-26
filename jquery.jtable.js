@@ -4288,7 +4288,7 @@ THE SOFTWARE.
         options: {
             sorting: false,
             multiSorting: false,
-	    roomForSortableIcon: true,
+            roomForSortableIcon: true,
             defaultSorting: ''
         },
 
@@ -4375,13 +4375,13 @@ THE SOFTWARE.
         _makeColumnSortable: function ($columnHeader, fieldName, initialSortingDirection) {
             let self = this;
 
-		// Add some empty spaces after the text so the background icon has room next to it
-		// one could play with css and ::after, but then the width calculation of columns borks
-		// TOOD: this should be configurable in number
+            // Add some empty spaces after the text so the background icon has room next to it
+            // one could play with css and ::after, but then the width calculation of columns borks
+            // TOOD: this should be configurable in number
 
-	    if (self.options.roomForSortableIcon) {
-		$columnHeader.find('.jtable-column-header-text').append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
-	    }
+            if (self.options.roomForSortableIcon) {
+                $columnHeader.find('.jtable-column-header-text').append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+            }
 
             $columnHeader
                 .addClass('jtable-column-header-sortable')
@@ -4426,14 +4426,17 @@ THE SOFTWARE.
             }
 
             // Sort ASC or DESC according to current sorting state
+            // From ASC => DESC, from DESC => nothing, from nothing => ASC
             if ($columnHeader.hasClass('jtable-column-header-sorted-asc')) {
                 $columnHeader.removeClass('jtable-column-header-sorted-asc').addClass('jtable-column-header-sorted-desc');
                 this._lastSorting.push({
                     'fieldName': $columnHeader.data('fieldName'),
                     sortOrder: 'DESC'
                 });
+            } else if ($columnHeader.hasClass('jtable-column-header-sorted-desc')) {
+                $columnHeader.removeClass('jtable-column-header-sorted-desc');
             } else {
-                $columnHeader.removeClass('jtable-column-header-sorted-desc').addClass('jtable-column-header-sorted-asc');
+                $columnHeader.addClass('jtable-column-header-sorted-asc');
                 this._lastSorting.push({
                     'fieldName': $columnHeader.data('fieldName'),
                     sortOrder: 'ASC'
