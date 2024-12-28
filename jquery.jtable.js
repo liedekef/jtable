@@ -4623,11 +4623,17 @@ THE SOFTWARE.
                 props.columnResizable = (props.columnResizable != false);
             } else {
                 props.columnResizable = false;
-	    }
+            }
 
             // visibility
             if (!props.visibility) {
                 props.visibility = 'visible';
+            } else {
+                //if (['visible', 'hidden', 'fixed','separator'].indexOf(props.visibility) < 0) {
+                allowed_states = ['visible', 'hidden', 'fixed', 'separator'];
+                if (!$.inArray(props.visibility,allowed_states)) {
+                    props.visibility = 'visible';
+                }
             }
         },
 
@@ -4687,12 +4693,6 @@ THE SOFTWARE.
             let columnIndex = this._columnList.indexOf(columnName);
             if (columnIndex < 0) {
                 this._logWarn('Column "' + columnName + '" does not exist in fields!');
-                return;
-            }
-
-            // Check if visibility value is valid
-            if (['visible', 'hidden', 'fixed','separator'].indexOf(visibility) < 0) {
-                this._logWarn('Visibility value is not valid: "' + visibility + '"! Options are: visible, hidden, fixed, separator.');
                 return;
             }
 
