@@ -138,6 +138,10 @@ THE SOFTWARE.
             this._initializeFields();
             this._createFieldAndColumnList();
 
+            this._cookieKeyPrefix = this._generateCookieKeyPrefix();            
+
+            this._extrasettings();
+
             // Creating DOM elements
             this._createMainContainer();
             this._createTableTitle();
@@ -147,8 +151,6 @@ THE SOFTWARE.
             this._createBusyDialog();
             this._createErrorDialog();
             this._addNoDataRow();
-
-            this._cookieKeyPrefix = this._generateCookieKeyPrefix();            
         },
 
         /* Normalizes some options for all fields (sets default values).
@@ -455,6 +457,12 @@ THE SOFTWARE.
          *************************************************************************/
         _setOption: function (key, value) {
 
+        },
+
+        _extrasettings: function() {
+            return {
+                // Empty as default, extensions can override this method to load additional settings from cookies or so
+            };
         },
 
         /* LOADING RECORDS  *****************************************************/
@@ -1326,7 +1334,8 @@ THE SOFTWARE.
                 strToHash = strToHash + this.options.tableId + '#';
             }
 
-            strToHash = strToHash + this._columnList.join('$') + '#c' + this._$table.find('thead th').length;
+            //strToHash = strToHash + this._columnList.join('$') + '#c' + this._$table.find('thead th').length;
+            strToHash = strToHash + this._columnList.join('$') + '#c' + this.options.fields.length;
             return 'jtable#' + simpleHash(strToHash);
         },
 
@@ -4278,6 +4287,7 @@ THE SOFTWARE.
     let base = {
         _initializeFields: jTable.prototype._initializeFields,
         _normalizeFieldOptions: jTable.prototype._normalizeFieldOptions,
+        _extrasettings: jTable.prototype._extrasettings,
         _createHeaderCellForField: jTable.prototype._createHeaderCellForField,
         // _createRecordLoadUrl: jTable.prototype._createRecordLoadUrl,
         _createJtParamsForLoading: jTable.prototype._createJtParamsForLoading
@@ -4309,10 +4319,9 @@ THE SOFTWARE.
          *************************************************************************/
         _initializeFields: function () {
             base._initializeFields.apply(this, arguments);
-
             this._lastSorting = [];
             if (this.options.sorting) {
-                this._buildDefaultSortingArray();
+		this._buildDefaultSortingArray();
             }
         },
 
@@ -4321,6 +4330,16 @@ THE SOFTWARE.
         _normalizeFieldOptions: function (fieldName, props) {
             base._normalizeFieldOptions.apply(this, arguments);
             props.sorting = (props.sorting != false);
+        },
+
+        /* Overrides _extrasettings method for sorting
+         *************************************************************************/
+        _extrasettings: function () {
+            base._extrasettings.apply(this, arguments);
+
+            if (this.options.saveUserPreferences && this.options.sorting) {
+                this._loadColumnSortSettings();
+            }
         },
 
         /* Overrides _createHeaderCellForField to make columns sortable.
@@ -4447,7 +4466,9 @@ THE SOFTWARE.
                 });
             }
 
-            // Load current page again
+            if (this.options.saveUserPreferences) {
+		    this._saveColumnSortSettings();
+	    }
             this._reloadTable();
         },
 
@@ -4481,8 +4502,44 @@ THE SOFTWARE.
             }
 
             return jtParams;
-        }
+        },
 
+        /* Saves field setting to cookie.
+         *  Saved setting will be a string like that:
+         * fieldName1=ASC|fieldName2=DESC|...
+         *************************************************************************/
+        _saveColumnSortSettings: function () {
+            let fieldSettings = '';
+            $.each(this._lastSorting, function (idx, value) {
+                let fieldSetting = value.fieldName + "=" + value.sortOrder;
+                fieldSettings = fieldSettings + fieldSetting + '|';
+            });
+            this._setCookie('column-sortsettings', fieldSettings.substr(0, fieldSettings.length - 1));
+        },
+
+        /* Loads field settings from cookie that is saved by _saveColumnSortSettings method.
+         *************************************************************************/
+        _loadColumnSortSettings: function () {
+            let self = this;
+
+            let columnSortSettingsCookie = self._getCookie('column-sortsettings');
+            if (!columnSortSettingsCookie) {
+                return;
+            }
+            if (!columnSortSettingsCookie.length) {
+                return;
+            }
+            self._lastSorting = [];
+            $.each(columnSortSettingsCookie.split('|'), function (inx, fieldSetting) {
+                let splitted = fieldSetting.split('=');
+                let fieldName = splitted[0];
+                let sortOrder = splitted[1];
+                self._lastSorting.push({
+                    'fieldName': fieldName,
+                    'sortOrder': sortOrder
+                });
+            });
+        },
     });
 
 })(jQuery);
@@ -4525,7 +4582,7 @@ THE SOFTWARE.
          * OVERRIDED METHODS                                                     *
          *************************************************************************/
 
-        /* Overrides _addRowToTableHead method.
+        /* Overrides _create method.
          *************************************************************************/
 
         _create: function () {
@@ -4920,7 +4977,7 @@ THE SOFTWARE.
             this._setCookie('column-settings', fieldSettings.substr(0, fieldSettings.length - 1));
         },
 
-        /* Loads field settings from cookie that is saved by _saveFieldSettings method.
+        /* Loads field settings from cookie that is saved by _saveColumnSettings method.
          *************************************************************************/
         _loadColumnSettings: function () {
             let self = this;
