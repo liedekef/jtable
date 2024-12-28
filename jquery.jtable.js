@@ -148,6 +148,9 @@ THE SOFTWARE.
             // Normalize field options
             this._normalizeFieldsOptions();
 
+            // Extra actions hook before table gets built
+            this._doExtraActions();
+
             // Creating DOM elements
             this._createMainContainer();
             this._createTableTitle();
@@ -464,13 +467,16 @@ THE SOFTWARE.
         /* Used to change options dynamically after initialization.
          *************************************************************************/
         _setOption: function (key, value) {
-
         },
 
+        /* Used by extensions to load additional settings from cookies or so
+         *************************************************************************/
         _loadExtraSettings: function() {
-            return {
-                // Empty as default, extensions can override this method to load additional settings from cookies or so
-            };
+        },
+
+        /* Used by extensions to execute additional actions before table build is done
+         *************************************************************************/
+        _doExtraActions: function() {
         },
 
         /* LOADING RECORDS  *****************************************************/
@@ -1291,7 +1297,7 @@ THE SOFTWARE.
 
             let expireDate = new Date();
             expireDate.setDate(expireDate.getDate() + 30);
-            document.cookie = encodeURIComponent(key) + '=' + encodeURIComponent(value) + "; expires=" + expireDate.toUTCString();
+	    $.cookie(key, value, { expires: expireDate });
         },
 
         /* Gets a cookie with given key.
@@ -1299,24 +1305,16 @@ THE SOFTWARE.
         _getCookie: function (key) {
             key = this._cookieKeyPrefix + key;
 
-            let equalities = document.cookie.split('; ');
-            for (let i = 0; i < equalities.length; i++) {
-                if (!equalities[i]) {
-                    continue;
-                }
-
-                let splitted = equalities[i].split('=');
-                if (splitted.length != 2) {
-                    continue;
-                }
-
-                if (decodeURIComponent(splitted[0]) === key) {
-                    return decodeURIComponent(splitted[1] || '');
-                }
-            }
-
-            return null;
+	    return $.cookie(key);
         },
+
+        /* Remove a cookie with given key.
+         *************************************************************************/
+	_removeCookie: function (key) {
+            key = this._cookieKeyPrefix + key;
+	    $.removeCookie(key, { path: '/' });
+            return null;
+	},
 
         /* Generates a hash key to be prefix for all cookies for this jtable instance.
          *************************************************************************/
@@ -4296,6 +4294,7 @@ THE SOFTWARE.
         _initializeSettings: jTable.prototype._initializeSettings,
         _normalizeFieldOptions: jTable.prototype._normalizeFieldOptions,
         _loadExtraSettings: jTable.prototype._loadExtraSettings,
+        _doExtraActions: jTable.prototype._doExtraActions,
         _createHeaderCellForField: jTable.prototype._createHeaderCellForField,
         // _createRecordLoadUrl: jTable.prototype._createRecordLoadUrl,
         _createJtParamsForLoading: jTable.prototype._createJtParamsForLoading
@@ -4328,9 +4327,6 @@ THE SOFTWARE.
         _initializeSettings: function () {
             base._initializeSettings.apply(this, arguments);
             this._lastSorting = [];
-            if (this.options.sorting) {
-                this._buildDefaultSortingArray();
-            }
         },
 
         /* Overrides _normalizeFieldOptions method to normalize sorting option for fields.
@@ -4347,6 +4343,15 @@ THE SOFTWARE.
 
             if (this.options.saveUserPreferences && this.options.sorting) {
                 this._loadColumnSortSettings();
+            }
+        },
+
+        /* Overrides _loadExtraSettings method for sorting
+         *************************************************************************/
+        _doExtraActions: function () {
+            base._doExtraActions.apply(this, arguments);
+            if (this.options.sorting) {
+                this._buildDefaultSortingArray();
             }
         },
 
@@ -4535,6 +4540,7 @@ THE SOFTWARE.
                 return;
             }
             if (!columnSortSettingsCookie.length) {
+		self._removeCookie('column-sortsettings');
                 return;
             }
             self._lastSorting = [];
@@ -4623,17 +4629,11 @@ THE SOFTWARE.
                 props.columnResizable = (props.columnResizable != false);
             } else {
                 props.columnResizable = false;
-            }
+	    }
 
             // visibility
             if (!props.visibility) {
                 props.visibility = 'visible';
-            } else {
-                //if (['visible', 'hidden', 'fixed','separator'].indexOf(props.visibility) < 0) {
-                allowed_states = ['visible', 'hidden', 'fixed', 'separator'];
-                if (!$.inArray(props.visibility,allowed_states)) {
-                    props.visibility = 'visible';
-                }
             }
         },
 
@@ -4693,6 +4693,12 @@ THE SOFTWARE.
             let columnIndex = this._columnList.indexOf(columnName);
             if (columnIndex < 0) {
                 this._logWarn('Column "' + columnName + '" does not exist in fields!');
+                return;
+            }
+
+            // Check if visibility value is valid
+            if (['visible', 'hidden', 'fixed','separator'].indexOf(visibility) < 0) {
+                this._logWarn('Visibility value is not valid: "' + visibility + '"! Options are: visible, hidden, fixed, separator.');
                 return;
             }
 
