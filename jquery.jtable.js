@@ -1,6 +1,6 @@
 ﻿/* 
 
-jTable 1.0.18 (edited by Franky Van Liedekerke)
+jTable 1.0.19 (edited by Franky Van Liedekerke)
 http://www.jtable.org
 
 ---------------------------------------------------------------------------
@@ -5019,7 +5019,7 @@ THE SOFTWARE.
                 return;
             }
             if (!columnSettingsCookie) { // empty cookie? Remove it
-		self._removeCookie('column-settings');
+                self._removeCookie('column-settings');
                 return;
             }
 
@@ -5030,7 +5030,7 @@ THE SOFTWARE.
                 let settings = splitted[1].split(';');
                 let columnVisibility = settings[0];
                 let columnWidth = settings[1];
-                if ($.inArray(fieldName,self.options.fields)) {
+                if ($.inArray(fieldName,self.options.fields) > -1) {
                     if ( self.options.fields[fieldName].visibility != 'fixed') {
                         self.options.fields[fieldName].visibility = columnVisibility;
                     }
