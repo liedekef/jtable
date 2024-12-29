@@ -3474,7 +3474,7 @@ THE SOFTWARE.
                 .addClass('jtable-column-header-container')
                 .appendTo($columnHeader);
 
-            self._$selectAllCheckbox = $('<input type="checkbox" />')
+            self._$selectAllCheckbox = $('<input name="jtable-column-header-checkbox" type="checkbox" />')
                 .appendTo($headerContainer)
                 .on("click", function () {
                     if (self._$tableRows.length <= 0) {
@@ -3558,7 +3558,7 @@ THE SOFTWARE.
             // 'select/deselect' checkbox column
             if (self.options.selectingCheckboxes) {
                 let $cell = $('<td></td>').addClass('jtable-command-column jtable-selecting-column');
-                let $selectCheckbox = $('<input type="checkbox" />').appendTo($cell);
+                let $selectCheckbox = $('<input name="jtable-column-checkbox-' + $row.data('recordKey') + '" type="checkbox" />').appendTo($cell);
                 if (!self.options.selectOnRowClick) {
                     $selectCheckbox.on("click", function () {
                         self._invertRowSelection($row);
@@ -3824,7 +3824,7 @@ THE SOFTWARE.
             self._$pageSizeChangeArea.append('<span>' + self.options.messages.pageSizeChangeLabel + ': </span>');
 
             // Page size change combobox
-            let $pageSizeChangeCombobox = $('<select></select>').appendTo(self._$pageSizeChangeArea);
+            let $pageSizeChangeCombobox = $('<select name="jtable-page-size-select"></select>').appendTo(self._$pageSizeChangeArea);
 
             // Add page sizes to the combobox
             for (let i = 0; i < self.options.pageSizes.length; i++) {
@@ -3860,7 +3860,7 @@ THE SOFTWARE.
             // Goto page input
             if (self.options.gotoPageArea == 'combobox') {
 
-                self._$gotoPageInput = $('<select></select>')
+                self._$gotoPageInput = $('<select name="jtable-page-goto-select"></select>')
                     .appendTo(this._$gotoPageArea)
                     .data('pageCount', 1)
                     .change(function() {
