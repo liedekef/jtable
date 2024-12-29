@@ -2423,6 +2423,7 @@ THE SOFTWARE.
     // Reference to base object members
     let base = {
         _create: jTable.prototype._create,
+        _loadExtraSettings: jTable.prototype._loadExtraSettings,
         _addColumnsToHeaderRow: jTable.prototype._addColumnsToHeaderRow,
         _addCellsToRowUsingRecord: jTable.prototype._addCellsToRowUsingRecord
     };
@@ -2460,17 +2461,29 @@ THE SOFTWARE.
         _create: function () {
             base._create.apply(this, arguments);
 
-            if (!this.options.actions.updateAction) {
-                return;
-            }
-
             this._createEditDialog();
+        },
+
+        /* Overrides _loadExtraSettings method
+         *************************************************************************/
+        _loadExtraSettings: function () {
+            base._loadExtraSettings.apply(this, arguments);
+
+            if (!this._keyField && this.options.actions.updateAction != undefined) {
+                this.options.actions.updateAction = undefined;
+                this._logWarn('No key field defined, setting updateAction to undefined.');
+            }
         },
 
         /* Creates and prepares edit dialog div
          *************************************************************************/
         _createEditDialog: function () {
             let self = this;
+
+            // Check if updateAction is supplied
+            if (!self.options.actions.updateAction) {
+                return;
+            }
 
             // Create a div for dialog and add to container element
             self._$editRecordDialog = $('<dialog />').addClass('jtable-modal-dialog').appendTo(self._$mainContainer);
@@ -2879,6 +2892,7 @@ THE SOFTWARE.
     // Reference to base object members
     let base = {
         _create: jTable.prototype._create,
+        _loadExtraSettings: jTable.prototype._loadExtraSettings,
         _addColumnsToHeaderRow: jTable.prototype._addColumnsToHeaderRow,
         _addCellsToRowUsingRecord: jTable.prototype._addCellsToRowUsingRecord
     };
@@ -2921,7 +2935,19 @@ THE SOFTWARE.
          *************************************************************************/
         _create: function () {
             base._create.apply(this, arguments);
+
             this._createDeleteDialog();
+        },
+
+        /* Overrides _loadExtraSettings method
+         *************************************************************************/
+        _loadExtraSettings: function () {
+            base._loadExtraSettings.apply(this, arguments);
+
+            if (!this._keyField && this.options.actions.deleteAction != undefined) {
+                this.options.actions.deleteAction = undefined;
+                this._logWarn('No key field defined, setting deleteAction to undefined.');
+            }
         },
 
         /* Creates and prepares delete record confirmation dialog div.
@@ -3312,6 +3338,7 @@ THE SOFTWARE.
     // Reference to base object members
     let base = {
         _create: jTable.prototype._create,
+        _loadExtraSettings: jTable.prototype._loadExtraSettings,
         _addColumnsToHeaderRow: jTable.prototype._addColumnsToHeaderRow,
         _addCellsToRowUsingRecord: jTable.prototype._addCellsToRowUsingRecord,
         _onLoadingRecords: jTable.prototype._onLoadingRecords,
@@ -3359,6 +3386,18 @@ THE SOFTWARE.
             // Call base method
             base._create.apply(this, arguments);
         },
+
+        /* Overrides _loadExtraSettings method
+         *************************************************************************/
+        _loadExtraSettings: function () {
+            base._loadExtraSettings.apply(this, arguments);
+
+            if (!this._keyField) {
+                this.options.selecting = false;
+                this._logWarn('No key field defined, selecting is not possible.');
+            }
+        },
+
 
         /* Registers to keyboard events those are needed for selection
          *************************************************************************/
@@ -3558,10 +3597,9 @@ THE SOFTWARE.
             // 'select/deselect' checkbox column
             if (self.options.selectingCheckboxes) {
                 let $cell = $('<td></td>').addClass('jtable-command-column jtable-selecting-column');
-                let $selectCheckbox = $('<input type="checkbox" />').appendTo($cell);
-		if (typeof $row.data('recordKey') !== 'undefined' ) {
-			$selectCheckbox.attr('id', "jtable-column-checkbox-" + $row.data('recordKey'));
-		}
+                let $selectCheckbox = $('<input type="checkbox" />')
+                    .attr('id', "jtable-column-checkbox-" + $row.data('recordKey'))
+                    .appendTo($cell);
                 if (!self.options.selectOnRowClick) {
                     $selectCheckbox.on("click", function () {
                         self._invertRowSelection($row);
