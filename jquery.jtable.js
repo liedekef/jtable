@@ -4355,11 +4355,14 @@ THE SOFTWARE.
          *************************************************************************/
         _doExtraActions: function () {
             base._doExtraActions.apply(this, arguments);
-            if (this.options.sorting) {
-                this._buildDefaultSortingArray();
-            }
-            if (this.options.saveUserPreferences && this.options.sorting) {
-                this._loadColumnSortSettings();
+            if (this.options.sorting) { 
+                if (this.options.saveUserPreferences) {
+                    this._loadSavedSortingArray();
+                }
+                // if _lastSorting is empty, load the default
+                if ($.isEmptyObject(this._lastSorting)) {
+                    this._buildDefaultSortingArray();
+                }
             }
         },
 
@@ -4540,7 +4543,7 @@ THE SOFTWARE.
 
         /* Loads field settings from cookie that is saved by _saveColumnSortSettings method.
          *************************************************************************/
-        _loadColumnSortSettings: function () {
+        _loadSavedSortingArray: function () {
             let self = this;
 
             let columnSortSettingsCookie = self._getCookie('column-sortsettings');
