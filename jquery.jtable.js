@@ -4717,7 +4717,7 @@ THE SOFTWARE.
             // Check if visibility value is valid
             if ($.inArray(visibility,['visible', 'hidden', 'fixed','separator']) < 0) {
                 this._logWarn('Visibility value is not valid: "' + visibility + '"! Setting to visible.');
-		visibility = 'visible';
+                visibility = 'visible';
             }
 
             // Get the field
@@ -5044,6 +5044,9 @@ THE SOFTWARE.
                 let settings = splitted[1].split(';');
                 let columnVisibility = settings[0];
                 let columnWidth = settings[1];
+                if ($.inArray(columnVisibility,['visible', 'hidden', 'fixed','separator']) < 0) {
+                    columnVisibility = 'visible';
+                }
                 if ($.inArray(fieldName,self._fieldList) > -1) {
                     if ( self.options.fields[fieldName].visibility != 'fixed') {
                         self.options.fields[fieldName].visibility = columnVisibility;
