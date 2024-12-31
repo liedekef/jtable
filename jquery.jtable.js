@@ -4559,10 +4559,17 @@ THE SOFTWARE.
                 let splitted = fieldSetting.split('=');
                 let fieldName = splitted[0];
                 let sortOrder = splitted[1];
-                self._lastSorting.push({
-                    'fieldName': fieldName,
-                    'sortOrder': sortOrder
-                });
+                if (sortOrder.toUpperCase() == 'DESC') {
+                    sortOrder = 'DESC";
+                } else {
+                    sortOrder = 'ASC";
+                }
+                if ($.inArray(fieldName,self._fieldList) > -1) {
+                    self._lastSorting.push({
+                        'fieldName': fieldName,
+                        'sortOrder': sortOrder
+                    });
+                }
             });
         },
     });
