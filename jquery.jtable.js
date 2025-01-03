@@ -1113,12 +1113,12 @@ THE SOFTWARE.
                     .addClass('jtable-toolbar-item-text').appendTo($toolBarItem);
             }
 
-            // click event
+            // click event ("click" is a function defined for the item in the options list, not a triggered jquery event)
             if (item.click) {
                 $toolBarItem.on("click", function (e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    item.trigger("click");
+                    item.click(); // call the defined function
                 });
             }
 
@@ -4355,14 +4355,11 @@ THE SOFTWARE.
          *************************************************************************/
         _doExtraActions: function () {
             base._doExtraActions.apply(this, arguments);
-            if (this.options.sorting) { 
-                if (this.options.saveUserPreferences) {
-                    this._loadSavedSortingArray();
-                }
-                // if _lastSorting is empty, load the default
-                if ($.isEmptyObject(this._lastSorting)) {
-                    this._buildDefaultSortingArray();
-                }
+            if (this.options.sorting) {
+                this._buildDefaultSortingArray();
+            }
+            if (this.options.saveUserPreferences && this.options.sorting) {
+                this._loadColumnSortSettings();
             }
         },
 
@@ -4543,7 +4540,7 @@ THE SOFTWARE.
 
         /* Loads field settings from cookie that is saved by _saveColumnSortSettings method.
          *************************************************************************/
-        _loadSavedSortingArray: function () {
+        _loadColumnSortSettings: function () {
             let self = this;
 
             let columnSortSettingsCookie = self._getCookie('column-sortsettings');
@@ -4559,17 +4556,10 @@ THE SOFTWARE.
                 let splitted = fieldSetting.split('=');
                 let fieldName = splitted[0];
                 let sortOrder = splitted[1];
-                if (sortOrder.toUpperCase() == 'DESC') {
-                    sortOrder = 'DESC";
-                } else {
-                    sortOrder = 'ASC";
-                }
-                if ($.inArray(fieldName,self._fieldList) > -1) {
-                    self._lastSorting.push({
-                        'fieldName': fieldName,
-                        'sortOrder': sortOrder
-                    });
-                }
+                self._lastSorting.push({
+                    'fieldName': fieldName,
+                    'sortOrder': sortOrder
+                });
             });
         },
     });
@@ -4717,7 +4707,7 @@ THE SOFTWARE.
             // Check if visibility value is valid
             if ($.inArray(visibility,['visible', 'hidden', 'fixed','separator']) < 0) {
                 this._logWarn('Visibility value is not valid: "' + visibility + '"! Setting to visible.');
-                visibility = 'visible';
+		visibility = 'visible';
             }
 
             // Get the field
@@ -5044,9 +5034,6 @@ THE SOFTWARE.
                 let settings = splitted[1].split(';');
                 let columnVisibility = settings[0];
                 let columnWidth = settings[1];
-                if ($.inArray(columnVisibility,['visible', 'hidden', 'fixed','separator']) < 0) {
-                    columnVisibility = 'visible';
-                }
                 if ($.inArray(fieldName,self._fieldList) > -1) {
                     if ( self.options.fields[fieldName].visibility != 'fixed') {
                         self.options.fields[fieldName].visibility = columnVisibility;
