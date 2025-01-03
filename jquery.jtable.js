@@ -601,35 +601,15 @@ THE SOFTWARE.
             let self = this;
 
             $.each(records, function (index, record) {
-                self._addRow(self._createRowFromRecord(record));
+                self._addRowToTable(self._createRowFromRecord(record));
             });
 
             self._refreshRowStyles();
         },
 
         /* Adds a single row to the table.
-         * NOTE: THIS METHOD IS DEPRECATED AND WILL BE REMOVED FROM FEATURE RELEASES.
-         * USE _addRow METHOD.
          *************************************************************************/
-        _addRowToTable: function ($tableRow, index, isNewRow, animationsEnabled) {
-            let options = {
-                index: this._normalizeNumber(index, 0, this._$tableRows.length, this._$tableRows.length)
-            };
-
-            if (isNewRow == true) {
-                options.isNewRow = true;
-            }
-
-            if (animationsEnabled == false) {
-                options.animationsEnabled = false;
-            }
-
-            this._addRow($tableRow, options);
-        },
-
-        /* Adds a single row to the table.
-         *************************************************************************/
-        _addRow: function ($row, options) {
+        _addRowToTable: function ($row, options) {
             //Set defaults
             options = $.extend({
                 index: this._$tableRows.length,
@@ -2173,7 +2153,7 @@ THE SOFTWARE.
             }
 
             if (options.clientOnly) {
-                self._addRow(
+                self._addRowToTable(
                     self._createRowFromRecord(options.record), {
                         isNewRow: true,
                         animationsEnabled: options.animationsEnabled
@@ -2197,7 +2177,7 @@ THE SOFTWARE.
                 }
 
                 self._onRecordAdded(data);
-                self._addRow(
+                self._addRowToTable(
                     self._createRowFromRecord(data.Record), {
                         isNewRow: true,
                         animationsEnabled: options.animationsEnabled
@@ -2329,7 +2309,7 @@ THE SOFTWARE.
                 }
 
                 self._onRecordAdded(data);
-                self._addRow(
+                self._addRowToTable(
                     self._createRowFromRecord(data.Record), {
                         isNewRow: true
                     });
@@ -3695,7 +3675,6 @@ THE SOFTWARE.
         // _createRecordLoadUrl: jTable.prototype._createRecordLoadUrl,
         _createJtParamsForLoading: jTable.prototype._createJtParamsForLoading,
         _addRowToTable: jTable.prototype._addRowToTable,
-        _addRow: jTable.prototype._addRow,
         _removeRowsFromTable: jTable.prototype._removeRowsFromTable,
         _onRecordsLoaded: jTable.prototype._onRecordsLoaded
     };
@@ -4025,27 +4004,14 @@ THE SOFTWARE.
         },
 
         /* Overrides _addRowToTable method to re-load table when a new row is created.
-         * NOTE: THIS METHOD IS DEPRECATED AND WILL BE REMOVED FROM FEATURE RELEASES.
-         * USE _addRow METHOD.
          *************************************************************************/
-        _addRowToTable: function ($tableRow, index, isNewRow) {
-            if (isNewRow && this.options.paging) {
-                this._reloadTable();
-                return;
-            }
-
-            base._addRowToTable.apply(this, arguments);
-        },
-
-        /* Overrides _addRow method to re-load table when a new row is created.
-         *************************************************************************/
-        _addRow: function ($row, options) {
+        _addRowToTable: function ($row, options) {
             if (options && options.isNewRow && this.options.paging) {
                 this._reloadTable();
                 return;
             }
 
-            base._addRow.apply(this, arguments);
+            base._addRowToTable.apply(this, arguments);
         },
 
         /* Overrides _removeRowsFromTable method to re-load table when a row is removed from table.
