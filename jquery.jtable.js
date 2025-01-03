@@ -1207,20 +1207,6 @@ THE SOFTWARE.
 
         /* COMMON METHODS *******************************************************/
 
-        /* Performs an AJAX call to specified URL.
-         * THIS METHOD IS DEPRECATED AND WILL BE REMOVED FROM FEATURE RELEASES.
-         * USE _ajax METHOD.
-         *************************************************************************/
-        _performAjaxCall: function (url, postData, async, success, error) {
-            this._ajax({
-                url: url,
-                data: postData,
-                async: async,
-                success: success,
-                error: error
-            });
-        },
-
         _unAuthorizedRequestHandler: function() {
             if (this.options.unAuthorizedRequestRedirectUrl) {
                 location.href = this.options.unAuthorizedRequestRedirectUrl;
@@ -2131,7 +2117,7 @@ THE SOFTWARE.
                     self._showAddRecordForm();
                 });
             } else {
-                // If user did not supplied a button, create a 'add record button' toolbar item.
+                // If user did not supply a button, create a 'add record button' toolbar item.
                 self._addToolBarItem({
                     icon: true,
                     cssClass: 'jtable-toolbar-item-add-record',
