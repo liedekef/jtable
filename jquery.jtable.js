@@ -420,18 +420,13 @@ THE SOFTWARE.
         /* Loads data using AJAX call, clears table and fills with new data.
          *************************************************************************/
         load: function (extraPostData, completeCallback) {
-            let listQueryParams = {}
-            if (typeof this.options.listQueryParams === "function") {
-                listQueryParams = this.options.listQueryParams();
-            } else {
-                listQueryParams = this.options.listQueryParams;
-            }
+            let listQueryParams = typeof this.options.listQueryParams === "function"
+                ? this.options.listQueryParams()
+                : this.options.listQueryParams;
 
-            if (extraPostData) {
-                this._lastPostData = {...listQueryParams, ...extraPostData};
-            } else {
-                this._lastPostData = listQueryParams;
-            }
+            // use spread operator to merge
+            this._lastPostData = { ...listQueryParams, ...(extraPostData || {}) };
+
             this._reloadTable(completeCallback);
         },
 
@@ -3108,7 +3103,7 @@ THE SOFTWARE.
          * PRIVATE METHODS                                                       *
          *************************************************************************/
 
-        /* This method is called when user clicks delete button on a row.
+        /* This method is called when a user clicks the delete button on a row.
          *************************************************************************/
         _deleteButtonClickedForRow: function ($row) {
             let self = this;
@@ -3124,7 +3119,7 @@ THE SOFTWARE.
                 // If delete progress is cancelled
                 if (data.cancel) {
 
-                    // If a canlellation reason is specified
+                    // If a cancel reason is specified
                     if (data.cancelMessage) {
                         self._showError(data.cancelMessage); // TODO: show warning/stop message instead of error (also show warning/error ui icon)!
                     }
