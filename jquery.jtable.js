@@ -511,7 +511,7 @@ THE SOFTWARE.
             self._onLoadingRecords();
 
             // listAction may be a function, check if it is
-            if ($.isFunction(self.options.actions.listAction)) {
+            if (typeof self.options.actions.listAction === "function") {
                 // Execute the function
                 let funcResult = self.options.actions.listAction(self._lastPostData, self._createJtParamsForLoading());
 
@@ -848,7 +848,7 @@ THE SOFTWARE.
             let field = this.options.fields[fieldName];
             let optionsSource = field.options;
 
-            if ($.isFunction(optionsSource)) {
+            if (typeof optionsSource === "function") {
                 // prepare parameter to the function
                 funcParams = $.extend(true, {
                     _cacheCleared: false,
@@ -885,7 +885,7 @@ THE SOFTWARE.
                 }
 
                 options = this._cache[cacheKey];
-            } else if (jQuery.isArray(optionsSource)) { // It is an array of options
+            } else if (Array.isArray(optionsSource)) { // It is an array of options
                 options = this._buildOptionsFromArray(optionsSource);
                 this._sortFieldOptions(options, field.optionsSorting);
             } else { // It is an object that it's properties are options
@@ -943,8 +943,12 @@ THE SOFTWARE.
                 };
             }
 
+            // simple isNumeric function
+            let isNumeric = function (value) {
+                return !isNaN(value) && !isNaN(parseFloat(value));
+            };
             let compareFunc;
-            if ($.isNumeric(dataSelector(options[0]))) {
+            if (isNumeric(dataSelector(options[0]))) {
                 // assume the option values are numeric
                 compareFunc = function (option1, option2) {
                     return dataSelector(option1) - dataSelector(option2);
@@ -1276,11 +1280,11 @@ THE SOFTWARE.
 
         /* Remove a cookie with given key.
          *************************************************************************/
-	_removeCookie: function (key) {
+        _removeCookie: function (key) {
             key = this._cookieKeyPrefix + key;
-	    $.removeCookie(key, { path: '/' });
+            $.removeCookie(key, { path: '/' });
             return null;
-	},
+        },
 
         /* Generates a hash key to be prefix for all cookies for this jtable instance.
          *************************************************************************/
@@ -2187,7 +2191,7 @@ THE SOFTWARE.
             };
 
             // createAction may be a function, check if it is
-            if (!options.url && $.isFunction(self.options.actions.createAction)) {
+            if (!options.url && typeof self.options.actions.createAction === "function") {
 
                 // Execute the function
                 let funcResult = self.options.actions.createAction($.param(options.record));
@@ -2319,7 +2323,7 @@ THE SOFTWARE.
             // $addRecordForm.data('submitting', true); //TODO: Why it's used, can remove? Check it.
 
             // createAction may be a function, check if it is
-            if ($.isFunction(self.options.actions.createAction)) {
+            if (typeof self.options.actions.createAction === "function") {
 
                 // Execute the function
                 let funcResult = self.options.actions.createAction($addRecordForm.serialize());
@@ -2534,7 +2538,7 @@ THE SOFTWARE.
             };
 
             // updateAction may be a function, check if it is
-            if (!options.url && $.isFunction(self.options.actions.updateAction)) {
+            if (!options.url && typeof self.options.actions.updateAction === "function") {
 
                 // Execute the function
                 let funcResult = self.options.actions.updateAction($.param(options.record));
@@ -2717,7 +2721,7 @@ THE SOFTWARE.
 
 
             // updateAction may be a function, check if it is
-            if ($.isFunction(self.options.actions.updateAction)) {
+            if (typeof self.options.actions.updateAction === "function") {
 
                 // Execute the function
                 let funcResult = self.options.actions.updateAction($editForm.serialize());
@@ -3113,7 +3117,7 @@ THE SOFTWARE.
             let deleteConfirmMessage = self.options.messages.deleteConfirmation;
 
             // If options.deleteConfirmation is function then call it
-            if ($.isFunction(self.options.deleteConfirmation)) {
+            if (typeof self.options.deleteConfirmation === "function") {
                 let data = { row: $row, record: $row.data('record'), deleteConfirm: true, deleteConfirmMessage: deleteConfirmMessage, cancel: false, cancelMessage: null };
                 self.options.deleteConfirmation(data);
 
@@ -3195,7 +3199,7 @@ THE SOFTWARE.
             postData[self._keyField] = self._getKeyValueOfRecord($row.data('record'));
 
             // deleteAction may be a function, check if it is
-            if (!url && $.isFunction(self.options.actions.deleteAction)) {
+            if (!url && typeof self.options.actions.deleteAction === "function") {
 
                 // Execute the function
                 let funcResult = self.options.actions.deleteAction(postData);
