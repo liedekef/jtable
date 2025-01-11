@@ -1141,7 +1141,7 @@ THE SOFTWARE.
                 self._$busyDialog[0].showModal();
                 // prevent event popup window from getting closes by escape
                 // add "jtable" namespace, so we can remove this particular listener too
-                $(document).on("keydown.jtable", function (event) {
+                $(document).on("keydown.jtable_escape", function (event) {
                     // ESCAPE key pressed
                     if (event.keyCode == 27) {
                         return false;
@@ -1166,7 +1166,7 @@ THE SOFTWARE.
 	    clearTimeout(this._setBusyTimer);
             this._setBusyTimer = null;
             this._$busyDialog[0].close();
-            $(document).off("keydown.jtable");
+            $(document).off("keydown.jtable_escape");
         },
 
         /* Returns true if jTable is busy.
