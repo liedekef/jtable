@@ -1140,8 +1140,8 @@ THE SOFTWARE.
                 self._$busyDialog.find(".jtable-busy-message").html(message);
                 self._$busyDialog[0].showModal();
                 // prevent event popup window from getting closes by escape
-                // add "eme" namespace, so we can remove this particular listener too
-                $(document).on("keydown.eme", function (event) {
+                // add "jtable" namespace, so we can remove this particular listener too
+                $(document).on("keydown.jtable", function (event) {
                     // ESCAPE key pressed
                     if (event.keyCode == 27) {
                         return false;
@@ -1166,7 +1166,7 @@ THE SOFTWARE.
 	    clearTimeout(this._setBusyTimer);
             this._setBusyTimer = null;
             this._$busyDialog[0].close();
-            $(document).off("keydown.eme");
+            $(document).off("keydown.jtable");
         },
 
         /* Returns true if jTable is busy.
