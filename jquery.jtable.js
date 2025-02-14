@@ -777,7 +777,7 @@ THE SOFTWARE.
             }
 
             let extraFieldType = this._findItemByProperty(this._extraFieldTypes, 'type', field.type);
-            if(extraFieldType && extraFieldType.creator){
+            if (extraFieldType && extraFieldType.creator) {
                 return extraFieldType.creator(record, field);
             }
             else if (field.type == 'date' || field.type == 'dateJS') {
@@ -1654,7 +1654,7 @@ THE SOFTWARE.
             } else {
                 $input = $('<input class="' + field.inputClass + '" id="Edit-' + fieldName + '" type="date" name="' + fieldName + '"></input>');
             }
-            if(value != undefined) {
+            if (value != undefined) {
                 $input.val(value);
             }
 
@@ -1681,7 +1681,7 @@ THE SOFTWARE.
         _createInputForField: function (field, fieldName, value) {
             let $input = $('<input class="' + field.inputClass + '" placeholder="' + field.placeholder + '" id="Edit-' + fieldName + '" type="' + field.type + '" name="' + fieldName + '"></input>');
 
-            if(value != undefined) {
+            if (value != undefined) {
                 $input.val(value);
             }
 
@@ -4404,8 +4404,7 @@ THE SOFTWARE.
 
             // Add some empty spaces after the text so the background icon has room next to it
             // one could play with css and ::after, but then the width calculation of columns borks
-            // TOOD: this should be configurable in number
-
+            // TODO: this should be configurable in number
             if (self.options.roomForSortableIcon) {
                 $columnHeader.find('.jtable-column-header-text').append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
             }
@@ -4419,11 +4418,10 @@ THE SOFTWARE.
                     if (!self.options.multiSorting) {
                         self._lastSorting = []; // clear previous sorting
                     }
-
                     self._sortTableByColumn($columnHeader);
                 });
 
-            if(initialSortingDirection){
+            if (initialSortingDirection) {
                 $columnHeader.addClass('jtable-column-header-sorted-' + initialSortingDirection.toLowerCase());
             }        
 
