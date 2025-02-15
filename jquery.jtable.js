@@ -4442,11 +4442,13 @@ THE SOFTWARE.
         _sortTableByColumn: function ($columnHeader) {
             let self = this;
             // Remove sorting styles from all columns except this one
-            if (self._lastSorting.length == 0) {
-                $columnHeader.siblings().removeClass('jtable-column-header-sorted-asc jtable-column-header-sorted-desc');
-            }
+            // TODO This should not be needed??
+            //if (self._lastSorting.length == 0) {
+             //   $columnHeader.siblings().removeClass('jtable-column-header-sorted-asc jtable-column-header-sorted-desc');
+            //}
 
             // If current sorting list includes this column, remove it from the list
+            // We'll then re-add it with the correct class
             for (let i = 0; i < self._lastSorting.length; i++) {
                 if (self._lastSorting[i].fieldName == $columnHeader.data('fieldName')) {
                     self._lastSorting.splice(i--, 1);
@@ -4498,6 +4500,7 @@ THE SOFTWARE.
 
         /* Adds jtSorting parameter to a URL as query string.
          *************************************************************************/
+        /*
         _addSortingInfoToUrl: function (url) {
             if (!this.options.sorting || this._lastSorting.length == 0) {
                 return url;
@@ -4510,6 +4513,7 @@ THE SOFTWARE.
 
             return (url + (url.includes('?') ? '?' : '&') + 'jtSorting=' + sorting.join(","));
         },
+        */
 
         /* Overrides _createJtParamsForLoading method to add sorging parameters to jtParams object.
          *************************************************************************/
@@ -4743,16 +4747,16 @@ THE SOFTWARE.
         _createColumnSelection: function () {
             let self = this;
 
+            if (!self.options.columnSelectable) {
+                return;
+            }
+
             // Create a div for dialog and add to container element
             this._$columnSelectionDiv = $('<div />')
                 .addClass('jtable-column-selection-container')
                 .appendTo(self._$mainContainer);
 
             this._$table.children('thead').on('contextmenu', function (e) {
-                if (!self.options.columnSelectable) {
-                    return;
-                }
-
                 e.preventDefault();
 
                 let main_resized = false;
@@ -4815,6 +4819,15 @@ THE SOFTWARE.
                 let columnName = self._columnList[i];
                 let field = self.options.fields[columnName];
 
+                let isSortedField = false;
+                if (self.options.sorting) {
+                    $.each(self._lastSorting, function (sortIndex, sortField) {
+                        if (sortField.fieldName == columnName) {
+                            isSortedField = true;
+                        }
+                    });
+                }
+
                 // Create li element
                 let $columnLi = $('<li></li>').appendTo($columnsUl);
 
@@ -4830,7 +4843,7 @@ THE SOFTWARE.
                         .on("click", function () {
                             let clickedColumnName = $(this).attr('id');
                             let clickedField = self.options.fields[clickedColumnName];
-                            if (clickedField.visibility == 'fixed') {
+                            if (clickedField.visibility == 'fixed' || isSortedField) {
                                 return;
                             }
 
@@ -4843,7 +4856,7 @@ THE SOFTWARE.
                     }
 
                     // Disable, if column is fixed
-                    if (field.visibility == 'fixed') {
+                    if (field.visibility == 'fixed' || isSortedField) {
                         $checkbox.attr('disabled', 'disabled');
                     }
                 }
@@ -4883,11 +4896,11 @@ THE SOFTWARE.
                     // Get a reference to the next column
                     let $nextColumnHeader = $columnHeader.nextAll('th.jtable-column-header:visible:first');
                     if ($nextColumnHeader.length) {
-			    let nextfieldname =  $nextColumnHeader.data('fieldName');
-			if (!self.options.fields[nextfieldname].columnResizable) {
-				$nextColumnHeader = undefined;
-			}
-		    }
+                        let nextfieldname =  $nextColumnHeader.data('fieldName');
+                        if (!self.options.fields[nextfieldname].columnResizable) {
+                            $nextColumnHeader = undefined;
+                        }
+                    }
                     if ($nextColumnHeader) {
                         nextColumnOuterWidth=$nextColumnHeader.outerWidth();
                     } else {
@@ -4993,8 +5006,8 @@ THE SOFTWARE.
             let columnWidths = {};
             headerCells.each(function () {
                 let $cell = $(this);
+                let fieldName = $cell.data('fieldName');
                 if ($cell.is(':visible')) {
-                    let fieldName = $cell.data('fieldName');
                     let widthInPercent = $cell.outerWidth() * 100 / totalWidthInPixel;
                     columnWidths[fieldName] = widthInPercent;
                 }
