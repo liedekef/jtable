@@ -1148,8 +1148,8 @@ THE SOFTWARE.
             let makeVisible = function () {
                 self._$busyDialog.find(".jtable-busy-message").html(message);
                 self._$busyDialog[0].showModal();
-                // prevent event popup window from getting closes by escape
-                // add "jtable" namespace, so we can remove this particular listener too
+                // prevent event popup window from getting closed by escape
+                // add "jtable" namespace, so we can remove this particular listener too (see "off", search for "jtable_escape")
                 $(document).on("keydown.jtable_escape", function (event) {
                     // ESCAPE key pressed
                     if (event.keyCode == 27) {
