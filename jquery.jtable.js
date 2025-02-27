@@ -4580,10 +4580,16 @@ THE SOFTWARE.
                 let splitted = fieldSetting.split('=');
                 let fieldName = splitted[0];
                 let sortOrder = splitted[1];
-                self._lastSorting.push({
-                    'fieldName': fieldName,
-                    'sortOrder': sortOrder
-                });
+                // make sure the cookie contains expected valid values
+                if (sortOrder != "ASC" && sortOrder != "DESC") {
+                    continue;
+                }
+                if ($.inArray(fieldName,self._fieldList) > -1) {
+                    self._lastSorting.push({
+                        'fieldName': fieldName,
+                        'sortOrder': sortOrder
+                    });
+                }
             });
         },
     });
@@ -4662,7 +4668,7 @@ THE SOFTWARE.
                 props.columnResizable = (props.columnResizable != false);
             } else {
                 props.columnResizable = false;
-	    }
+            }
 
             // visibility
             if (!props.visibility) {
