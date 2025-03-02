@@ -4328,10 +4328,10 @@ THE SOFTWARE.
             sortingInfoSelector: '',
             // Localization
             messages: {
-                sortingInfoPrefix: 'Applied table sorting: ',
+                sortingInfoPrefix: 'Sorting applied: ',
                 ascending: 'Ascending',
                 descending: 'Descending',
-                sortingInfoNone: 'No table sorting applied',
+                sortingInfoNone: 'No sorting applied',
             }
 
         },
