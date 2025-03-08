@@ -4396,7 +4396,7 @@ THE SOFTWARE.
                 $(self.options.sortingInfoSelector).text(sortingInfoString);
                 if (self.options.sortingInfoReset) {
                     $('<button class="jtable-dialog-button jtable-resetsorting-button"></button>')
-                        .html('<span>' + self.options.messages.reset + '</span>')
+                        .html('<span>' + self.options.messages.resetSorting + '</span>')
                         .on('click', function () {
                             self.resetSorting();
                         })
