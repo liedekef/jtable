@@ -1285,7 +1285,7 @@ THE SOFTWARE.
         _setUserPref: function (key, value) {
             key = this._userPrefPrefix + key;
 
-            if (saveUserPreferencesMethod == 'cookie') {
+            if (this.options.saveUserPreferencesMethod == 'cookie') {
                 let expireDate = new Date();
                 expireDate.setDate(expireDate.getDate() + 30);
                 Cookies.set(key, value, { expires: expireDate });
@@ -1300,7 +1300,7 @@ THE SOFTWARE.
         _getUserPref: function (key) {
             key = this._userPrefPrefix + key;
 
-            if (saveUserPreferencesMethod == 'cookie') {
+            if (this.options.saveUserPreferencesMethod == 'cookie') {
                 return Cookies.get(key);
             } else {
                 return localStorage.getItem(key);
@@ -1311,7 +1311,7 @@ THE SOFTWARE.
          *************************************************************************/
         _removeUserPref: function (key) {
             key = this._userPrefPrefix + key;
-            if (saveUserPreferencesMethod == 'cookie') {
+            if (this.options.saveUserPreferencesMethod == 'cookie') {
                 Cookies.remove(key);
             } else {
                 localStorage.removeItem(key);
