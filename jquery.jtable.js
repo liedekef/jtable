@@ -46,6 +46,15 @@ THE SOFTWARE.
         this.element = $(element);
         this.options = $.extend(true, {}, this.options, options);
         this._create();
+        // Bind the events
+        this._$mainContainer.on("closeRequested", this.options.closeRequested);
+        this._$mainContainer.on("formCreated", this.options.formCreated);
+        this._$mainContainer.on("formSubmitting", this.options.formSubmitting);
+        this._$mainContainer.on("formClosed", this.options.formClosed);
+        this._$mainContainer.on("loadingRecords", this.options.loadingRecords);
+        this._$mainContainer.on("recordsLoaded", this.options.recordsLoaded);
+        this._$mainContainer.on("rowInserted", this.options.rowInserted);
+        this._$mainContainer.on("rowsRemoved", this.options.rowsRemoved);
     }
 
     jTable.prototype = {
