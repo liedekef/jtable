@@ -76,7 +76,7 @@ THE SOFTWARE.
                 items: []
             },
 
-            // Events
+            // Functions for events
             closeRequested: function (event, data) { },
             formCreated: function (event, data) { },
             formSubmitting: function (event, data) { },
@@ -1352,6 +1352,13 @@ THE SOFTWARE.
             this._$mainContainer.on("recordsLoaded", this.options.recordsLoaded);
             this._$mainContainer.on("rowInserted", this.options.rowInserted);
             this._$mainContainer.on("rowsRemoved", this.options.rowsRemoved);
+
+            // from the extensions, but lets keep things simple and add all events here ...
+            this._$mainContainer.on("recordAdded", this.options.recordAdded);
+            this._$mainContainer.on("rowUpdated", this.options.rowUpdated);
+            this._$mainContainer.on("recordUpdated", this.options.recordUpdated);
+            this._$mainContainer.on("recordDeleted", this.options.recordDeleted);
+            this._$mainContainer.on("selectionChanged", this.options.selectionChanged);
         },
 
         _onLoadingRecords: function () {
@@ -2055,6 +2062,7 @@ THE SOFTWARE.
 
     // Reference to base object members
     let base = {
+        _initializeSettings: jTable.prototype._initializeSettings,
         _create: jTable.prototype._create
     };
 
@@ -2076,13 +2084,15 @@ THE SOFTWARE.
         },
 
         /************************************************************************
-         * PRIVATE FIELDS                                                        *
+         * CONSTRUCTOR AND INITIALIZING METHODS                                  *
          *************************************************************************/
-        _$addRecordDialog: null, // Reference to the adding new record dialog div (jQuery object)
 
-        /************************************************************************
-         * CONSTRUCTOR                                                           *
+        /* Overrides _initializeSettings method
          *************************************************************************/
+        _initializeSettings: function () {
+            base._initializeSettings.apply(this, arguments);
+            this._$addRecordDialog = null; // Reference to the adding new record dialog div (jQuery object)
+        },
 
         /* Overrides base method to do create-specific constructions.
          *************************************************************************/
@@ -2407,6 +2417,7 @@ THE SOFTWARE.
 
     // Reference to base object members
     let base = {
+        _initializeSettings: jTable.prototype._initializeSettings,
         _create: jTable.prototype._create,
         _addColumnsToHeaderRow: jTable.prototype._addColumnsToHeaderRow,
         _addCellsToRowUsingRecord: jTable.prototype._addCellsToRowUsingRecord
@@ -2420,7 +2431,7 @@ THE SOFTWARE.
          *************************************************************************/
         options: {
 
-            // Events
+            // Functions for events
             recordUpdated: function (event, data) { },
             rowUpdated: function (event, data) { },
 
@@ -2430,15 +2441,18 @@ THE SOFTWARE.
             }
         },
 
-        /************************************************************************
-         * PRIVATE FIELDS                                                        *
-         *************************************************************************/
-        _$editRecordDialog: null, // Reference to the editing dialog div (jQuery object)
-        _$editingRow: null, // Reference to currently editing row (jQuery object)
 
         /************************************************************************
          * CONSTRUCTOR AND INITIALIZATION METHODS                                *
          *************************************************************************/
+
+        /* Overrides _initializeSettings method
+         *************************************************************************/
+        _initializeSettings: function () {
+            base._initializeSettings.apply(this, arguments);
+            this._$editRecordDialog = null; // Reference to the editing dialog div (jQuery object)
+            this._$editingRow = null; // Reference to currently editing row (jQuery object)
+        },
 
         /* Overrides base method to do editing-specific constructions.
          *************************************************************************/
@@ -2865,6 +2879,7 @@ THE SOFTWARE.
 
     // Reference to base object members
     let base = {
+        _initializeSettings: jTable.prototype._initializeSettings,
         _create: jTable.prototype._create,
         _loadExtraSettings: jTable.prototype._loadExtraSettings,
         _addColumnsToHeaderRow: jTable.prototype._addColumnsToHeaderRow,
@@ -2882,7 +2897,7 @@ THE SOFTWARE.
             // Options
             deleteConfirmation: true,
 
-            // Events
+            // Functions for events
             recordDeleted: function (event, data) { },
 
             // Localization
@@ -2896,14 +2911,16 @@ THE SOFTWARE.
         },
 
         /************************************************************************
-         * PRIVATE FIELDS                                                        *
+         * CONSTRUCTOR AND INITIALIZING METHODS                                  *
          *************************************************************************/
-        _$deleteDialog: null, // Reference to the delete record dialog div (jQuery object)
-        _$deletingRow: null, // Reference to currently deleting row (jQuery object)
 
-        /************************************************************************
-         * CONSTRUCTOR                                                           *
+        /* Overrides _initializeSettings method
          *************************************************************************/
+        _initializeSettings: function () {
+            base._initializeSettings.apply(this, arguments);
+            this._$deleteDialog = null; // Reference to the delete record dialog div (jQuery object)
+            this._$deletingRow = null; // Reference to currently deleting row (jQuery object)
+        },
 
         /* Overrides base method to do deletion-specific constructions.
          *************************************************************************/
@@ -3313,6 +3330,7 @@ THE SOFTWARE.
 
     // Reference to base object members
     let base = {
+        _initializeSettings: jTable.prototype._initializeSettings,
         _create: jTable.prototype._create,
         _loadExtraSettings: jTable.prototype._loadExtraSettings,
         _addColumnsToHeaderRow: jTable.prototype._addColumnsToHeaderRow,
@@ -3336,20 +3354,22 @@ THE SOFTWARE.
             selectingCheckboxes: false,
             selectOnRowClick: true,
 
-            // Events
+            // Functions for events
             selectionChanged: function (event, data) { }
         },
 
         /************************************************************************
-         * PRIVATE FIELDS                                                        *
+         * CONSTRUCTOR AND INITIALIZING METHODS                                  *
          *************************************************************************/
-        _selectedRecordIdsBeforeLoad: null, // This array is used to store selected row Id's to restore them after a page refresh (string array).
-        _$selectAllCheckbox: null, // Reference to the 'select/deselect all' checkbox (jQuery object)
-        _shiftKeyDown: false, // True, if shift key is currently down.
 
-        /************************************************************************
-         * CONSTRUCTOR                                                           *
+        /* Overrides _initializeSettings method
          *************************************************************************/
+        _initializeSettings: function () {
+            base._initializeSettings.apply(this, arguments);
+            this._selectedRecordIdsBeforeLoad = null; // This array is used to store selected row Id's to restore them after a page refresh (string array).
+            this._$selectAllCheckbox = null; // Reference to the 'select/deselect all' checkbox (jQuery object)
+            this._shiftKeyDown = false; // True, if shift key is currently down.
+        },
 
         /* Overrides base method to do selecting-specific constructions.
          *************************************************************************/
@@ -3727,6 +3747,7 @@ THE SOFTWARE.
     // Reference to base object members
     let base = {
         load: jTable.prototype.load,
+        _initializeSettings: jTable.prototype._initializeSettings,
         _create: jTable.prototype._create,
         _setOption: jTable.prototype._setOption,
         // _createRecordLoadUrl: jTable.prototype._createRecordLoadUrl,
@@ -3758,20 +3779,22 @@ THE SOFTWARE.
         },
 
         /************************************************************************
-         * PRIVATE FIELDS                                                        *
-         *************************************************************************/
-        _$bottomPanel: null, // Reference to the panel at the bottom of the table (jQuery object)
-        _$pagingListArea: null, // Reference to the page list area in to bottom panel (jQuery object)
-        _$pageSizeChangeArea: null, // Reference to the page size change area in to bottom panel (jQuery object)
-        _$pageInfoSpan: null, // Reference to the paging info area in to bottom panel (jQuery object)
-        _$gotoPageArea: null, // Reference to 'Go to page' input area in to bottom panel (jQuery object)
-        _$gotoPageInput: null, // Reference to 'Go to page' input in to bottom panel (jQuery object)
-        _totalRecordCount: 0, // Total count of records on all pages
-        _currentPageNo: 1, // Current page number
-
-        /************************************************************************
          * CONSTRUCTOR AND INITIALIZING METHODS                                  *
          *************************************************************************/
+
+        /* Overrides _initializeSettings method
+         *************************************************************************/
+        _initializeSettings: function () {
+            base._initializeSettings.apply(this, arguments);
+            this._$bottomPanel = null; // Reference to the panel at the bottom of the table (jQuery object)
+            this._$pagingListArea = null; // Reference to the page list area in to bottom panel (jQuery object)
+            this._$pageSizeChangeArea = null; // Reference to the page size change area in to bottom panel (jQuery object)
+            this._$pageInfoSpan = null; // Reference to the paging info area in to bottom panel (jQuery object)
+            this._$gotoPageArea = null; // Reference to 'Go to page' input area in to bottom panel (jQuery object)
+            this._$gotoPageInput = null; // Reference to 'Go to page' input in to bottom panel (jQuery object)
+            this._totalRecordCount = 0; // Total count of records on all pages
+            this._currentPageNo = 1; // Current page number
+        },
 
         /* Overrides base method to do paging-specific constructions.
          *************************************************************************/
@@ -4358,15 +4381,10 @@ THE SOFTWARE.
         },
 
         /************************************************************************
-         * PRIVATE FIELDS                                                        *
-         *************************************************************************/
-        _lastSorting: null, // Last sorting of the table
-
-        /************************************************************************
-         * OVERRIDED METHODS                                                     *
+         * CONSTRUCTOR AND INITIALIZING METHODS                                  *
          *************************************************************************/
 
-        /* Overrides base method to create sorting array.
+        /* Overrides _initializeSettings method
          *************************************************************************/
         _initializeSettings: function () {
             base._initializeSettings.apply(this, arguments);
@@ -4716,6 +4734,7 @@ THE SOFTWARE.
 
     // Reference to base object members
     let base = {
+        _initializeSettings: jTable.prototype._initializeSettings,
         _create: jTable.prototype._create,
         _loadExtraSettings: jTable.prototype._loadExtraSettings,
         _normalizeFieldOptions: jTable.prototype._normalizeFieldOptions,
@@ -4737,16 +4756,17 @@ THE SOFTWARE.
         },
 
         /************************************************************************
-         * PRIVATE FIELDS                                                        *
+         * CONSTRUCTOR AND INITIALIZING METHODS                                  *
          *************************************************************************/
-        _$columnSelectionDiv: null,
-        _$columnResizeBar: null,
-        _userPrefPrefix: null,
-        _currentResizeArgs: null,
 
-        /************************************************************************
-         * OVERRIDED METHODS                                                     *
+        /* Overrides _initializeSettings method
          *************************************************************************/
+        _initializeSettings: function () {
+            base._initializeSettings.apply(this, arguments);
+            this._$columnSelectionDiv = null;
+            this._$columnResizeBar = null;
+            this._$_currentResizeArgs = null;
+        },
 
         /* Overrides _create method.
          *************************************************************************/
