@@ -1,6 +1,6 @@
 ﻿/* 
 
-jTable 1.0.47 (edited by Franky Van Liedekerke)
+jTable 1.0.48 (edited by Franky Van Liedekerke)
 https://www.e-dynamics.be
 
 ---------------------------------------------------------------------------
