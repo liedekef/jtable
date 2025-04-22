@@ -1,6 +1,6 @@
 ﻿/* 
 
-jTable 1.0.19 (edited by Franky Van Liedekerke)
+jTable 1.0.47 (edited by Franky Van Liedekerke)
 https://www.e-dynamics.be
 
 ---------------------------------------------------------------------------
@@ -46,15 +46,6 @@ THE SOFTWARE.
         this.element = $(element);
         this.options = $.extend(true, {}, this.options, options);
         this._create();
-        // Bind the events
-        this._$mainContainer.on("closeRequested", this.options.closeRequested);
-        this._$mainContainer.on("formCreated", this.options.formCreated);
-        this._$mainContainer.on("formSubmitting", this.options.formSubmitting);
-        this._$mainContainer.on("formClosed", this.options.formClosed);
-        this._$mainContainer.on("loadingRecords", this.options.loadingRecords);
-        this._$mainContainer.on("recordsLoaded", this.options.recordsLoaded);
-        this._$mainContainer.on("rowInserted", this.options.rowInserted);
-        this._$mainContainer.on("rowsRemoved", this.options.rowsRemoved);
     }
 
     jTable.prototype = {
@@ -110,33 +101,6 @@ THE SOFTWARE.
             }
         },
         /************************************************************************
-         * PRIVATE FIELDS                                                        *
-         *************************************************************************/
-        _$mainContainer: null, // Reference to the main container of all elements that are created by this plug-in (jQuery object)
-
-        _$titleDiv: null, // Reference to the title div (jQuery object)
-        _$toolbarDiv: null, // Reference to the toolbar div (jQuery object)
-
-        _$tableDiv: null, // Reference to the table main div
-        _$table: null, // Reference to the main <table> (jQuery object)
-        _$tableBody: null, // Reference to <body> in the table (jQuery object)
-        _$tableRows: null, // Array of all <tr> in the table (except "no data" row) (jQuery object array)
-
-        _$busyDialog: null, // Reference to the div that is used to block UI while busy (jQuery object)
-        _$errorDialog: null, // Reference to the error dialog div (jQuery object)
-
-        _columnList: null, // Name of all data columns in the table (select column and command columns are not included) (string array)
-        _fieldList: null, // Name of all fields of a record (defined in fields option) (string array)
-        _keyField: null, // Name of the key field of a record (that is defined as 'key: true' in the fields option) (string)
-
-        _firstDataColumnOffset: 0, // Start index of first record field in table columns (some columns can be placed before first data column, such as select checkbox column) (integer)
-        _lastPostData: null, // Last posted data on load method (object)
-
-        _cache: null, // General purpose cache dictionary (object)
-
-        _extraFieldTypes:[],
-
-        /************************************************************************
          * CONSTRUCTOR AND INITIALIZATION METHODS                                *
          *************************************************************************/
 
@@ -164,6 +128,7 @@ THE SOFTWARE.
 
             // Creating DOM elements
             this._createMainContainer();
+            this._bindEvents();
             this._createTableTitle();
             this._createToolBar();
             this._createTableDiv();
@@ -211,11 +176,28 @@ THE SOFTWARE.
         /* Intializes some private variables.
          ************************************************************************/
         _initializeSettings: function () {
-            this._lastPostData = {};
-            this._$tableRows = [];
-            this._columnList = [];
-            this._fieldList = [];
-            this._cache = [];
+            this._$mainContainer = null; // Reference to the main container of all elements that are created by this plug-in (jQuery object)
+
+            this._$titleDiv = null; // Reference to the title div (jQuery object)
+            this._$toolbarDiv = null; // Reference to the toolbar div (jQuery object)
+
+            this._$tableDiv = null; // Reference to the table main div
+            this._$table = null; // Reference to the main <table> (jQuery object)
+            this._$tableBody = null; // Reference to <body> in the table (jQuery object)
+            this._$tableRows = []; // Array of all <tr> in the table (except "no data" row) (jQuery object array)
+
+            this._$busyDialog = null; // Reference to the div that is used to block UI while busy (jQuery object)
+            this._$errorDialog = null; // Reference to the error dialog div (jQuery object)
+
+            this._columnList = []; // Name of all data columns in the table (select column and command columns are not included) (string array)
+            this._fieldList = []; // Name of all fields of a record (defined in fields option) (string array)
+            this._keyField = null; // Name of the key field of a record (that is defined as 'key: true' in the fields option) (string)
+
+            this._firstDataColumnOffset = 0; // Start index of first record field in table columns (some columns can be placed before first data column, such as select checkbox column) (integer)
+            this._lastPostData = {}; // Last posted data on load method (object)
+
+            this._cache = []; // General purpose cache dictionary (object)
+
             this._extraFieldTypes = [];
         },
 
@@ -1358,8 +1340,19 @@ THE SOFTWARE.
         },
 
         /************************************************************************
-         * EVENT RAISING METHODS                                                 *
+         * EVENT BIND and RAISING METHODS                                                 *
          *************************************************************************/
+        _bindEvents: function() {
+            // Bind the events
+            this._$mainContainer.on("closeRequested", this.options.closeRequested);
+            this._$mainContainer.on("formCreated", this.options.formCreated);
+            this._$mainContainer.on("formSubmitting", this.options.formSubmitting);
+            this._$mainContainer.on("formClosed", this.options.formClosed);
+            this._$mainContainer.on("loadingRecords", this.options.loadingRecords);
+            this._$mainContainer.on("recordsLoaded", this.options.recordsLoaded);
+            this._$mainContainer.on("rowInserted", this.options.rowInserted);
+            this._$mainContainer.on("rowsRemoved", this.options.rowsRemoved);
+        },
 
         _onLoadingRecords: function () {
             this._$mainContainer.trigger("loadingRecords", {});
