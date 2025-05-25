@@ -2163,7 +2163,7 @@ THE SOFTWARE.
             let self = this;
 
             let $saveButton = self._$addRecordDialog.find('#AddRecordDialogSaveButton');
-            let $addRecordForm = self._$addRecordDialog.find('form');
+            let $addRecordForm = self._$addRecordDialog.find('form').first();
 
             if (self._$mainContainer.trigger("formSubmitting", { form: $addRecordForm, formType: 'create' }) != false) {
                 self._setEnabledOfDialogButton($saveButton, false, self.options.messages.saving);
@@ -2330,14 +2330,14 @@ THE SOFTWARE.
             });
 
             // Remove any existing form
-            self._$addRecordDialog.find('form:first').remove();
+            self._$addRecordDialog.find('form').first().remove();
 
             // Make sure people can click on the save button
             let $saveButton = self._$addRecordDialog.find('#AddRecordDialogSaveButton');
             self._setEnabledOfDialogButton($saveButton, true, self.options.messages.save);
 
             // Show the form
-            self._$addRecordDialog.find('#addRecordDialogTitle:first').after($addRecordForm);
+            self._$addRecordDialog.find('#addRecordDialogTitle').first().after($addRecordForm);
             self._$addRecordDialog[0].showModal();
             self._$mainContainer.trigger("formCreated", { form: $addRecordForm, formType: 'create' });
         },
@@ -2478,7 +2478,7 @@ THE SOFTWARE.
                 .appendTo(self._$mainContainer)
                 .on('close', function () {
                     // the close event is called upon close-call or pressing escape
-                    let $editRecordForm = self._$editRecordDialog.find('form:first');
+                    let $editRecordForm = self._$editRecordDialog.find('form').first();
                     self._$mainContainer.trigger("formClosed", { form: $editRecordForm, formType: 'edit', row: self._$editingRow });
                     $editRecordForm.remove();
                 });
@@ -2514,7 +2514,7 @@ THE SOFTWARE.
             }
 
             let $saveButton = self._$editRecordDialog.find('#EditRecordDialogSaveButton');
-            let $editRecordForm = self._$editRecordDialog.find('form');
+            let $editRecordForm = self._$editRecordDialog.find('form').first();
             if (self._$mainContainer.trigger("formSubmitting", { form: $editRecordForm, formType: 'edit', row: self._$editingRow }) != false) {
                 self._setEnabledOfDialogButton($saveButton, false, self.options.messages.saving);
                 self._saveEditRecordForm($editRecordForm, $saveButton);
@@ -2730,14 +2730,14 @@ THE SOFTWARE.
             // Store the row being edited
             self._$editingRow = $tableRow;
             // Remove any existing form
-            self._$editRecordDialog.find('form:first').remove();
+            self._$editRecordDialog.find('form').first().remove();
  
             // Make sure people can click on the save button
             let $saveButton = self._$editRecordDialog.find('#EditRecordDialogSaveButton');
             self._setEnabledOfDialogButton($saveButton, true, self.options.messages.save);
 
             // Show the form
-            self._$editRecordDialog.find('#editRecordDialogTitle:first').after($editRecordForm);
+            self._$editRecordDialog.find('#editRecordDialogTitle').first().after($editRecordForm);
             self._$editRecordDialog[0].showModal();
             self._$mainContainer.trigger("formCreated", { form: $editRecordForm, formType: 'edit', record: record, row: $tableRow });
         },
