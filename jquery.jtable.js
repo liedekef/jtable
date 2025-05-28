@@ -1,6 +1,6 @@
 ﻿/* 
 
-jTable 1.0.53 (edited by Franky Van Liedekerke)
+jTable 1.0.54 (edited by Franky Van Liedekerke)
 https://www.e-dynamics.be
 
 ---------------------------------------------------------------------------
@@ -2287,6 +2287,7 @@ THE SOFTWARE.
         body { font-family: sans-serif; padding: 10px; }
         table { width: 100%; border-collapse: collapse; }
         table, th, td { border: 1px solid black; }
+	.jtable-command-column { display: none; }
         ${self.options.printExtraStyles}
     </style>
     <base href="${window.location.href}">
