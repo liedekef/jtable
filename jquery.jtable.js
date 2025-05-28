@@ -1073,6 +1073,12 @@ THE SOFTWARE.
 
             this._jqueryuiThemeAddClass($toolBarItem, 'ui-widget ui-state-default ui-corner-all', 'ui-state-hover');
 
+            // id property
+            if (item.id) {
+                $toolBarItem
+                    .attr('id', item.id);
+            }
+
             // cssClass property
             if (item.cssClass) {
                 $toolBarItem
