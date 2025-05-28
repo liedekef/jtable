@@ -1093,8 +1093,6 @@ THE SOFTWARE.
                 } else if ($.type(item.icon) === 'string') {
                     $icon.css('background', 'url("' + item.icon + '")');
                 }
-            } else if (item.emojiIcon && $.type(item.emojiIcon) === 'string') {
-                let $icon = $('<span class="jtable-toolbar-item-icon">'+item.emojiIcon+'</span>').appendTo($toolBarItem);
             }
 
             // text property
@@ -2140,7 +2138,7 @@ THE SOFTWARE.
             // newTable.find('th').each(function () {
             let tmpRow = []; // construct header available array
             $.each(newTable.find('th'),function () {
-                if ($(this).hasClass('jtable-column-header-select')) {
+                if ($(this).hasClass('jtable-command-column')) {
                     return;
                 }
                 if ($(this).css('display') != 'none') {
@@ -2155,7 +2153,7 @@ THE SOFTWARE.
             $.each(newTable.find('tr'),function () {
                 let tmpRow = [];
                 $.each($(this).find('td'),function() {
-                    if ($(this).hasClass('jtable-selecting-column')) {
+                    if ($(this).hasClass('jtable-command-column')) {
                         return;
                     }
                     if ($(this).css('display') != 'none') {
@@ -2232,7 +2230,7 @@ THE SOFTWARE.
  
             // Localization
             messages: {
-                printTable: 'Print'
+                printTable: '🖨️ Print'
             }
         },
 
@@ -2267,7 +2265,6 @@ THE SOFTWARE.
                 // If user did not supply a button, create a 'add record button' toolbar item.
                 self._addToolBarItem({
                     icon: false,
-                    emojiIcon: '🖨️',
                     cssClass: 'jtable-toolbar-item-print-table',
                     text: self.options.messages.printTable,
                     click: function () {
