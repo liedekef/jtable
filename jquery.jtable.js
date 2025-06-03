@@ -1,6 +1,6 @@
 ﻿/* 
 
-jTable 1.0.55 (edited by Franky Van Liedekerke)
+jTable 1.0.56 (edited by Franky Van Liedekerke)
 https://www.e-dynamics.be
 
 ---------------------------------------------------------------------------
@@ -2171,7 +2171,7 @@ THE SOFTWARE.
             // we create a link and click on it.
             // window.open-call to 'data:' fails on some browsers due to security limitations with the
             //    error: "Not allowed to navigate top frame to data URL 'data:text/csv;charset=utf8...."
-            let mydata = csvData.join('\r\n');
+            let mydata = '\uFEFF' + csvData.join('\r\n'); // Add BOM at the beginning
             let blob = new Blob([mydata], { type: 'text/csv;charset=utf-8' });
             let link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
