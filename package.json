@@ -1,0 +1,29 @@
+{
+  "name": "@liedekef/jtable",
+  "version": "3.0.0",
+  "description": "A maintained fork of jtable: an interactive table for JavaScript/HTML with CRUD operations. Actively updated by @liedekef.",
+  "main": "jquery.jtable.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/liedekef/jtable"
+  },
+  "author": "liedekef",
+  "license": "MIT",
+  "keywords": [
+    "table",
+    "CRUD",
+    "javascript",
+    "html",
+    "jtable"
+  ],
+  "files": [
+    "*.js",
+    "themes/",
+    "localization/",
+    "extensions/"
+  ],
+  "bugs": {
+    "url": "https://github.com/liedekef/jtable/issues"
+  },
+  "homepage": "https://github.com/liedekef/jtable#readme"
+}
