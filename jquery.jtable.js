@@ -612,7 +612,7 @@ THE SOFTWARE.
             options = $.extend({
                 index: this._$tableRows.length,
                 isNewRow: false,
-                animationsEnabled: true
+                animationsEnabled: this.options.animationsEnabled
             }, options);
 
             // Remove 'no data' row if this is first row
@@ -641,7 +641,7 @@ THE SOFTWARE.
             // Show animation if needed
             if (options.isNewRow) {
                 this._refreshRowStyles();
-                if (this.options.animationsEnabled && options.animationsEnabled) {
+                if (options.animationsEnabled) {
                     this._showNewRowAnimation($row);
                 }
             }
