@@ -487,7 +487,7 @@ THE SOFTWARE.
             let completeReload = function(data) {
                 self._hideBusy();
 
-                //Show the error message if server returns error
+                // Show the error message if server returns error
                 if (data.Result != 'OK') {
                     self._showError(data.Message);
                     return;
@@ -505,7 +505,7 @@ THE SOFTWARE.
                 }
             };
 
-            self._showBusy(self.options.messages.loadingMessage, self.options.loadingAnimationDelay); //Disable table since it's busy
+            self._showBusy(self.options.messages.loadingMessage, self.options.loadingAnimationDelay); // Disable table since it's busy
             self._onLoadingRecords();
 
             // listAction may be a function, check if it is
@@ -608,7 +608,7 @@ THE SOFTWARE.
         /* Adds a single row to the table.
          *************************************************************************/
         _addRowToTable: function ($row, options) {
-            //Set defaults
+            // Set defaults
             options = $.extend({
                 index: this._$tableRows.length,
                 isNewRow: false,
@@ -638,7 +638,7 @@ THE SOFTWARE.
 
             this._onRowInserted($row, options.isNewRow);
 
-            //Show animation if needed
+            // Show animation if needed
             if (options.isNewRow) {
                 this._refreshRowStyles();
                 if (this.options.animationsEnabled && options.animationsEnabled) {
@@ -5695,7 +5695,7 @@ THE SOFTWARE.
                     let $row = $(this);
                     let $childRow = $row.data('childRow');
                     if ($childRow) {
-                        //self.closeChildTable($row); //Removed since it causes "Uncaught Error: cannot call methods on jtable prior to initialization; attempted to call method 'destroy'"
+                        //self.closeChildTable($row); // Removed since it causes "Uncaught Error: cannot call methods on jtable prior to initialization; attempted to call method 'destroy'"
                         $childRow.remove();
                     }
                 });
