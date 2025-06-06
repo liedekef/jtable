@@ -656,9 +656,13 @@ THE SOFTWARE.
                 className = className + ' ui-state-highlight';
             }
 
-            $tableRow.addClass(className, 'slow', '', function () {
-                $tableRow.removeClass(className, 5000);
-            });
+            $tableRow.addClass(className);
+
+            // Wait 5 seconds, then remove the class
+            setTimeout(function () {
+                $tableRow.removeClass(className);
+            }, 5000);
+
         },
 
         /* Removes a row or rows (jQuery selection) from table.
@@ -3149,9 +3153,10 @@ THE SOFTWARE.
                 className = className + ' ui-state-highlight';
             }
 
-            $tableRow.stop(true, true).addClass(className, 'slow', '', function () {
-                $tableRow.removeClass(className, 5000);
-            });
+            $tableRow.stop(true, true).addClass(className);
+            setTimeout(function () {
+                $tableRow.removeClass(className);
+            }, 5000);
         },
 
         /************************************************************************
@@ -3609,9 +3614,10 @@ THE SOFTWARE.
                 }
 
                 // Stop current animation (if does exists) and begin 'deleting' animation.
-                $rows.stop(true, true).addClass(className, 'slow', '').promise().done(function () {
+                $rows.stop(true, true).addClass(className);
+                setTimeout(function () {
                     self._removeRowsFromTable($rows, 'deleted');
-                });
+                }, 600); // "slow" = ~600ms
             } else {
                 self._removeRowsFromTable($rows, 'deleted');
             }
