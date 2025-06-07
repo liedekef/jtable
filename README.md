@@ -1,9 +1,8 @@
 What is jTable
 ======
 
-https://www.e-dynamics.be
-
-[![A screenshot of jTable](https://raw.githubusercontent.com/liedekef/jtable/master/screenshot.png)](https://www.e-dynamics.be/)
+[![A screenshot of jTable](https://raw.githubusercontent.com/liedekef/jtable/master/screenshot.png)](https://github.com/liedekef/jtable/)
+[![Other screenshot, used in Events Made Easy](https://raw.githubusercontent.com/liedekef/jtable/master/screenshot2.png)](https://github.com/liedekef/jtable/)
 
 jTable is a jQuery plugin used to create AJAX based CRUD tables without coding HTML or Javascript. It has several features including:
 
