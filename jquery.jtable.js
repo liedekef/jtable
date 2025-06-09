@@ -3177,6 +3177,236 @@ THE SOFTWARE.
 
 
 /************************************************************************
+ * CLONE RECORD extension for jTable                                    *
+ *************************************************************************/
+(function ($) {
+
+    // Reference to base object members
+    let base = {
+        _initializeSettings: jTable.prototype._initializeSettings,
+        _create: jTable.prototype._create,
+        _addColumnsToHeaderRow: jTable.prototype._addColumnsToHeaderRow,
+        _addCellsToRowUsingRecord: jTable.prototype._addCellsToRowUsingRecord
+    };
+
+    $.extend(true, jTable.prototype, {
+
+        options: {
+            // Localization
+            messages: {
+                cloneRecord: 'Clone'
+            }
+        },
+
+        _initializeSettings: function () {
+            base._initializeSettings.apply(this, arguments);
+            this._$cloneRecordDialog = null; // Reference to the cloning dialog div (jQuery object)
+            this._$cloningRow = null; // Reference to currently cloning row (jQuery object)
+        },
+
+        _create: function () {
+            base._create.apply(this, arguments);
+
+            // Only add clone if cloneAction is available
+            if (!this.options.actions.cloneAction) {
+                return;
+            }
+            this._createCloneRecordDialog();
+        },
+
+        _createCloneRecordDialog: function () {
+            let self = this;
+
+            self._$cloneRecordDialog = $('<dialog />')
+                .addClass('jtable-modal-dialog jtable-clone-modal-dialog')
+                .appendTo(self._$mainContainer)
+                .on('close', function () {
+                    let $cloneRecordForm = self._$cloneRecordDialog.find('form').first();
+                    self._$mainContainer.trigger("formClosed", { form: $cloneRecordForm, formType: 'clone', row: self._$cloningRow });
+                    $cloneRecordForm.remove();
+                });
+
+            $('<h2 id="cloneRecordDialogTitle"></h2>')
+                .css({padding: '0px'})
+                .text(self.options.messages.cloneRecord)
+                .appendTo(self._$cloneRecordDialog);
+
+            const $cancelButton = $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button>')
+                .attr('id', 'CloneRecordDialogCancelButton')
+                .html('<span>' + self.options.messages.cancel + '</span>')
+                .on('click', function () {
+                    self._closeCloneForm();
+                });
+
+            let $saveButton = $('<button class="jtable-dialog-button jtable-dialog-savebutton"></button>')
+                .attr('id', 'CloneRecordDialogSaveButton')
+                .html('<span>' + self.options.messages.save + '</span>')
+                .on('click', function () {
+                    self._onSaveClickedOnCloneForm();
+                    self._closeCloneForm();
+                });
+
+            self._$cloneRecordDialog.append($cancelButton, $saveButton);
+        },
+
+        // Add "Clone" button to the header and rows, after Edit
+        _addColumnsToHeaderRow: function ($tr) {
+            base._addColumnsToHeaderRow.apply(this, arguments);
+            if (this.options.actions.cloneAction != undefined) {
+                $tr.append(this._createEmptyCommandHeader('jtable-column-header-clone'));
+            }
+        },
+
+        _addCellsToRowUsingRecord: function ($row) {
+            base._addCellsToRowUsingRecord.apply(this, arguments);
+            let self = this;
+            if (self.options.actions.cloneAction != undefined) {
+                let $span = $('<span></span>').html(self.options.messages.cloneRecord);
+                let $button = $('<button title="' + self.options.messages.cloneRecord + '"></button>')
+                    .addClass('jtable-command-button jtable-clone-command-button')
+                    .append($span)
+                    .on("click", function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        self._showCloneRecordForm($row);
+                    });
+                $('<td></td>')
+                    .addClass('jtable-command-column')
+                    .append($button)
+                    .appendTo($row);
+            }
+        },
+
+        _showCloneRecordForm: function ($tableRow) {
+            let self = this;
+            let record = $.extend(true, {}, $tableRow.data('record')); // deep copy
+
+            // Clear key fields to avoid conflict
+            for (let i = 0; i < self._fieldList.length; i++) {
+                let fieldName = self._fieldList[i];
+                if (self.options.fields[fieldName].key) {
+                    record[fieldName] = undefined; // or ''
+                }
+            }
+
+            // Create form
+            let $cloneRecordForm = $('<form id="jtable-clone-form" class="jtable-dialog-form jtable-clone-form"></form>');
+
+            for (let i = 0; i < self._fieldList.length; i++) {
+                let fieldName = self._fieldList[i];
+                let field = self.options.fields[fieldName];
+
+                // Do not allow editing key fields unless create == true
+                if (field.key == true && field.create != true) {
+                    continue;
+                }
+                if (field.create == false) {
+                    continue;
+                }
+                if (field.type == 'hidden') {
+                    $cloneRecordForm.append(self._createInputForHidden(fieldName, record[fieldName]));
+                    continue;
+                }
+
+                let $fieldContainer = $('<div />')
+                    .addClass('jtable-input-field-container')
+                    .appendTo($cloneRecordForm);
+
+                $fieldContainer.append(self._createInputLabelForRecordField(fieldName));
+                $fieldContainer.append(
+                    self._createInputForRecordField({
+                        fieldName: fieldName,
+                        value: record[fieldName],
+                        record: record,
+                        formType: 'clone',
+                        form: $cloneRecordForm
+                    })
+                );
+            }
+
+            self._makeCascadeDropDowns($cloneRecordForm, record, 'clone');
+
+            $cloneRecordForm.submit(function () {
+                self._onSaveClickedOnCloneForm();
+                return false;
+            });
+
+            self._$cloningRow = $tableRow;
+            self._$cloneRecordDialog.find('form').first().remove();
+
+            let $saveButton = self._$cloneRecordDialog.find('#CloneRecordDialogSaveButton');
+            self._setEnabledOfDialogButton($saveButton, true, self.options.messages.save);
+
+            self._$cloneRecordDialog.find('#cloneRecordDialogTitle').first().after($cloneRecordForm);
+            self._$cloneRecordDialog[0].showModal();
+            self._$mainContainer.trigger("formCreated", { form: $cloneRecordForm, formType: 'clone', record: record, row: $tableRow });
+        },
+
+        _onSaveClickedOnCloneForm: function () {
+            let self = this;
+            let $saveButton = self._$cloneRecordDialog.find('#CloneRecordDialogSaveButton');
+            let $cloneRecordForm = self._$cloneRecordDialog.find('form').first();
+
+            if (self._$mainContainer.trigger("formSubmitting", { form: $cloneRecordForm, formType: 'clone', row: self._$cloningRow }) != false) {
+                self._setEnabledOfDialogButton($saveButton, false, self.options.messages.saving);
+                self._saveCloneRecordForm($cloneRecordForm, $saveButton);
+            }
+        },
+
+        _closeCloneForm: function () {
+            this._$cloneRecordDialog[0].close();
+        },
+
+        _saveCloneRecordForm: function ($cloneRecordForm, $saveButton) {
+            let self = this;
+
+            let completeCloneRecord = function (data) {
+                if (data.Result != 'OK') {
+                    self._showError(data.Message);
+                    return;
+                }
+                if (!data.Record) {
+                    self._logError('Server must return the created Record object.');
+                    return;
+                }
+                self._addRowToTable(
+                    self._createRowFromRecord(data.Record), {
+                        isNewRow: true
+                    });
+                self._closeCloneForm();
+            };
+
+            // cloneAction may be a function, check if it is
+            if (typeof self.options.actions.cloneAction === "function") {
+                let funcResult = self.options.actions.cloneAction($cloneRecordForm.serialize());
+                if (self._isDeferredObject(funcResult)) {
+                    funcResult.done(function (data) {
+                        completeCloneRecord(data);
+                    }).fail(function () {
+                        self._showError(self.options.messages.serverCommunicationError);
+                    });
+                } else {
+                    completeCloneRecord(funcResult);
+                }
+            } else { // Assume it's a URL string
+                self._submitFormUsingAjax(
+                    self.options.actions.cloneAction,
+                    $cloneRecordForm.serialize(),
+                    function (data) {
+                        completeCloneRecord(data);
+                    },
+                    function () {
+                        self._showError(self.options.messages.serverCommunicationError);
+                    }
+                );
+            }
+        }
+    });
+
+})(jQuery);
+
+
+/************************************************************************
  * DELETION extension for jTable                                         *
  *************************************************************************/
 (function ($) {

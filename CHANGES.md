@@ -1,3 +1,12 @@
+= 3.0.2 (2025/06/09) =
+* cloneAction added, so a record can be cloned now
+
+= 3.0.1 (2025/06/05) =
+* remove some old jqueryUI for add/delete animation effects
+
+= 3.0.0 (2025/06/05) =
+* npm release added
+
 = 1.0.53 (2025/05/28) =
 * Added options for CSV export and print table
 

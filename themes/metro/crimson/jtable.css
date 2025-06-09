@@ -420,6 +420,15 @@ div.jtable-main-container table.jtable > tbody > tr.jtable-data-row > td > .jtab
 div.jtable-main-container table.jtable > tbody > tr.jtable-data-row > td > .jtable-edit-command-button:hover {
   opacity: 0.8;
 }
+div.jtable-main-container table.jtable > tbody > tr.jtable-data-row > td > .jtable-clone-command-button {
+  background: url('../clone.png') no-repeat;
+  width: 16px;
+  height: 16px;
+  opacity: 0.4;
+}
+div.jtable-main-container table.jtable > tbody > tr.jtable-data-row > td > .jtable-clone-command-button:hover {
+  opacity: 0.8;
+}
 div.jtable-main-container table.jtable > tbody > tr.jtable-data-row > td > .jtable-delete-command-button {
   background: url('../delete.png') no-repeat;
   width: 16px;
