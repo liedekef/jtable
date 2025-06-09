@@ -6,8 +6,7 @@ const dir = './localization'; // <-- adjust to your actual path
 
 // Strings to add
 const newStrings = {
-  csvExport: 'CSV',
-  printTable: 'Print'
+  cloneRecord: 'Clone Record'
 };
 
 // Convert object to string entries

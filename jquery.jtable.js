@@ -3194,7 +3194,7 @@ THE SOFTWARE.
         options: {
             // Localization
             messages: {
-                cloneRecord: 'Clone'
+                cloneRecord: 'Clone Record'
             }
         },
 
