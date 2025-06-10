@@ -4145,9 +4145,6 @@ THE SOFTWARE.
             if (self.options.selectingCheckboxes) {
                 let $cell = $('<td></td>').addClass('jtable-command-column jtable-selecting-column');
                 let $selectCheckbox = $('<input type="checkbox" />').appendTo($cell);
-                if (typeof $row.data('recordKey') !== 'undefined' ) {
-                    $selectCheckbox.attr('id', "jtable-column-checkbox-" + $row.data('recordKey'));
-                }
                 if (!self.options.selectOnRowClick) {
                     $selectCheckbox.on("click", function () {
                         self._invertRowSelection($row);
