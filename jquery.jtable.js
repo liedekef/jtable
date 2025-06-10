@@ -5390,6 +5390,33 @@ THE SOFTWARE.
             }
         },
 
+        /* recalc width of columns.
+         * usefull when a table becomes visible
+         *************************************************************************/
+        recalcColumnWidths: function () {
+            const self = this;
+
+            // Get regular columns
+            const headerCells = self._$table.find('>thead th:not(.jtable-command-column-header)');
+            if (!headerCells.length) return;
+
+            // Calculate widths only for visible content
+            const visibleRegularColumns = headerCells.filter(function() {
+                return $(this).css('display') !== 'none';
+            });
+
+            // We just set the width to the known width again (from the options, either configured or loaded from user pref)
+            visibleRegularColumns.each(function(index) {
+                const $cell = $(this);
+                const fieldName = $cell.data('fieldName');
+                if (self.options.fields[fieldName].width) {
+                    $cell.css('width', self.options.fields[fieldName].width);
+                }
+            });
+            // All loaded, then normalize
+            this._normalizeColumnWidths();
+        },
+
         /************************************************************************
          * PRIVATE METHODS                                                       *
          *************************************************************************/
@@ -5685,42 +5712,42 @@ THE SOFTWARE.
         /* Normalizes column widths as percent for current view.
          *************************************************************************/
         _normalizeColumnWidths: function () {
-            let self = this;
+            const self = this;
+            const $table = self._$table;
 
-            // First set command column width as small as possible
-            let commandColumnHeaders = self._$table
-                .find('>thead th.jtable-command-column-header')
+            // Set all command columns (visible or hidden)
+            const commandColumnHeaders = $table.find('>thead th.jtable-command-column-header')
                 .data('width-in-percent', 1)
                 .css('width', '1%');
 
-            // Now we'll go through all columns
-            let headerCells = self._$table.find('>thead th');
+            // Get regular columns
+            const headerCells = $table.find('>thead th:not(.jtable-command-column-header)');
+            if (!headerCells.length) return;
 
-            let totalWidthInPixel = self._$table.outerWidth();
-
-            // Calculate width of each column
-            let columnWidths = {};
-            headerCells.each(function () {
-                let $cell = $(this);
-                let fieldName = $cell.data('fieldName');
-                if ($cell.is(':visible')) {
-                    let widthInPercent = $cell.outerWidth() * 100 / totalWidthInPixel;
-                    columnWidths[fieldName] = widthInPercent;
-                }
+            // Calculate widths only for visible content
+            const visibleRegularColumns = headerCells.filter(function() {
+                return $(this).css('display') !== 'none';
             });
 
-            // Set width of each column
-            headerCells.each(function () {
-                let $cell = $(this);
-                if ($cell.is(':visible')) {
-                    let fieldName = $cell.data('fieldName');
-                    $cell.data('width-in-percent', columnWidths[fieldName]).css('width', columnWidths[fieldName] + '%');
-                } else {
-                    // invisible fields should be as small as possible (column header) when becoming visible
-                    // so we set the width to 1%, when becoming visible the browser table logic will make it fit
-                    $cell.data('width-in-percent', 1).css('width', '1%');
-                }
-            });
+            if (visibleRegularColumns.length) {
+                const totalWidth = $table.outerWidth();
+                const commandColumnsWidth = commandColumnHeaders.toArray()
+                    .reduce((sum, cell) => sum + $(cell).outerWidth(), 0);
+
+                const availableWidth = totalWidth - commandColumnsWidth;
+
+                visibleRegularColumns.each(function(index) {
+                    const $cell = $(this);
+                    const widthPercent = ($cell.outerWidth() * 100) / availableWidth;
+                    $cell.data('width-in-percent', widthPercent)
+                        .css('width', widthPercent + '%');
+                });
+            }
+
+            // Set minimal width for hidden columns
+            headerCells.filter(function() {
+                return $(this).css('display') === 'none';
+            }).data('width-in-percent', 1).css('width', '1%');
         },
 
         /* Saves field setting to cookie.
@@ -5770,7 +5797,7 @@ THE SOFTWARE.
                     }
                     if (self.options.columnResizable) {
                         let allow_resize = (self.options.fields[fieldName].columnResizable != false);
-                        if ( allow_resize ) {
+                        if ( allow_resize && !isNaN(columnWidth) ) {
                             self.options.fields[fieldName].width = columnWidth + "%";
                         }
                     }

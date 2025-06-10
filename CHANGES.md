@@ -1,3 +1,6 @@
+= 3.0.3 (2025/06/10) =
+* Public method recalcColumnWidths added, can be used if a hidden table becomes visible
+
 = 3.0.2 (2025/06/09) =
 * cloneAction added, so a record can be cloned now
 
