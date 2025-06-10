@@ -402,7 +402,7 @@ THE SOFTWARE.
             // self._$errorDialog.on('close', function () {
             // });
  
-            $('<h2 id="errorDialogTitle"></h2>').css({padding: '0px'}).html(self.options.messages.error).appendTo(self._$errorDialog);
+            $('<h2 class="jtable-error-dialogtitle"></h2>').css({padding: '0px'}).html(self.options.messages.error).appendTo(self._$errorDialog);
             $('<div><p><span class="jtable-error-message"></span></p></div>').appendTo(self._$errorDialog);
             $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button>')
                 .html('<span>' + self.options.messages.close + '</span>')
@@ -4060,7 +4060,7 @@ THE SOFTWARE.
                 .addClass('jtable-column-header-container')
                 .appendTo($columnHeader);
 
-            self._$selectAllCheckbox = $('<input id="jtable-column-header-checkbox" type="checkbox" />')
+            self._$selectAllCheckbox = $('<input class="jtable-column-header-checkbox" type="checkbox" />')
                 .appendTo($headerContainer)
                 .on("click", function () {
                     if (self._$tableRows.length <= 0) {
@@ -4415,7 +4415,7 @@ THE SOFTWARE.
             self._$pageSizeChangeArea.append('<span>' + self.options.messages.pageSizeChangeLabel + ': </span>');
 
             // Page size change combobox
-            let $pageSizeChangeCombobox = $('<select id="jtable-page-size-select"></select>').appendTo(self._$pageSizeChangeArea);
+            let $pageSizeChangeCombobox = $('<select class="jtable-page-size-select"></select>').appendTo(self._$pageSizeChangeArea);
 
             // Add page sizes to the combobox
             for (let i = 0; i < self.options.pageSizes.length; i++) {
@@ -4451,7 +4451,7 @@ THE SOFTWARE.
             // Goto page input
             if (self.options.gotoPageArea == 'combobox') {
 
-                self._$gotoPageInput = $('<select id="jtable-page-goto-select"></select>')
+                self._$gotoPageInput = $('<select class="jtable-page-goto-select"></select>')
                     .appendTo(this._$gotoPageArea)
                     .data('pageCount', 1)
                     .change(function() {
