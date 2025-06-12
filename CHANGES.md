@@ -1,3 +1,9 @@
+= 3.0.4 (2025/06/12) =
+* Finetune column width
+* Fix toolbarsearch extension placement of reset button
+* added listClassHeader, which will be applied to header-columns only
+  the original listClass will only be applied to regular columns, not the header
+
 = 3.0.3 (2025/06/10) =
 * Public method recalcColumnWidths added, can be used if a hidden table becomes visible
 

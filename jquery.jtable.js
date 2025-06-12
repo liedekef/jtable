@@ -6,7 +6,7 @@ https://www.e-dynamics.be
 ---------------------------------------------------------------------------
 
 Copyright (C) 2011-2014 by Halil İbrahim Kalkan (http://www.halilibrahimkalkan.com)
-Copyright (C) 2025-no by Franky Van Liedekerke (https://www.e-dynamics.be)
+Copyright (C) 2025-now by Franky Van Liedekerke (https://www.e-dynamics.be)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -147,6 +147,9 @@ THE SOFTWARE.
         /* Normalizes some options for a field (sets default values).
          *************************************************************************/
         _normalizeFieldOptions: function (fieldName, props) {
+            if (props.listClass == undefined) {
+                props.listClassHeader = '';
+            }
             if (props.listClass == undefined) {
                 props.listClass = '';
             }
@@ -341,7 +344,7 @@ THE SOFTWARE.
 
             let $th = $('<th></th>')
                 .addClass('jtable-column-header')
-                .addClass(field.listClass)
+                .addClass(field.listClassHeader)
                 .css('width', field.width)
                 .data('fieldName', fieldName)
                 .append($headerContainerDiv);
@@ -2137,10 +2140,10 @@ THE SOFTWARE.
             // newTable.find('th').each(function () {
             let tmpRow = []; // construct header available array
             $.each(newTable.find('th'),function () {
-                if ($(this).hasClass('jtable-command-column')) {
+                if ($(this).hasClass('jtable-command-column-header')) {
                     return;
                 }
-                if ($(this).css('display') != 'none') {
+                if ($(this).css('display') != 'none') { // don't check for visible here, since the table is a clone that won't work
                     let val = $(this).find('.jtable-column-header-text').text();
                     tmpRow[tmpRow.length] = self._formatCSV(val);
                 }
@@ -2155,7 +2158,7 @@ THE SOFTWARE.
                     if ($(this).hasClass('jtable-command-column')) {
                         return;
                     }
-                    if ($(this).css('display') != 'none') {
+                    if ($(this).css('display') != 'none') { // don't check for visible here, since the table is a clone that won't work
                         if ($(this).find('img').length || $(this).find('button').length) {
                             $(this).html('');
                         }
@@ -2286,7 +2289,8 @@ THE SOFTWARE.
         body { font-family: sans-serif; padding: 10px; }
         table { width: 100%; border-collapse: collapse; }
         table, th, td { border: 1px solid black; }
-	.jtable-command-column { display: none; }
+	    .jtable-command-column-header { display: none; }
+	    .jtable-command-column { display: none; }
         ${self.options.printExtraStyles}
     </style>
     <base href="${window.location.href}">
@@ -5398,9 +5402,7 @@ THE SOFTWARE.
             if (!headerCells.length) return;
 
             // Calculate widths only for visible content
-            const visibleRegularColumns = headerCells.filter(function() {
-                return $(this).css('display') !== 'none';
-            });
+            const visibleRegularColumns = headerCells.filter(':visible');
 
             // We just set the width to the known width again (from the options, either configured or loaded from user pref)
             visibleRegularColumns.each(function(index) {

@@ -14,10 +14,7 @@
 		/* Adds tr element to given thead element
         *************************************************************************/
         _addRowToTableHead: function ($thead) {
-            var $tr = $('<tr></tr>')
-                .appendTo($thead);
-
-            this._addColumnsToHeaderRow($tr);
+            base._addRowToTableHead.apply(this, arguments);
 			if(this.options.toolbarsearch){			
 	            var $tr = $('<tr></tr>')
                 .appendTo($thead);
@@ -30,23 +27,35 @@
         _toolbarsearch_addColumnsToHeaderRow: function ($tr) {
 			var self = this;
 			if(this.options.selecting && this.options.selectingCheckboxes){
-				$tr.append('<td/>');	
+				$tr.append('<th/>');	
 			}
 	    	for (var i = 0; i < this._columnList.length; i++) {
     	    	var fieldName = this._columnList[i];
         	    var $headerCell = this._toolbarsearch_createHeaderCellForField(fieldName, this.options.fields[fieldName]);
             	$headerCell.appendTo($tr);
             }
+
+            let actions = ['deleteAction', 'cloneAction', 'updateAction'];
+            let colspan = 0;
+            actions.forEach(action => {
+                if (this.options.actions[action]) {
+                    colspan += 1;
+                }
+            });
+
+            let $reset;
 			if(this.options.toolbarreset){
-			$reset = $('<th></th>')
-                .addClass('jtable-toolbarsearch-reset')
-                .attr('colspan',$(".jtable-command-column-header").length);
-			$resetbutton = $('<input type="button" class="jtable-toolbarsearch-reset-button" value="Reset"/>').appendTo($reset);
-			$resetbutton.click(function(){
-				$('.jtable-toolbarsearch').val('');
-				self.load({});				
-			});
-			$tr.append($reset);
+                $reset = $('<th></th>')
+                    .addClass('jtable-toolbarsearch-reset');
+                if (colspan) {
+                    $reset.attr('colspan',colspan);
+                }
+                $resetbutton = $('<input type="button" class="jtable-toolbarsearch-reset-button" value="Reset"/>').appendTo($reset);
+                $resetbutton.click(function(){
+                    $('.jtable-toolbarsearch').val('');
+                    self.load({});				
+                });
+                $tr.append($reset);
 			}
         },		
 
