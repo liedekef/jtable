@@ -1,3 +1,6 @@
+= 3.0.5 (2025/06/12) =
+* Add correct number of empty elements to toolbarsearch row, even if no reset is defined
+
 = 3.0.4 (2025/06/12) =
 * Finetune column width
 * Fix toolbarsearch extension placement of reset button

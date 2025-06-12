@@ -36,27 +36,30 @@
             }
 
             let actions = ['deleteAction', 'cloneAction', 'updateAction'];
-            let colspan = 0;
+            let $actioncount = 0;
             actions.forEach(action => {
                 if (this.options.actions[action]) {
-                    colspan += 1;
+                    $actioncount += 1;
                 }
             });
 
-            let $reset;
-			if(this.options.toolbarreset){
-                $reset = $('<th></th>')
-                    .addClass('jtable-toolbarsearch-reset');
-                if (colspan) {
-                    $reset.attr('colspan',colspan);
-                }
+            let $reset = $('<th></th>')
+                .addClass('jtable-toolbarsearch-reset');
+            if ($actioncount) {
+                $reset.attr('colspan',$actioncount);
+            }
+
+			if (this.options.toolbarreset) {
+                // we add the reset button if wanted, even if no other actions are defined (so $actioncount=0)
                 $resetbutton = $('<input type="button" class="jtable-toolbarsearch-reset-button" value="Reset"/>').appendTo($reset);
                 $resetbutton.click(function(){
                     $('.jtable-toolbarsearch').val('');
                     self.load({});				
                 });
                 $tr.append($reset);
-			}
+			} else if ($actioncount) {
+                $tr.append($reset);
+            }
         },		
 
         /* Creates a header cell for given field.
