@@ -5418,8 +5418,6 @@ THE SOFTWARE.
                     $cell.css('width', self.options.fields[fieldName].width);
                 }
             });
-            // All loaded, then normalize
-            this._normalizeColumnWidths();
         },
 
         /************************************************************************
@@ -5716,43 +5714,35 @@ THE SOFTWARE.
 
         /* Normalizes column widths as percent for current view.
          *************************************************************************/
-        _normalizeColumnWidths: function () {
-            const $table = this._$table;
+_normalizeColumnWidths: function () {
+    const $table = this._$table;
 
-            // Command columns (fixed minimal width)
-            $table.find('>thead th.jtable-command-column-header')
-                .data('width-in-percent', 1)
-                .css('width', '1%');
+    const $allHeaderCells = $table.find('>thead th');
+    const $commandColumns = $allHeaderCells.filter('.jtable-command-column-header');
+    const $regularColumns = $allHeaderCells.not('.jtable-command-column-header');
 
-            // Regular columns
-            const headerCells = $table.find('>thead th:not(.jtable-command-column-header)');
-            if (!headerCells.length) return;
+    // 1. Set minimal width for command columns
+    $commandColumns.each(function () {
+        $(this).data('width-in-percent', 1).css('width', '1%');
+    });
 
-            const visibleColumns = headerCells.filter(':visible');
-            if (!visibleColumns.length) return;
+    // 2. Get all visible regular columns
+    const $visibleRegularColumns = $regularColumns.filter(':visible');
+    if (!$visibleRegularColumns.length) return;
 
-            const tableContentWidth = $table.innerWidth();
-            const commandColumnsWidth = $table.find('>thead th.jtable-command-column-header:visible')
-                .toArray().reduce((sum, cell) => sum + $(cell).outerWidth(), 0);
+    const totalWidth = $table.outerWidth();
 
-            const availableWidth = tableContentWidth - commandColumnsWidth;
-            const totalCurrentWidth = visibleColumns.toArray()
-                .reduce((sum, cell) => sum + $(cell).innerWidth(), 0);
+    // 3. Assign percentage widths based on visible size
+    $visibleRegularColumns.each(function () {
+        const $cell = $(this);
+        const widthPercent = $cell.outerWidth() * 100 / totalWidth;
+        $cell.data('width-in-percent', widthPercent).css('width', widthPercent + '%');
+    });
 
-            visibleColumns.each(function() {
-                const $cell = $(this);
-                const widthPercent = ($cell.innerWidth() / totalCurrentWidth) * 100 *
-                    (availableWidth / tableContentWidth);
-                // Round to 2 decimal places to avoid long floating-point values
-                const roundedWidthPercent = Math.round(widthPercent * 100) / 100;
-                $cell.data('width-in-percent', roundedWidthPercent)
-                    .css('width', roundedWidthPercent + '%');
-            });
-
-            // Hidden columns (minimal width)
-            headerCells.not(':visible')
-                .data('width-in-percent', 1)
-                .css('width', '1%');
+    // 4. Set minimal width for hidden regular columns
+    $regularColumns.not(':visible').each(function () {
+        $(this).data('width-in-percent', 1).css('width', '1%');
+    });
         },
 
         /* Saves field setting to cookie.
