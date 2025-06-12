@@ -1,6 +1,6 @@
 {
   "name": "@liedekef/jtable",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "A maintained fork of jtable: an interactive table for JavaScript/HTML with CRUD operations. Actively updated by @liedekef.",
   "main": "jquery.jtable.js",
   "repository": {
