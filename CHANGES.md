@@ -1,3 +1,6 @@
+= 3.0.6 (2025/06/12) =
+* added listClassEntry, which will be applied to regular columns only (not the header row)
+
 = 3.0.5 (2025/06/12) =
 * Add correct number of empty elements to toolbarsearch row, even if no reset is defined
 
@@ -5,7 +8,6 @@
 * Finetune column width
 * Fix toolbarsearch extension placement of reset button
 * added listClassHeader, which will be applied to header-columns only
-  the original listClass will only be applied to regular columns, not the header
 
 = 3.0.3 (2025/06/10) =
 * Public method recalcColumnWidths added, can be used if a hidden table becomes visible

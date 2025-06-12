@@ -147,8 +147,11 @@ THE SOFTWARE.
         /* Normalizes some options for a field (sets default values).
          *************************************************************************/
         _normalizeFieldOptions: function (fieldName, props) {
-            if (props.listClass == undefined) {
+            if (props.listClassHeader == undefined) {
                 props.listClassHeader = '';
+            }
+            if (props.listClassEntry == undefined) {
+                props.listClassEntry = '';
             }
             if (props.listClass == undefined) {
                 props.listClass = '';
@@ -344,6 +347,7 @@ THE SOFTWARE.
 
             let $th = $('<th></th>')
                 .addClass('jtable-column-header')
+                .addClass(field.listClass)
                 .addClass(field.listClassHeader)
                 .css('width', field.width)
                 .data('fieldName', fieldName)
@@ -593,6 +597,7 @@ THE SOFTWARE.
         _createCellForRecordField: function (record, fieldName) {
             return $('<td></td>')
                 .addClass(this.options.fields[fieldName].listClass)
+                .addClass(this.options.fields[fieldName].listClassEntry)
                 .append((this._getDisplayTextForRecordField(record, fieldName)));
         },
 
@@ -5405,6 +5410,7 @@ THE SOFTWARE.
             const visibleRegularColumns = headerCells.filter(':visible');
 
             // We just set the width to the known width again (from the options, either configured or loaded from user pref)
+            this._loadColumnSettings();
             visibleRegularColumns.each(function(index) {
                 const $cell = $(this);
                 const fieldName = $cell.data('fieldName');
