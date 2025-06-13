@@ -1521,6 +1521,12 @@ THE SOFTWARE.
             return number;
         },
 
+        _roundNumber: function (number) {
+            return number;
+            const roundedNumber = Math.round(number*100)/100;
+            return roundedNumber;
+        },
+
         /* Formats a string just like string.format in c#.
          *  Example:
          *  _formatString('Hello {0}','Halil') = 'Hello Halil'
@@ -5418,6 +5424,7 @@ THE SOFTWARE.
                     $cell.css('width', self.options.fields[fieldName].width);
                 }
             });
+            self._normalizeColumnWidths();
         },
 
         /************************************************************************
@@ -5673,19 +5680,19 @@ THE SOFTWARE.
                             // Now resize the column by setting width
                             // Calculate widths as percent
                             let pixelToPercentRatio = $columnHeader.data('width-in-percent') / self._currentResizeArgs.currentColumnStartWidth;
-                            $columnHeader.data('width-in-percent', currentColumnFinalWidth * pixelToPercentRatio);
+			    let width_diff = self._roundNumber( currentColumnFinalWidth * pixelToPercentRatio) - $columnHeader.data('width-in-percent') ;
+                            $columnHeader.data('width-in-percent', $columnHeader.data('width-in-percent') + width_diff);
                             // Set new widths to columns (resize!)
                             $columnHeader.css('width', $columnHeader.data('width-in-percent') + '%');
 
                             // now do the same for the next column if present
                             if ($nextColumnHeader) {
-                                let nextColumnFinalWidth = nextColumnOuterWidth + (self._currentResizeArgs.currentColumnStartWidth - currentColumnFinalWidth);
-                                $nextColumnHeader.data('width-in-percent', nextColumnFinalWidth * pixelToPercentRatio);
+                                $nextColumnHeader.data('width-in-percent', $nextColumnHeader.data('width-in-percent') - width_diff);
                                 $nextColumnHeader.css('width', $nextColumnHeader.data('width-in-percent') + '%');
                             }
 
                             // Normalize all column widths
-                            self._normalizeColumnWidths();
+                            //self._normalizeColumnWidths();
 
                             // Save current preferences
                             if (self.options.saveUserPreferences) {
@@ -5714,35 +5721,37 @@ THE SOFTWARE.
 
         /* Normalizes column widths as percent for current view.
          *************************************************************************/
-_normalizeColumnWidths: function () {
-    const $table = this._$table;
+        _normalizeColumnWidths: function () {
+            let self = this;
+            const $table = self._$table;
 
-    const $allHeaderCells = $table.find('>thead th');
-    const $commandColumns = $allHeaderCells.filter('.jtable-command-column-header');
-    const $regularColumns = $allHeaderCells.not('.jtable-command-column-header');
+            const $allHeaderCells = $table.find('>thead th');
+            const $commandColumns = $allHeaderCells.filter('.jtable-command-column-header');
+            const $regularColumns = $allHeaderCells.not('.jtable-command-column-header');
 
-    // 1. Set minimal width for command columns
-    $commandColumns.each(function () {
-        $(this).data('width-in-percent', 1).css('width', '1%');
-    });
+            // 1. Set minimal width for command columns
+            $commandColumns.each(function () {
+                $(this).data('width-in-percent', 1).css('width', '1%');
+            });
 
-    // 2. Get all visible regular columns
-    const $visibleRegularColumns = $regularColumns.filter(':visible');
-    if (!$visibleRegularColumns.length) return;
+            // 2. Get all visible regular columns
+            const $visibleRegularColumns = $regularColumns.filter(':visible');
+            if (!$visibleRegularColumns.length) return;
 
-    const totalWidth = $table.outerWidth();
+            const totalWidth = $table.outerWidth();
 
-    // 3. Assign percentage widths based on visible size
-    $visibleRegularColumns.each(function () {
-        const $cell = $(this);
-        const widthPercent = $cell.outerWidth() * 100 / totalWidth;
-        $cell.data('width-in-percent', widthPercent).css('width', widthPercent + '%');
-    });
+            // 3. Assign percentage widths based on visible size
+            $visibleRegularColumns.each(function () {
+                const $cell = $(this);
+                const widthPercent = $cell.outerWidth() * 100 / totalWidth;
+                const roundedWidthPercent = self._roundNumber(widthPercent);
+                $cell.data('width-in-percent', roundedWidthPercent).css('width', roundedWidthPercent + '%');
+            });
 
-    // 4. Set minimal width for hidden regular columns
-    $regularColumns.not(':visible').each(function () {
-        $(this).data('width-in-percent', 1).css('width', '1%');
-    });
+            // 4. Set minimal width for hidden regular columns
+            $regularColumns.not(':visible').each(function () {
+                $(this).data('width-in-percent', 1).css('width', '1%');
+            });
         },
 
         /* Saves field setting to cookie.
