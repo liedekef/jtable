@@ -5426,6 +5426,13 @@ THE SOFTWARE.
             });
             self._normalizeColumnWidths();
         },
+        recalcColumnWidthsOnce: function() {
+            // Check if we've already recalculated (using a data attribute)
+            if (!this._$mainContainer.data('recalculated-once')) {
+                this.recalcColumnWidths(); // Call the original method
+                this._$mainContainer.data('recalculated-once', true); // Mark as done
+            }
+        },
 
         /************************************************************************
          * PRIVATE METHODS                                                       *
