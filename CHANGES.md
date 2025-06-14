@@ -1,3 +1,6 @@
+= 3.0.7 (2025/06/14) =
+* Finally happy with column resizing for hidden tables too
+
 = 3.0.6 (2025/06/12) =
 * added field option listClassEntry, which will be applied to regular columns only (not the header row)
 * listClass field option is applied to all columns (header/body)
