@@ -5148,7 +5148,7 @@ THE SOFTWARE.
         },
         */
 
-        /* Overrides _createJtParamsForLoading method to add sorging parameters to jtParams object.
+        /* Overrides _createJtParamsForLoading method to add sorting parameters to jtParams object.
          *************************************************************************/
         _createJtParamsForLoading: function () {
             let self = this;
@@ -5159,7 +5159,7 @@ THE SOFTWARE.
                 $.each(self._lastSorting, function (idx, value) {
                     sorting.push(value.fieldName + ' ' + value.sortOrder);
                 });
-                // no sorted columns, but default sort is configured, use that as a base
+                // If no sorted columns but default sort is configured, then we use that as a base
                 // see also _buildDefaultSortingArray
                 if (sorting.length==0 && self.options.defaultSorting.length) {
                     $.each(self.options.defaultSorting.split(","), function (orderIndex, orderValue) {
@@ -5245,29 +5245,29 @@ THE SOFTWARE.
         /* reset sorting order to default
          *********************************************************************************/
         resetSorting: function() {
-	    let self = this;
-	    self._lastSorting = []; // clear previous sorting
+            let self = this;
+            self._lastSorting = []; // clear previous sorting
             self._buildDefaultSortingArray();
             if (self.options.saveUserPreferences) {
                 self._saveColumnSortSettings();
             }
-	    let headerCells = self._$table.find('>thead th');
+            let headerCells = self._$table.find('>thead th');
             headerCells.each(function () {
                 let $columnHeader = $(this);
                 let fieldName = $columnHeader.data('fieldName');
-		$columnHeader.removeClass('jtable-column-header-sorted-asc jtable-column-header-sorted-desc');
+                $columnHeader.removeClass('jtable-column-header-sorted-asc jtable-column-header-sorted-desc');
 
-		    // Set default sorting
-		    $.each(self._lastSorting, function (sortIndex, sortField) {
-			    if (sortField.fieldName == fieldName) {
-				    if (sortField.sortOrder == 'DESC') {
-					    $columnHeader.addClass('jtable-column-header-sorted-desc');
-				    } else {
-					    $columnHeader.addClass('jtable-column-header-sorted-asc');
-				    }
-			    }
-		    });
-	    });
+                // Set default sorting
+                $.each(self._lastSorting, function (sortIndex, sortField) {
+                    if (sortField.fieldName == fieldName) {
+                        if (sortField.sortOrder == 'DESC') {
+                            $columnHeader.addClass('jtable-column-header-sorted-desc');
+                        } else {
+                            $columnHeader.addClass('jtable-column-header-sorted-asc');
+                        }
+                    }
+                });
+            });
             this._reloadTable();
         },
 
