@@ -1,3 +1,6 @@
+= 3.0.8 (2025/06/15) =
+* Setting command columns to their actual pct allows exact column resizing now
+
 = 3.0.7 (2025/06/14) =
 * Finally happy with column resizing for hidden tables too
 
