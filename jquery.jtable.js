@@ -1523,7 +1523,7 @@ THE SOFTWARE.
 
         _roundNumber: function (number) {
             return number;
-            const roundedNumber = Math.round(number*100)/100;
+            const roundedNumber = Math.round(number*1000)/1000;
             return roundedNumber;
         },
 
@@ -5698,8 +5698,8 @@ THE SOFTWARE.
                                 $nextColumnHeader.css('width', $nextColumnHeader.data('width-in-percent') + '%');
                             }
 
-                            // Normalize all column widths
-                            //self._normalizeColumnWidths();
+                            // Normalize all column widths, since the wanted percentages might not be the real ones
+                            self._normalizeColumnWidths();
 
                             // Save current preferences
                             if (self.options.saveUserPreferences) {
@@ -5735,17 +5735,23 @@ THE SOFTWARE.
             const $allHeaderCells = $table.find('>thead th');
             const $commandColumns = $allHeaderCells.filter('.jtable-command-column-header');
             const $regularColumns = $allHeaderCells.not('.jtable-command-column-header');
+            const totalWidth = $table.outerWidth();
 
             // 1. Set minimal width for command columns
             $commandColumns.each(function () {
-                $(this).data('width-in-percent', 1).css('width', '1%');
+                const $cell = $(this);
+                // first we set it super small (too small)
+                $cell.css('width', '0%');
+                // if we leave the width at 1%, it is not the actual width and causes issues with other columns when resizing
+                // so we calculate the actual width and set that
+                const widthPercent = $cell.outerWidth() * 100 / totalWidth;
+                const roundedWidthPercent = self._roundNumber(widthPercent);
+                $cell.data('width-in-percent', roundedWidthPercent).css('width', roundedWidthPercent + '%');
             });
 
             // 2. Get all visible regular columns
             const $visibleRegularColumns = $regularColumns.filter(':visible');
             if (!$visibleRegularColumns.length) return;
-
-            const totalWidth = $table.outerWidth();
 
             // 3. Assign percentage widths based on visible size
             $visibleRegularColumns.each(function () {
@@ -5757,7 +5763,7 @@ THE SOFTWARE.
 
             // 4. Set minimal width for hidden regular columns
             $regularColumns.not(':visible').each(function () {
-                $(this).data('width-in-percent', 1).css('width', '1%');
+                $(this).data('width-in-percent', 0).css('width', '0%');
             });
         },
 
