@@ -1,3 +1,6 @@
+= 3.0.9 (2025/06/16) =
+* Fif for command column widths in firefox
+
 = 3.0.8 (2025/06/15) =
 * Setting command columns to their actual pct allows exact column resizing now
 

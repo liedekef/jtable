@@ -1,6 +1,6 @@
 ﻿/* 
 
-jTable 3.0.8 (edited by Franky Van Liedekerke)
+jTable 3.0.9 (edited by Franky Van Liedekerke)
 https://www.e-dynamics.be
 
 ---------------------------------------------------------------------------
@@ -5741,7 +5741,8 @@ THE SOFTWARE.
             $commandColumns.each(function () {
                 const $cell = $(this);
                 // first we set it super small (too small)
-                $cell.css('width', '0%');
+                // // 0% is not allowed, FF takes that as "auto"
+                $cell.css('width', '1%');
                 // if we leave the width at 1%, it is not the actual width and causes issues with other columns when resizing
                 // so we calculate the actual width and set that
                 const widthPercent = $cell.outerWidth() * 100 / totalWidth;
@@ -5763,7 +5764,7 @@ THE SOFTWARE.
 
             // 4. Set minimal width for hidden regular columns
             $regularColumns.not(':visible').each(function () {
-                $(this).data('width-in-percent', 0).css('width', '0%');
+                $(this).data('width-in-percent', 1).css('width', '1%');
             });
         },
 
