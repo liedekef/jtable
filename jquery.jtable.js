@@ -5687,7 +5687,7 @@ THE SOFTWARE.
                             // Now resize the column by setting width
                             // Calculate widths as percent
                             let pixelToPercentRatio = $columnHeader.data('width-in-percent') / self._currentResizeArgs.currentColumnStartWidth;
-			    let width_diff = self._roundNumber( currentColumnFinalWidth * pixelToPercentRatio) - $columnHeader.data('width-in-percent') ;
+                            let width_diff = self._roundNumber( currentColumnFinalWidth * pixelToPercentRatio) - $columnHeader.data('width-in-percent') ;
                             $columnHeader.data('width-in-percent', $columnHeader.data('width-in-percent') + width_diff);
                             // Set new widths to columns (resize!)
                             $columnHeader.css('width', $columnHeader.data('width-in-percent') + '%');
