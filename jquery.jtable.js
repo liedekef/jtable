@@ -1,6 +1,6 @@
 ﻿/* 
 
-jTable 3.0.9 (edited by Franky Van Liedekerke)
+jTable 3.0.10 (edited by Franky Van Liedekerke)
 https://www.e-dynamics.be
 
 ---------------------------------------------------------------------------
@@ -5743,11 +5743,6 @@ THE SOFTWARE.
                 // first we set it super small (too small)
                 // // 0% is not allowed, FF takes that as "auto"
                 $cell.css('width', '1%');
-                // if we leave the width at 1%, it is not the actual width and causes issues with other columns when resizing
-                // so we calculate the actual width and set that
-                const widthPercent = $cell.outerWidth() * 100 / totalWidth;
-                const roundedWidthPercent = self._roundNumber(widthPercent);
-                $cell.data('width-in-percent', roundedWidthPercent).css('width', roundedWidthPercent + '%');
             });
 
             // 2. Get all visible regular columns
