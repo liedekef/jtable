@@ -1,3 +1,12 @@
+= 3.0.11 (2025/07/01) =
+* Added logLevel option
+* The toolbarsearch extension now supports dropdowns
+* The file input field is now supported in the modals (not multiple yet)
+
+= 3.0.10 (2025/06/26) =
+* Description update
+* Table column resizing compatibility with Firefox
+ 
 = 3.0.9 (2025/06/16) =
 * Fif for command column widths in firefox
 

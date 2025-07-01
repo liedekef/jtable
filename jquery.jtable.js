@@ -1,6 +1,6 @@
 ﻿/* 
 
-jTable 3.0.10 (edited by Franky Van Liedekerke)
+jTable 3.0.11 (edited by Franky Van Liedekerke)
 https://www.e-dynamics.be
 
 ---------------------------------------------------------------------------
@@ -49,9 +49,17 @@ THE SOFTWARE.
     }
 
     jTable.prototype = {
+        LOG_LEVELS: {
+            DEBUG: 0,
+            INFO: 1,
+            WARN: 2,
+            ERROR: 3,
+            NONE: 4
+        },
         options: {
             // Options
             tableId: undefined,
+            logLevel: 3, // needs to be a constant here, LOG_LEVELS is not in scope of options
             actions: {},
             fields: {},
             animationsEnabled: true,
@@ -1552,37 +1560,41 @@ THE SOFTWARE.
         },
 
         // Logging methods
-
-        _logDebug: function (text) {
-            if (!window.console) {
+        _log: function (level, text) {
+            if (!window.console || typeof this.options.logLevel === 'undefined') {
                 return;
             }
 
-            console.log('jTable DEBUG: ' + text);
+            let currentLevel = this.options.logLevel;
+            // If logLevel is a string, convert it
+            if (typeof currentLevel === 'string') {
+                currentLevel = this.LOG_LEVELS[currentLevel.toUpperCase()] ?? this.LOG_LEVELS.ERROR;
+            }
+
+            if (level < currentLevel) {
+                return;
+            }
+
+            const levelStr = Object.keys(this.LOG_LEVELS).find(key => this.LOG_LEVELS[key] === level);
+            const prefix = `jTable ${levelStr}:`;
+
+            console.log(`${prefix} ${text}`);
+        },
+
+        _logDebug: function (text) {
+            this._log(this.LOG_LEVELS.DEBUG, text);
         },
 
         _logInfo: function (text) {
-            if (!window.console) {
-                return;
-            }
-
-            console.log('jTable INFO: ' + text);
+            this._log(this.LOG_LEVELS.INFO, text);
         },
 
         _logWarn: function (text) {
-            if (!window.console) {
-                return;
-            }
-
-            console.log('jTable WARNING: ' + text);
+            this._log(this.LOG_LEVELS.WARN, text);
         },
 
         _logError: function (text) {
-            if (!window.console) {
-                return;
-            }
-
-            console.log('jTable ERROR: ' + text);
+            this._log(this.LOG_LEVELS.ERROR, text);
         }
 
     });
@@ -1610,7 +1622,12 @@ THE SOFTWARE.
                 url: url,
                 data: formData,
                 success: success,
-                error: error
+                error: error,
+		                contentType: false,
+            processData: false,
+            type: 'POST',
+            dataType: 'json'
+
             });
         },
 
@@ -1674,7 +1691,11 @@ THE SOFTWARE.
                     return this._createDropDownListForField(field, fieldName, value, record, formType, form);
                 }
             } else {
-                return this._createInputForField(field, fieldName, value);
+                if (field.type == 'file') {
+                    return this._createInputForField(field, fieldName, '');
+                } else {
+                    return this._createInputForField(field, fieldName, value);
+                }
             }
         },
 
@@ -2709,7 +2730,7 @@ THE SOFTWARE.
                 // Make an Ajax call to create record
                 self._submitFormUsingAjax(
                     self.options.actions.createAction,
-                    $addRecordForm.serialize(),
+                    new FormData($addRecordForm[0]),
                     function (data) {
                         completeAddRecord(data);
                     },
@@ -3112,7 +3133,7 @@ THE SOFTWARE.
                 // Make an Ajax call to update record
                 self._submitFormUsingAjax(
                     self.options.actions.updateAction,
-                    $editRecordForm.serialize(),
+                    new FormData($editRecordForm[0]),
                     function(data) {
                         completeEdit(data);
                     },
@@ -3406,7 +3427,7 @@ THE SOFTWARE.
             } else { // Assume it's a URL string
                 self._submitFormUsingAjax(
                     self.options.actions.cloneAction,
-                    $cloneRecordForm.serialize(),
+                    new FormData($cloneRecordForm[0]),
                     function (data) {
                         completeCloneRecord(data);
                     },
