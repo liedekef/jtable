@@ -167,6 +167,9 @@ THE SOFTWARE.
             if (props.inputClass == undefined) {
                 props.inputClass = '';
             }
+            if (props.inputAttributes == undefined) {
+                props.inputAttributes = '';
+            }
             if (props.placeholder == undefined) {
                 props.placeholder = '';
             }
@@ -1715,10 +1718,10 @@ THE SOFTWARE.
             let $input = '';
             if (typeof $.fn.datepicker == 'function') {
                 let displayFormat = field.displayFormat || this.options.defaultDateFormat;
-                $input = $('<input class="' + field.inputClass + '" id="Edit-' + fieldName + '" type="text" name="' + fieldName + '"></input>');
+                $input = $('<input class="' + field.inputClass + '" id="Edit-' + fieldName + '" type="text" name="' + fieldName + '"' + field.inputAttributes + '></input>');
                 $input.datepicker({ dateFormat: displayFormat });
             } else {
-                $input = $('<input class="' + field.inputClass + '" id="Edit-' + fieldName + '" type="date" name="' + fieldName + '"></input>');
+                $input = $('<input class="' + field.inputClass + '" id="Edit-' + fieldName + '" type="date" name="' + fieldName + '"' + field.inputAttributes + '></input>');
             }
             if (value != undefined) {
                 $input.val(value);
@@ -1732,7 +1735,7 @@ THE SOFTWARE.
         /* Creates a textarea element for a field.
          *************************************************************************/
         _createTextAreaForField: function (field, fieldName, value) {
-            let $textArea = $('<textarea class="' + field.inputClass + '" id="Edit-' + fieldName + '" name="' + fieldName + '"></textarea>');
+            let $textArea = $('<textarea class="' + field.inputClass + '" id="Edit-' + fieldName + '" name="' + fieldName + '"' + field.inputAttributes + '></textarea>');
             if (value != undefined) {
                 $textArea.val(value);
             }
@@ -1745,7 +1748,7 @@ THE SOFTWARE.
         /* Creates any type input for a field (text/password/range/week/datetime-local/...).
          *************************************************************************/
         _createInputForField: function (field, fieldName, value) {
-            let $input = $('<input class="' + field.inputClass + '" placeholder="' + field.placeholder + '" id="Edit-' + fieldName + '" type="' + field.type + '" name="' + fieldName + '"></input>');
+            let $input = $('<input class="' + field.inputClass + '" placeholder="' + field.placeholder + '" id="Edit-' + fieldName + '" type="' + field.type + '" name="' + fieldName + '"' + field.inputAttributes + '></input>');
 
             if (value != undefined) {
                 $input.val(value);
@@ -1771,7 +1774,7 @@ THE SOFTWARE.
                 .addClass('jtable-input jtable-checkbox-input');
 
             // Create checkbox and check if needed
-            let $checkBox = $('<input class="' + field.inputClass + '" id="Edit-' + fieldName + '" type="checkbox" name="' + fieldName + '" />')
+            let $checkBox = $('<input class="' + field.inputClass + '" id="Edit-' + fieldName + '" type="checkbox" name="' + fieldName + '"' + field.inputAttributes + ' />')
                 .appendTo($containerDiv);
             if (value != undefined) {
                 $checkBox.val(value);
@@ -1825,7 +1828,7 @@ THE SOFTWARE.
                 .addClass('jtable-input jtable-dropdown-input');
 
             // Create select element
-            let $select = $('<select class="' + field.inputClass + '" id="Edit-' + fieldName + '" name="' + fieldName + '"></select>')
+            let $select = $('<select class="' + field.inputClass + '" id="Edit-' + fieldName + '" name="' + fieldName + '"' + field.inputAttributes + '></select>')
                 .appendTo($containerDiv);
 
             // add options
@@ -1892,7 +1895,7 @@ THE SOFTWARE.
                     .addClass('jtable-radio-input')
                     .appendTo($containerDiv);
 
-                let $radioButton = $('<input type="radio" id="Edit-' + fieldName + '-' + i + '" class="' + field.inputClass + '" name="' + fieldName + '"' + ((option.Value == (value + '')) ? ' checked="true"' : '') + ' />')
+                let $radioButton = $('<input type="radio" id="Edit-' + fieldName + '-' + i + '" class="' + field.inputClass + '" name="' + fieldName + '"' + field.inputAttributes + ((option.Value == (value + '')) ? ' checked="true"' : '') + ' />')
                     .val(option.Value)
                     .appendTo($radioButtonDiv);
 
@@ -2474,7 +2477,6 @@ THE SOFTWARE.
                 .html('<span>' + self.options.messages.save + '</span>')
                 .on('click', function () {
                     self._onSaveClickedOnCreateForm();
-                    self._closeCreateForm();
                 });
 
             self._$addRecordDialog.append($cancelButton, $saveButton);
@@ -2501,12 +2503,17 @@ THE SOFTWARE.
         _onSaveClickedOnCreateForm: function () {
             let self = this;
 
-            let $saveButton = self._$addRecordDialog.find('#AddRecordDialogSaveButton');
             let $addRecordForm = self._$addRecordDialog.find('form').first();
+            if ($addRecordForm[0].checkValidity()) {
+                let $saveButton = self._$addRecordDialog.find('#AddRecordDialogSaveButton');
 
-            if (self._$mainContainer.trigger("formSubmitting", { form: $addRecordForm, formType: 'create' }) != false) {
-                self._setEnabledOfDialogButton($saveButton, false, self.options.messages.saving);
-                self._saveAddRecordForm($addRecordForm, $saveButton);
+                if (self._$mainContainer.trigger("formSubmitting", { form: $addRecordForm, formType: 'create' }) != false) {
+                    self._setEnabledOfDialogButton($saveButton, false, self.options.messages.saving);
+                    self._saveAddRecordForm($addRecordForm, $saveButton);
+                }
+                self._closeCreateForm();
+            } else {
+                $addRecordForm[0].reportValidity();
             }
         },
 
@@ -2835,7 +2842,6 @@ THE SOFTWARE.
                 .html('<span>' + self.options.messages.save + '</span>')
                 .on('click', function () {
                     self._onSaveClickedOnEditForm();
-                    self._closeEditForm();
                 });
 
             self._$editRecordDialog.append($cancelButton, $saveButton);
@@ -2852,11 +2858,16 @@ THE SOFTWARE.
                 return;
             }
 
-            let $saveButton = self._$editRecordDialog.find('#EditRecordDialogSaveButton');
             let $editRecordForm = self._$editRecordDialog.find('form').first();
-            if (self._$mainContainer.trigger("formSubmitting", { form: $editRecordForm, formType: 'edit', row: self._$editingRow }) != false) {
-                self._setEnabledOfDialogButton($saveButton, false, self.options.messages.saving);
-                self._saveEditRecordForm($editRecordForm, $saveButton);
+            if ($editRecordForm[0].checkValidity()) {
+                let $saveButton = self._$editRecordDialog.find('#EditRecordDialogSaveButton');
+                if (self._$mainContainer.trigger("formSubmitting", { form: $editRecordForm, formType: 'edit', row: self._$editingRow }) != false) {
+                    self._setEnabledOfDialogButton($saveButton, false, self.options.messages.saving);
+                    self._saveEditRecordForm($editRecordForm, $saveButton);
+                }
+                self._closeEditForm();
+            } else {
+                $editRecordForm[0].reportValidity();
             }
         },
 
@@ -3129,7 +3140,6 @@ THE SOFTWARE.
                 }
 
             } else { // Assume it's a URL string
-
                 // Make an Ajax call to update record
                 self._submitFormUsingAjax(
                     self.options.actions.updateAction,
@@ -3279,7 +3289,6 @@ THE SOFTWARE.
                 .html('<span>' + self.options.messages.save + '</span>')
                 .on('click', function () {
                     self._onSaveClickedOnCloneForm();
-                    self._closeCloneForm();
                 });
 
             self._$cloneRecordDialog.append($cancelButton, $saveButton);
@@ -3380,12 +3389,15 @@ THE SOFTWARE.
 
         _onSaveClickedOnCloneForm: function () {
             let self = this;
-            let $saveButton = self._$cloneRecordDialog.find('#CloneRecordDialogSaveButton');
             let $cloneRecordForm = self._$cloneRecordDialog.find('form').first();
-
-            if (self._$mainContainer.trigger("formSubmitting", { form: $cloneRecordForm, formType: 'clone', row: self._$cloningRow }) != false) {
-                self._setEnabledOfDialogButton($saveButton, false, self.options.messages.saving);
-                self._saveCloneRecordForm($cloneRecordForm, $saveButton);
+            if ($cloneRecordForm[0].checkValidity()) {
+                let $saveButton = self._$cloneRecordDialog.find('#CloneRecordDialogSaveButton');
+                if (self._$mainContainer.trigger("formSubmitting", { form: $cloneRecordForm, formType: 'clone', row: self._$cloningRow }) != false) {
+                    self._setEnabledOfDialogButton($saveButton, false, self.options.messages.saving);
+                    self._saveCloneRecordForm($cloneRecordForm, $saveButton);
+                }
+            } else {
+                $cloneRecordForm[0].reportValidity();
             }
         },
 
