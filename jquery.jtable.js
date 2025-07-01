@@ -2504,6 +2504,7 @@ THE SOFTWARE.
             let self = this;
 
             let $addRecordForm = self._$addRecordDialog.find('form').first();
+            // since the form is submitted via ajax, the validy of fields is not checked, we force it here
             if ($addRecordForm[0].checkValidity()) {
                 let $saveButton = self._$addRecordDialog.find('#AddRecordDialogSaveButton');
 
@@ -2859,6 +2860,7 @@ THE SOFTWARE.
             }
 
             let $editRecordForm = self._$editRecordDialog.find('form').first();
+            // since the form is submitted via ajax, the validy of fields is not checked, we force it here
             if ($editRecordForm[0].checkValidity()) {
                 let $saveButton = self._$editRecordDialog.find('#EditRecordDialogSaveButton');
                 if (self._$mainContainer.trigger("formSubmitting", { form: $editRecordForm, formType: 'edit', row: self._$editingRow }) != false) {
@@ -3390,6 +3392,7 @@ THE SOFTWARE.
         _onSaveClickedOnCloneForm: function () {
             let self = this;
             let $cloneRecordForm = self._$cloneRecordDialog.find('form').first();
+            // since the form is submitted via ajax, the validy of fields is not checked, we force it here
             if ($cloneRecordForm[0].checkValidity()) {
                 let $saveButton = self._$cloneRecordDialog.find('#CloneRecordDialogSaveButton');
                 if (self._$mainContainer.trigger("formSubmitting", { form: $cloneRecordForm, formType: 'clone', row: self._$cloningRow }) != false) {
