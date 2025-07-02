@@ -59,7 +59,7 @@ THE SOFTWARE.
         options: {
             // Options
             tableId: undefined,
-            logLevel: 3, // needs to be a constant here, LOG_LEVELS is not in scope of options
+            logLevel: 2, // needs to be a constant here, LOG_LEVELS is not in scope of options
             actions: {},
             fields: {},
             animationsEnabled: true,
