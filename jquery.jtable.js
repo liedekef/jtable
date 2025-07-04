@@ -1269,6 +1269,10 @@ THE SOFTWARE.
                 }
 
                 if (options.error) {
+                    if (jqXHR && jqXHR.responseText) {
+                        let responseText = jqXHR.responseText.trim();
+                        self._logDebug(responseText);
+                    }
                     options.error(arguments);
                 }
             };
@@ -2880,6 +2884,45 @@ THE SOFTWARE.
         /************************************************************************
          * PUBLIC METHODS                                                        *
          *************************************************************************/
+        editRecordByKey: function (recordKey) {
+            const self = this;
+
+            const tryOpen = function () {
+                const $row = self.getRowByKey(recordKey);
+                if ($row && $row.length) {
+                    self._showEditRecordForm($row);
+                } else {
+                    self._showError("Could not find row for record key: " + recordKey);
+                }
+            };
+
+            const rowsLoaded = self._$tableBody && self._$tableBody.find('tr.jtable-data-row').length > 0;
+
+            if (!rowsLoaded) {
+                self.load(null, tryOpen); // Only call once
+            } else {
+                tryOpen();
+            }
+        },
+
+        editRecordViaAjax: function (recordKey, ajaxUrl) {
+            var self = this;
+
+            self._ajax({
+                url: ajaxUrl,
+                data: { [self._keyField]: recordKey },
+                success: function (data) {
+                    if (data.Result != 'OK') {
+                        self._showError(data.Message);
+                        return;
+                    }
+                    self._showEditRecordForm($('<tr></tr>').data('record', data.Record));
+                },
+                error: function () {
+                    self._showError('Server error loading record');
+                }
+            });
+        },
 
         /* Updates a record on the table (optionally on the server also)
          *************************************************************************/

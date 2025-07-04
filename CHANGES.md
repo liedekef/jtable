@@ -1,3 +1,7 @@
+= 3.0.12 (2025//) =
+* Added public methods editRecordByKey and editRecordViaAjax
+  Both show the edit dialog if the record is found, see the doc
+
 = 3.0.11 (2025/07/01) =
 * Added logLevel option
 * The toolbarsearch extension now supports dropdowns
