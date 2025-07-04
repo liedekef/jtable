@@ -1,6 +1,8 @@
 = 3.0.12 (2025//) =
 * Added public methods editRecordByKey and editRecordViaAjax
   Both show the edit dialog if the record is found, see the doc
+* Added field options listEscapeHTML and inputEscapeHTML, indicating wether or not you want the list or input value escaped
+  Default is false, the old behavior
 
 = 3.0.11 (2025/07/01) =
 * Added logLevel option

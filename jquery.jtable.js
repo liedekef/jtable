@@ -164,11 +164,17 @@ THE SOFTWARE.
             if (props.listClass == undefined) {
                 props.listClass = '';
             }
+            if (props.listEscapeHTML == undefined) {
+                props.listEscapeHTML = false;
+            }
             if (props.inputClass == undefined) {
                 props.inputClass = '';
             }
             if (props.inputAttributes == undefined) {
                 props.inputAttributes = '';
+            }
+            if (props.inputEscapeHTML == undefined) {
+                props.inputEscapeHTML = false;
             }
             if (props.placeholder == undefined) {
                 props.placeholder = '';
@@ -177,7 +183,7 @@ THE SOFTWARE.
                 props.type = 'text';
             }
 
-            // Convert dependsOn to array if it's a comma seperated lists
+            // Convert dependsOn to array if it's a comma seperated list
             if (props.dependsOn && $.type(props.dependsOn) === 'string') {
                 let dependsOnArray = props.dependsOn.split(',');
                 props.dependsOn = [];
@@ -787,20 +793,18 @@ THE SOFTWARE.
         _getDisplayTextForRecordField: function (record, fieldName) {
             let field = this.options.fields[fieldName];
             let fieldValue = record[fieldName];
+            let extraFieldType = this._findItemByProperty(this._extraFieldTypes, 'type', field.type);
 
+            let displayText = '';
             // if this is a custom field, call display function
             if (field.display) {
-                return field.display({ record: record });
-            }
-
-            let extraFieldType = this._findItemByProperty(this._extraFieldTypes, 'type', field.type);
-            if (extraFieldType && extraFieldType.creator) {
-                return extraFieldType.creator(record, field);
-            }
-            else if (field.type == 'date' || field.type == 'dateJS') {
-                return this._getDisplayTextForDateRecordField(field, fieldValue);
+                displayText = field.display({ record: record });
+            } else if (extraFieldType && extraFieldType.creator) {
+                displayText = extraFieldType.creator(record, field);
+            } else if (field.type == 'date' || field.type == 'dateJS') {
+                displayText = this._getDisplayTextForDateRecordField(field, fieldValue);
             } else if (field.type == 'checkbox') {
-                return this._getCheckBoxTextForFieldByValue(fieldName, fieldValue);
+                displayText = this._getCheckBoxTextForFieldByValue(fieldName, fieldValue);
             } else if (field.options) { // combobox or radio button list since there are options.
                 let options = this._getOptionsForField(fieldName, {
                     record: record,
@@ -808,9 +812,14 @@ THE SOFTWARE.
                     source: 'list',
                     dependedValues: this._createDependedValuesUsingRecord(record, field.dependsOn)
                 });
-                return this._findOptionByValue(options, fieldValue).DisplayText;
+                displayText = this._findOptionByValue(options, fieldValue).DisplayText;
             } else { // other types
-                return fieldValue;
+                displayText = fieldValue;
+            }
+            if (field.listEscapeHTML) {
+                return this._escapeHTML(displayText);
+            } else {
+                return displayText;
             }
         },
 
@@ -1564,6 +1573,22 @@ THE SOFTWARE.
         */
         _isDeferredObject: function (obj) {
             return obj.then && obj.done && obj.fail;
+        },
+
+        // HTML escape function
+        _escapeHTML: function (text) {
+            if (!text) {
+                return text;
+            }
+            let map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
         },
 
         // Logging methods
@@ -3218,7 +3243,11 @@ THE SOFTWARE.
             if (field.type == 'date') {
                 return this._getDisplayTextForDateRecordField(field, fieldValue);
             } else {
-                return fieldValue;
+                if (field.inputEscapeHTML) {
+                    return this._escapeHTML(fieldValue);
+                } else {
+                    return fieldValue;
+                }
             }
         },
 
