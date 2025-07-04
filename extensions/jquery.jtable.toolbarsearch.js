@@ -87,6 +87,13 @@
                         .addClass('jtable-toolbarsearch')
                         .css('width','90%');
                 }
+            } else if (field.type=='checkbox' && field.values) {
+                $input = $('<select class="" id="jtable-toolbarsearch-' + fieldName +'"></select>')
+                    .addClass('jtable-toolbarsearch')
+                    .css('width','90%');
+                let options = this._createCheckBoxStateArrayForField(fieldName);
+                options.unshift({ "Value": "", "DisplayText": "" });
+                this._fillDropDownListWithOptions($input, options, '');
             } else if (field.options) {
                 $input = $('<select class="" id="jtable-toolbarsearch-' + fieldName +'"></select>')
                     .addClass('jtable-toolbarsearch')
