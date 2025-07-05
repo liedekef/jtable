@@ -179,6 +179,9 @@ THE SOFTWARE.
             if (props.placeholder == undefined) {
                 props.placeholder = '';
             }
+            if (props.explain == undefined) {
+                props.explain = '';
+            }
             if (props.type == undefined) {
                 props.type = 'text';
             }
@@ -1756,9 +1759,13 @@ THE SOFTWARE.
                 $input.val(value);
             }
 
-            return $('<div />')
+            let $containerDiv = $('<div />')
                 .addClass('jtable-input jtable-date-input')
                 .append($input);
+            if (field.explain) {
+                $containerDiv.append($('<br><span><small>' + field.explain + '</small></span>'));
+            }
+            return $containerDiv;
         },
 
         /* Creates a textarea element for a field.
@@ -1769,9 +1776,13 @@ THE SOFTWARE.
                 $textArea.val(value);
             }
 
-            return $('<div />')
+            let $containerDiv = $('<div />')
                 .addClass('jtable-input jtable-textarea-input')
                 .append($textArea);
+            if (field.explain) {
+                $containerDiv.append($('<br><span><small>' + field.explain + '</small></span>'));
+            }
+            return $containerDiv;
         },
 
         /* Creates any type input for a field (text/password/range/week/datetime-local/...).
@@ -1783,9 +1794,13 @@ THE SOFTWARE.
                 $input.val(value);
             }
 
-            return $('<div />')
+            let $containerDiv = $('<div />')
                 .addClass('jtable-input jtable-' + field.inputClass + '-input')
                 .append($input);
+            if (field.explain) {
+                $containerDiv.append($('<br><span><small>' + field.explain + '</small></span>'));
+            }
+            return $containerDiv;
         },
 
         /* Creates a checkboxfor a field.
@@ -1845,6 +1860,10 @@ THE SOFTWARE.
                     });
             }
 
+            if (field.explain) {
+                $containerDiv.append($('<br><span><small>' + field.explain + '</small></span>'));
+            }
+
             return $containerDiv;
         },
 
@@ -1869,6 +1888,10 @@ THE SOFTWARE.
             });
 
             this._fillDropDownListWithOptions($select, options, value);
+
+            if (field.explain) {
+                $containerDiv.append($('<br><span><small>' + field.explain + '</small></span>'));
+            }
 
             return $containerDiv;
         },

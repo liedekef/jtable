@@ -3,6 +3,8 @@
   Both show the edit dialog if the record is found, see the doc
 * Added field options listEscapeHTML and inputEscapeHTML, indicating wether or not you want the list or input value escaped
   Default is false, the old behavior
+* Added field option inputAttributes. This allows to add any html attribute to a field. jTable now does form validation (as a regular form) before submit, so if you set this to e.g. "required", the required attribute will be set to the input field.
+* Added field option explain. This option allows you to put extra text below any input field in the edit/create forms.
 * toolbarsearch now also supports checkbox
 
 = 3.0.11 (2025/07/01) =
