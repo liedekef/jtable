@@ -1441,13 +1441,15 @@ THE SOFTWARE.
         let res;
         this.each(function () {
             // check the instance state
-            let myinstance = $.data(this, 'jTable');
+            let myinstance = $(this).data('jtable');
             if (!myinstance) {
                 // no state yet, so call a new jTable with the options and save the instance state in jTable-data
                 if (methodOrOptionsType !== 'object') {
                     methodOrOptions = {};
                 }
-                res = $.data(this, 'jTable', new jTable(this, methodOrOptions));
+                const instance = new jTable(this, methodOrOptions);
+                $(this).data('jtable', instance);  // to make the instance public accessible via .data('jtable')
+                res = instance;
             } else {
                 // there is an instance, so here we only allow to continue if a method is called
                 if (methodOrOptionsType === 'string') {

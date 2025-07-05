@@ -6,6 +6,12 @@
 * Added field option inputAttributes. This allows to add any html attribute to a field. jTable now does form validation (as a regular form) before submit, so if you set this to e.g. "required", the required attribute will be set to the input field.
 * Added field option explain. This option allows you to put extra text below any input field in the edit/create forms.
 * toolbarsearch now also supports checkbox
+* jTable instance checks now follow industry standards. So no more
+  `if ($('#MyTable').data('jTable')) {`
+  but:
+  `if ($('#MyTable').data('jtable')) {`
+  Also, the instance is chainable now.
+
 
 = 3.0.11 (2025/07/01) =
 * Added logLevel option
