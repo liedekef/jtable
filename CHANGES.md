@@ -1,4 +1,4 @@
-= 3.0.12 (2025//) =
+= 3.1.0 (2025/07/06) =
 * Added public methods editRecordByKey and editRecordViaAjax
   Both show the edit dialog if the record is found, see the doc
 * Added field options listEscapeHTML and inputEscapeHTML, indicating wether or not you want the list or input value escaped
@@ -11,7 +11,6 @@
   but:
   `if ($('#MyTable').data('jtable')) {`
   Also, the instance is chainable now.
-
 
 = 3.0.11 (2025/07/01) =
 * Added logLevel option
