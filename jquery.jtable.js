@@ -4073,7 +4073,7 @@ THE SOFTWARE.
         _loadExtraSettings: function () {
             base._loadExtraSettings.apply(this, arguments);
 
-            if (!this._keyField) {
+            if (this.options.selecting && !this._keyField) {
                 this.options.selecting = false;
                 this._logWarn('No key field defined, selecting is not possible.');
             }
@@ -5384,7 +5384,9 @@ THE SOFTWARE.
             if (self.options.saveUserPreferences) {
                 self._saveColumnSortSettings();
             }
-            let headerCells = self._$table.find('>thead th');
+            //let headerCells = self._$table.find('>thead th');
+            // only the sortable headers are of interest (the toolbar extension adds a row with the same data info ...)
+            const headerCells = self._$table.find('>thead th:is(.jtable-column-header-sortable)');
             headerCells.each(function () {
                 let $columnHeader = $(this);
                 let fieldName = $columnHeader.data('fieldName');
