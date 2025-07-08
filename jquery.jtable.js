@@ -1694,13 +1694,36 @@ THE SOFTWARE.
                 value = field.defaultValue;
             }
 
+            let inputres ;
+            // Create input according to field type
+            if (field.type == 'date') {
+                inputres = this._createDateInputForField(field, fieldName, value);
+            } else if (field.type == 'textarea') {
+                inputres = this._createTextAreaForField(field, fieldName, value);
+            } else if (field.type == 'checkbox') {
+                inputres = this._createCheckboxForField(field, fieldName, value);
+            } else if (field.options) {
+                if (field.type == 'radiobutton') {
+                    inputres = this._createRadioButtonListForField(field, fieldName, value, record, formType);
+                } else {
+                    inputres = this._createDropDownListForField(field, fieldName, value, record, formType, form);
+                }
+            } else {
+                if (field.type == 'file') {
+                    inputres = this._createInputForField(field, fieldName, '');
+                } else {
+                    inputres = this._createInputForField(field, fieldName, value);
+                }
+            }
+
             // Use custom function if supplied
             if (field.input) {
                 let $input = $(field.input({
                     value: value,
                     record: record,
                     formType: formType,
-                    form: form
+                    form: form,
+                    inputField: inputres // we add the rendered input field too
                 }));
 
                 // Add id attribute if does not exists
@@ -1714,26 +1737,9 @@ THE SOFTWARE.
                     .append($input);
             }
 
-            // Create input according to field type
-            if (field.type == 'date') {
-                return this._createDateInputForField(field, fieldName, value);
-            } else if (field.type == 'textarea') {
-                return this._createTextAreaForField(field, fieldName, value);
-            } else if (field.type == 'checkbox') {
-                return this._createCheckboxForField(field, fieldName, value);
-            } else if (field.options) {
-                if (field.type == 'radiobutton') {
-                    return this._createRadioButtonListForField(field, fieldName, value, record, formType);
-                } else {
-                    return this._createDropDownListForField(field, fieldName, value, record, formType, form);
-                }
-            } else {
-                if (field.type == 'file') {
-                    return this._createInputForField(field, fieldName, '');
-                } else {
-                    return this._createInputForField(field, fieldName, value);
-                }
-            }
+            // no custom function, then we return the original input
+            return inputres;
+
         },
 
         // Creates a hidden input element with given name and value.
