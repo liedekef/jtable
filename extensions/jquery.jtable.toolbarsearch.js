@@ -104,21 +104,19 @@
                 this._fillDropDownListWithOptions($input, options, '');
             };
 
+            $input.on('change', function() {
+                var queries = [];
+                var searchOptions = [];
 
-            $input.bind('change',function(){
-                var $q=[];
-                var $opt=[];
-                var $postData={};
-                var $i =0;
-                $('.jtable-toolbarsearch').each(function(){
-                    var $id = $(this).attr('id');
-                    if($(this).val().length>=1){
-                        $opt.push($id.replace('jtable-toolbarsearch-',''));								 
-                        $q.push($(this).val());
-                        $i++;
+                $('.jtable-toolbarsearch').each(function() {
+                    var fieldName = $(this).attr('id').replace('jtable-toolbarsearch-', '');
+                    if ($(this).val().trim().length >= 1) {
+                        searchOptions.push(fieldName);
+                        queries.push($(this).val());
                     }
                 });
-                self.load({'q[]':$q,'opt[]':$opt});
+
+                self.load({ 'q[]': queries, 'opt[]': searchOptions });
             });
 
             var $headerContainerDiv = $('<div />')

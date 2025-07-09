@@ -1,3 +1,6 @@
+= 3.1.1 (2025/07/06) =
+* Revert the use of HTML dialogs and back to own modals. Reason is that the dialog blocks other modal popups ...
+
 = 3.1.0 (2025/07/06) =
 * Added public methods editRecordByKey and editRecordViaAjax
   Both show the edit dialog if the record is found, see the doc

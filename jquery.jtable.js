@@ -402,45 +402,64 @@ THE SOFTWARE.
 
         /* Creates a dialov to block UI while jTable is busy
          *************************************************************************/
-        _createBusyDialog: function () {
+        _createBusyDialog: function() {
             let self = this;
-            self._$busyDialog = $('<dialog />')
-                .addClass('jtable-busy-modal-dialog')
-                .prependTo(self._$mainContainer)
-                .on('close', function () {
-                    // the close event is called upon close-call or pressing escape
-                    $(document).off("keydown.jtable_escape");
-                });
-            self._$busyMessageDiv = $('<div />').addClass('jtable-busy-message').appendTo(self._$busyDialog);
-            self._jqueryuiThemeAddClass(self._$busyMessageDiv, 'ui-widget-header');
+            // Create overlay
+            self._$busyOverlay = $('<div class="jtable-modal-overlay"></div>')
+                .prependTo(self._$mainContainer);
+
+            // Create modal
+            self._$busyDialog = $('<div class="jtable-modal jtable-busy-modal"></div>')
+                .appendTo(self._$busyOverlay);
+
+            self._$busyMessageDiv = $('<div class="jtable-busy-message"></div>')
+                .appendTo(self._$busyDialog);
         },
 
         /* Creates and prepares error dialog
          *************************************************************************/
-        _createErrorDialog: function () {
+        _createErrorDialog: function() {
             let self = this;
 
-            // Create a div for dialog and add to container element
-            self._$errorDialog = $('<dialog />')
-                .addClass('jtable-modal-dialog jtable-error-modal-dialog')
-                .appendTo(self._$mainContainer);
+            // Create overlay
+            self._$errorOverlay = $('<div class="jtable-modal-overlay"></div>')
+                .prependTo(self._$mainContainer);
 
-            // the close event is called upon close-call or pressing escape
-            // self._$errorDialog.on('close', function () {
-            // });
- 
-            $('<h2 class="jtable-error-dialogtitle"></h2>').css({padding: '0px'}).html(self.options.messages.error).appendTo(self._$errorDialog);
-            $('<div><p><span class="jtable-error-message"></span></p></div>').appendTo(self._$errorDialog);
-            $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button>')
-                .html('<span>' + self.options.messages.close + '</span>')
-                .on('click', function () {
+            // Create modal
+            self._$errorDialog = $('<div class="jtable-modal jtable-error-modal"></div>')
+                .appendTo(self._$errorOverlay);
+
+            // Add content
+            $('<h2 class="jtable-modal-header"></h2>')
+                .html(self.options.messages.error)
+                .appendTo(self._$errorDialog);
+
+            $('<div class="jtable-modal-body"><p><span class="jtable-error-message"></span></p></div>')
+                .appendTo(self._$errorDialog);
+
+            $('<div class="jtable-modal-footer"></div>')
+                .append(
+                    $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button>')
+                    .html('<span>' + self.options.messages.close + '</span>')
+                    .on('click', function() {
+                        self._closeErrorDialog();
+                    })
+                )
+                .appendTo(self._$errorDialog);
+
+            // Close button
+            $('<span class="jtable-modal-close">&times;</span>')
+                .on('click', function() {
                     self._closeErrorDialog();
                 })
                 .appendTo(self._$errorDialog);
+
+	    // initially closed
+            self._closeErrorDialog();
         },
 
-        _closeErrorDialog() {
-            this._$errorDialog[0].close();
+        _closeErrorDialog: function() {
+            this._$errorOverlay.hide();
         },
 
         /************************************************************************
@@ -1163,9 +1182,9 @@ THE SOFTWARE.
 
         /* Shows error message dialog with given message.
          *************************************************************************/
-        _showError: function (message) {
+        _showError: function(message) {
             this._$errorDialog.find(".jtable-error-message").html(message);
-            this._$errorDialog[0].showModal();
+            this._$errorOverlay.show();
         },
 
         /* BUSY PANEL ***********************************************************/
@@ -1174,26 +1193,17 @@ THE SOFTWARE.
          * TODO: Make this cofigurable and changable
          *************************************************************************/
         _setBusyTimer: null,
-        _showBusy: function (message, delay) {
+        _showBusy: function(message, delay) {
             let self = this;
-            let makeVisible = function () {
-                self._$busyDialog.find(".jtable-busy-message").html(message);
-                self._$busyDialog[0].showModal();
-                // prevent event popup window from getting closed by escape
-                // add "jtable" namespace, so we can remove this particular listener too (see "off", search for "jtable_escape")
-                $(document).on("keydown.jtable_escape", function (event) {
-                    // ESCAPE key pressed
-                    if (event.keyCode == 27) {
-                        return false;
-                    }
-                });
+            let makeVisible = function() {
+                self._$busyMessageDiv.html(message);
+                self._$busyOverlay.show();
             };
 
             if (delay) {
                 if (self._setBusyTimer) {
                     return;
                 }
-
                 self._setBusyTimer = setTimeout(makeVisible, delay);
             } else {
                 makeVisible();
@@ -1202,12 +1212,10 @@ THE SOFTWARE.
 
         /* Hides busy indicator and unblocks table UI.
          *************************************************************************/
-        _hideBusy: function () {
-            // the timer needs to be cleared before the close happens
-            // otherwise the close event won't fire
+        _hideBusy: function() {
             clearTimeout(this._setBusyTimer);
             this._setBusyTimer = null;
-            this._$busyDialog[0].close();
+            this._$busyOverlay.hide();
         },
 
         /* Returns true if jTable is busy.
@@ -1703,7 +1711,9 @@ THE SOFTWARE.
             } else if (field.type == 'checkbox') {
                 inputres = this._createCheckboxForField(field, fieldName, value);
             } else if (field.options) {
-                if (field.type == 'radiobutton') {
+                if (field.type == 'datalist') {
+                    inputres = this._createDataListForField(field, fieldName, value, record, formType);
+                } else if (field.type == 'radiobutton') {
                     inputres = this._createRadioButtonListForField(field, fieldName, value, record, formType);
                 } else {
                     inputres = this._createDropDownListForField(field, fieldName, value, record, formType, form);
@@ -1939,6 +1949,41 @@ THE SOFTWARE.
             return dependedValues;
         },
 
+        /* Creates a datalist for a field.
+         *************************************************************************/
+        _createDataListForField: function (field, fieldName, value, record, source) {
+            let $containerDiv = $('<div />')
+                .addClass('jtable-input jtable-datalist-input');
+
+            // Create the input element
+            let $input = $('<input type="text" list="' + fieldName + '-list" />')
+                .attr('name', fieldName)
+                .attr('id', 'Edit-' + fieldName)
+                .addClass(field.inputClass)
+                .attr(field.inputAttributes || {})
+                .val(value)
+                .appendTo($containerDiv);
+
+            // Create the datalist element
+            let $datalist = $('<datalist id="' + fieldName + '-list"></datalist>')
+                .appendTo($containerDiv);
+
+            // Get options for the field
+            let options = this._getOptionsForField(fieldName, {
+                record: record,
+                source: source
+            });
+
+            // Add options to the datalist
+            $.each(options, function(i, option) {
+                $('<option />')
+                    .val(option.Value)
+                    .text(option.DisplayText)
+                    .appendTo($datalist);
+            });
+
+            return $containerDiv;
+        },
         /* Creates a radio button list for a field.
          *************************************************************************/
         _createRadioButtonListForField: function (field, fieldName, value, record, source) {
@@ -2513,51 +2558,62 @@ THE SOFTWARE.
         _createAddRecordDialog: function () {
             let self = this;
 
-            // Create a div for dialog and add to container element
-            self._$addRecordDialog = $('<dialog />')
-                .addClass('jtable-modal-dialog jtable-add-modal-dialog')
-                .appendTo(self._$mainContainer)
-                .on('close', function () {
-                    // the close event is called upon close-call or pressing escape
-                    let $addRecordForm = self._$addRecordDialog.find('form').first();
-                    self._$mainContainer.trigger("formClosed", { form: $addRecordForm, formType: 'create' });
-                    $addRecordForm.remove();
-                });
+            // Create overlay
+            self._$addRecordOverlay = $('<div class="jtable-modal-overlay"></div>')
+                .prependTo(self._$mainContainer);
 
-            $('<h2 id="addRecordDialogTitle"></h2>').css({padding: '0px'}).text(self.options.messages.addNewRecord).appendTo(self._$addRecordDialog);
-            const $cancelButton = $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button> ')
-                .attr('id', 'AddRecordDialogCancelButton')
+            // Create modal
+            self._$addRecordDialog = $('<div class="jtable-modal jtable-add-modal"></div>')
+                .appendTo(self._$addRecordOverlay);
+
+            $('<h2 class="jtable-modal-header" id="addRecordDialogTitle"></h2>')
+                .text(self.options.messages.addNewRecord)
+                .appendTo(self._$addRecordDialog);
+
+            const $cancelButton = $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button>')
                 .html('<span>' + self.options.messages.cancel + '</span>')
                 .on('click', function () {
                     self._closeCreateForm();
                 });
 
             let $saveButton = $('<button class="jtable-dialog-button jtable-dialog-savebutton"></button>')
-                .attr('id', 'AddRecordDialogSaveButton')
                 .html('<span>' + self.options.messages.save + '</span>')
                 .on('click', function () {
                     self._onSaveClickedOnCreateForm();
                 });
 
-            self._$addRecordDialog.append($cancelButton, $saveButton);
+            $('<div class="jtable-modal-footer"></div>')
+                .append($cancelButton, $saveButton)
+                .appendTo(self._$addRecordDialog);
 
-            if (self.options.addRecordButton) {
-                // If user supplied a button, bind the click event to show dialog form
-                self.options.addRecordButton.on("click", function (e) {
-                    e.preventDefault();
-                    self._showAddRecordForm();
-                });
-            } else {
-                // If user did not supply a button, create a 'add record button' toolbar item.
-                self._addToolBarItem({
-                    icon: true,
-                    cssClass: 'jtable-toolbar-item-add-record',
-                    text: self.options.messages.addNewRecord,
-                    click: function () {
-                        self._showAddRecordForm();
-                    }
-                });
-            }
+            // Close button
+            $('<span class="jtable-modal-close">&times;</span>')
+                .on('click', function() {
+                    self._closeCreateForm();
+                })
+                .appendTo(self._$addRecordDialog);
+	    
+	     // initially closed
+             self._closeCreateForm();
+
+		if (self.options.addRecordButton) {
+			// If user supplied a button, bind the click event to show dialog form
+			self.options.addRecordButton.on("click", function (e) {
+				e.preventDefault();
+				self._showAddRecordForm();
+			});
+		} else {
+			// If user did not supply a button, create a 'add record button' toolbar item.
+			self._addToolBarItem({
+				icon: true,
+				cssClass: 'jtable-toolbar-item-add-record',
+				text: self.options.messages.addNewRecord,
+				click: function () {
+					self._showAddRecordForm();
+				}
+			});
+		}
+
         },
 
         _onSaveClickedOnCreateForm: function () {
@@ -2579,7 +2635,8 @@ THE SOFTWARE.
         },
 
         _closeCreateForm: function () {
-            this._$addRecordDialog[0].close();
+            this._$addRecordOverlay.hide();
+            this._$mainContainer.trigger("formClosed", { form: this._$addRecordDialog.find('form').first(), formType: 'create' });
         },
 
         /************************************************************************
@@ -2744,8 +2801,8 @@ THE SOFTWARE.
             self._setEnabledOfDialogButton($saveButton, true, self.options.messages.save);
 
             // Show the form
-            self._$addRecordDialog.find('#addRecordDialogTitle').first().after($addRecordForm);
-            self._$addRecordDialog[0].showModal();
+	    self._$addRecordDialog.find('#addRecordDialogTitle').first().after($addRecordForm);
+            self._$addRecordOverlay.show();
             self._$mainContainer.trigger("formCreated", { form: $addRecordForm, formType: 'create' });
         },
 
@@ -2879,33 +2936,43 @@ THE SOFTWARE.
         _createEditRecordDialog: function () {
             let self = this;
 
-            // Create a div for dialog and add to container element
-            self._$editRecordDialog = $('<dialog />')
-                .addClass('jtable-modal-dialog jtable-edit-modal-dialog')
-                .appendTo(self._$mainContainer)
-                .on('close', function () {
-                    // the close event is called upon close-call or pressing escape
-                    let $editRecordForm = self._$editRecordDialog.find('form').first();
-                    self._$mainContainer.trigger("formClosed", { form: $editRecordForm, formType: 'edit', row: self._$editingRow });
-                    $editRecordForm.remove();
-                });
+            // Create overlay
+            self._$editRecordOverlay = $('<div class="jtable-modal-overlay"></div>')
+                .prependTo(self._$mainContainer);
 
-            $('<h2 id="editRecordDialogTitle"></h2>').css({padding: '0px'}).text(self.options.messages.editRecord).appendTo(self._$editRecordDialog);
-            const $cancelButton = $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button> ')
-                .attr('id', 'EditRecordDialogCancelButton')
+            // Create modal
+            self._$editRecordDialog = $('<div class="jtable-modal jtable-edit-modal"></div>')
+                .appendTo(self._$editRecordOverlay);
+
+            $('<h2 class="jtable-modal-header" id="editRecordDialogTitle"></h2>')
+                .text(self.options.messages.editRecord)
+                .appendTo(self._$editRecordDialog);
+
+            const $cancelButton = $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button>')
                 .html('<span>' + self.options.messages.cancel + '</span>')
                 .on('click', function () {
                     self._closeEditForm();
                 });
 
             let $saveButton = $('<button class="jtable-dialog-button jtable-dialog-savebutton"></button>')
-                .attr('id', 'EditRecordDialogSaveButton')
                 .html('<span>' + self.options.messages.save + '</span>')
                 .on('click', function () {
                     self._onSaveClickedOnEditForm();
                 });
 
-            self._$editRecordDialog.append($cancelButton, $saveButton);
+            $('<div class="jtable-modal-footer"></div>')
+                .append($cancelButton, $saveButton)
+                .appendTo(self._$editRecordDialog);
+
+            // Close button
+            $('<span class="jtable-modal-close">&times;</span>')
+                .on('click', function() {
+                    self._closeEditForm();
+                })
+                .appendTo(self._$editRecordDialog);
+
+	    // initially closed
+            self._closeEditForm();
         },
 
         /* Saves editing form to server.
@@ -2934,7 +3001,8 @@ THE SOFTWARE.
         },
 
         _closeEditForm: function () {
-            this._$editRecordDialog[0].close();
+            this._$editRecordOverlay.hide();
+            this._$mainContainer.trigger("formClosed", { form: this._$editRecordDialog.find('form').first(), formType: 'edit', row: this._$editingRow });
         },
 
         /************************************************************************
@@ -3188,8 +3256,8 @@ THE SOFTWARE.
             self._setEnabledOfDialogButton($saveButton, true, self.options.messages.save);
 
             // Show the form
-            self._$editRecordDialog.find('#editRecordDialogTitle').first().after($editRecordForm);
-            self._$editRecordDialog[0].showModal();
+	    self._$editRecordDialog.find('#editRecordDialogTitle').first().after($editRecordForm);
+            self._$editRecordOverlay.show();
             self._$mainContainer.trigger("formCreated", { form: $editRecordForm, formType: 'edit', record: record, row: $tableRow });
         },
 
@@ -3368,35 +3436,43 @@ THE SOFTWARE.
         _createCloneRecordDialog: function () {
             let self = this;
 
-            self._$cloneRecordDialog = $('<dialog />')
-                .addClass('jtable-modal-dialog jtable-clone-modal-dialog')
-                .appendTo(self._$mainContainer)
-                .on('close', function () {
-                    let $cloneRecordForm = self._$cloneRecordDialog.find('form').first();
-                    self._$mainContainer.trigger("formClosed", { form: $cloneRecordForm, formType: 'clone', row: self._$cloningRow });
-                    $cloneRecordForm.remove();
-                });
+            // Create overlay
+            self._$cloneRecordOverlay = $('<div class="jtable-modal-overlay"></div>')
+                .prependTo(self._$mainContainer);
 
-            $('<h2 id="cloneRecordDialogTitle"></h2>')
-                .css({padding: '0px'})
+            // Create modal
+            self._$cloneRecordDialog = $('<div class="jtable-modal jtable-clone-modal"></div>')
+                .appendTo(self._$cloneRecordOverlay);
+
+            $('<h2 class="jtable-modal-header" id="cloneRecordDialogTitle"></h2>')
                 .text(self.options.messages.cloneRecord)
                 .appendTo(self._$cloneRecordDialog);
 
             const $cancelButton = $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button>')
-                .attr('id', 'CloneRecordDialogCancelButton')
                 .html('<span>' + self.options.messages.cancel + '</span>')
                 .on('click', function () {
                     self._closeCloneForm();
                 });
 
             let $saveButton = $('<button class="jtable-dialog-button jtable-dialog-savebutton"></button>')
-                .attr('id', 'CloneRecordDialogSaveButton')
                 .html('<span>' + self.options.messages.save + '</span>')
                 .on('click', function () {
                     self._onSaveClickedOnCloneForm();
                 });
 
-            self._$cloneRecordDialog.append($cancelButton, $saveButton);
+            $('<div class="jtable-modal-footer"></div>')
+                .append($cancelButton, $saveButton)
+                .appendTo(self._$cloneRecordDialog);
+
+            // Close button
+            $('<span class="jtable-modal-close">&times;</span>')
+                .on('click', function() {
+                    self._closeCloneForm();
+                })
+                .appendTo(self._$cloneRecordDialog);
+
+	    // initially closed
+            self._closeCloneForm();
         },
 
         // Add "Clone" button to the header and rows, after Edit
@@ -3487,8 +3563,9 @@ THE SOFTWARE.
             let $saveButton = self._$cloneRecordDialog.find('#CloneRecordDialogSaveButton');
             self._setEnabledOfDialogButton($saveButton, true, self.options.messages.save);
 
-            self._$cloneRecordDialog.find('#cloneRecordDialogTitle').first().after($cloneRecordForm);
-            self._$cloneRecordDialog[0].showModal();
+            // Show the form
+	    self._$cloneRecordDialog.find('#cloneRecordDialogTitle').first().after($cloneRecordForm);
+            self._$cloneRecordOverlay.show();
             self._$mainContainer.trigger("formCreated", { form: $cloneRecordForm, formType: 'clone', record: record, row: $tableRow });
         },
 
@@ -3508,7 +3585,8 @@ THE SOFTWARE.
         },
 
         _closeCloneForm: function () {
-            this._$cloneRecordDialog[0].close();
+            this._$cloneRecordOverlay.hide();
+            this._$mainContainer.trigger("formClosed", { form: this._$cloneRecordDialog.find('form').first(), formType: 'clone', row: this._$cloningRow });
         },
 
         _saveCloneRecordForm: function ($cloneRecordForm, $saveButton) {
@@ -3634,40 +3712,34 @@ THE SOFTWARE.
         _createDeleteDialog: function () {
             let self = this;
 
-            // Check if deleteAction is supplied
-            if (!self.options.actions.deleteAction) {
-                return;
-            }
+            // Create overlay
+            self._$deleteOverlay = $('<div class="jtable-modal-overlay"></div>')
+                .prependTo(self._$mainContainer);
 
-            // Create a div for dialog and add to container element
-            self._$deleteDialog= $('<dialog />')
-                .addClass('jtable-modal-dialog jtable-delete-modal-dialog')
-                .appendTo(self._$mainContainer);
- 
-            // the close event is called upon close-call or pressing escape
-            // self._$deleteDialog.on('close', function () {
-            // });
+            // Create modal
+            self._$deleteDialog = $('<div class="jtable-modal jtable-delete-modal"></div>')
+                .appendTo(self._$deleteOverlay);
 
-            $('<h2 id="deleteDialogTitle"></h2>').css({padding: '0px'}).text(self.options.messages.areYouSure).appendTo(self._$deleteDialog);
-            $('<div><p><span class="alert-icon" style="float:left; margin:0 7px 20px 0;"></span><span class="jtable-delete-confirm-message"></span></p></div>').appendTo(self._$deleteDialog);
+            $('<h2 class="jtable-modal-header"></h2>')
+                .text(self.options.messages.areYouSure)
+                .appendTo(self._$deleteDialog);
 
-            const $cancelButton = $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button> ')
-                .attr('id', 'DeleteDialogCancelButton')
+            $('<div class="jtable-modal-body"><p><span class="alert-icon"></span><span class="jtable-delete-confirm-message"></span></p></div>')
+                .appendTo(self._$deleteDialog);
+
+            const $cancelButton = $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button>')
                 .html('<span>' + self.options.messages.cancel + '</span>')
                 .on('click', function () {
                     self._closeDeleteDialog();
                 });
 
             let $deleteButton = $('<button class="jtable-dialog-button jtable-dialog-deletebutton"></button>')
-                .attr('id', 'DeleteDialogDeleteButton')
                 .html('<span>' + self.options.messages.deleteText + '</span>')
                 .on('click', function () {
-                    // row may be removed by another source, if so, do nothing
                     if (self._$deletingRow.hasClass('jtable-row-removed')) {
                         self._closeDeleteDialog();
                         return;
                     }
-
                     self._setEnabledOfDialogButton($deleteButton, false, self.options.messages.deleting);
                     self._deleteRecordFromServer(
                         self._$deletingRow,
@@ -3675,17 +3747,29 @@ THE SOFTWARE.
                             self._removeRowsFromTableWithAnimation(self._$deletingRow);
                             self._closeDeleteDialog();
                         },
-                        function (message) { // error
+                        function (message) {
                             self._showError(message);
                         }
                     );
                 });
 
-            self._$deleteDialog.append($cancelButton, $deleteButton);
+            $('<div class="jtable-modal-footer"></div>')
+                .append($cancelButton, $deleteButton)
+                .appendTo(self._$deleteDialog);
+
+            // Close button
+            $('<span class="jtable-modal-close">&times;</span>')
+                .on('click', function() {
+                    self._closeDeleteDialog();
+                })
+                .appendTo(self._$deleteDialog);
+
+	    // initially closed
+            self._closeDeleteDialog();
         },
 
         _closeDeleteDialog: function () {
-            this._$deleteDialog[0].close();
+            this._$deleteOverlay.hide();
         },
 
         /************************************************************************
@@ -3904,9 +3988,9 @@ THE SOFTWARE.
         _showDeleteDialog: function ($row, deleteConfirmMessage) {
             this._$deletingRow = $row;
             this._$deleteDialog.find('.jtable-delete-confirm-message').html(deleteConfirmMessage);
-            let $deleteButton = this._$deleteDialog.find('#DeleteDialogDeleteButton');
+            let $deleteButton = this._$deleteDialog.find('.jtable-dialog-deletebutton');
             this._setEnabledOfDialogButton($deleteButton, true, this.options.messages.deleteText);
-            this._$deleteDialog[0].showModal();
+            this._$deleteOverlay.show();
         },
 
         /* Performs an ajax call to server to delete record
