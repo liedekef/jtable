@@ -330,6 +330,15 @@ form.jtable-dialog-form span.jtable-option-text-clickable {
 .jtable-busy-modal {
   padding: 0px;
 }
+.jtable-dialog-button {
+  opacity: 0.8;
+  border: 1px solid #ccc;
+  padding: 5px;
+  margin: 5px;
+}
+.jtable-dialog-button:hover {
+  background-color: #dedede;
+}
 div.jtable-busy-message {
   cursor: wait;
   margin: 0px;
@@ -348,17 +357,6 @@ div.jtable-contextmenu-overlay {
 }
 .jtable-table-div > table {
   overflow: hidden;
-}
-.jtable-modal-dialog {
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-.jtable-dialog-button {
-  opacity: 0.8;
-  filter: alpha(opacity=80);
-  border: 1px solid #ccc;
-  padding: 5px;
-  margin: 5px;
 }
 div.jtable-main-container {
   font-family: 'Segoe UI Semilight', 'Open Sans', Verdana, Arial, Helvetica, sans-serif;
