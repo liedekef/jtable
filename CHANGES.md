@@ -1,5 +1,6 @@
 = 3.1.1 (2025/07/06) =
 * Revert the use of HTML dialogs and back to own modals. Reason is that the dialog blocks other modal popups ...
+* Support datalist as input type
 
 = 3.1.0 (2025/07/06) =
 * Added public methods editRecordByKey and editRecordViaAjax
