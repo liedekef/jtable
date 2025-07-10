@@ -20,7 +20,9 @@
     "*.js",
     "themes/",
     "localization/",
-    "extensions/"
+    "extensions/",
+    "CHANGS.md",
+    "README.md"
   ],
   "bugs": {
     "url": "https://github.com/liedekef/jtable/issues"
