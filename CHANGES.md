@@ -1,4 +1,9 @@
-= 3.1.1 (2025/07/06) =
+= 3.1.2 (2025/07/10) =
+* Added field.displayDateLocale and generic option defaultDateLocale
+  If your input field is type=date and no specific datepicker is used, this can help format the layout
+  Default is empty, meaning your browser locale is used (the same format as the input datepicker then)
+
+= 3.1.1 (2025/07/10) =
 * Revert the use of HTML dialogs and back to own modals. Reason is that the dialog blocks other modal popups ...
 * Support datalist as input type
 

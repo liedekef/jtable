@@ -64,6 +64,7 @@ THE SOFTWARE.
             fields: {},
             animationsEnabled: true,
             defaultDateFormat: 'yy-mm-dd',
+            defaultDateLocale: '', // only used for the date presentation if no specific datepicker is present
             showCloseButton: false,
             loadingAnimationDelay: 500,
             saveUserPreferences: true,
@@ -890,7 +891,8 @@ THE SOFTWARE.
                 let date = this._parseDate(fieldValue);
                 return $.datepicker.formatDate(displayFormat, date);
             } else {
-                return fieldValue;
+                let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
+                return new Date(fieldValue).toLocaleDateString(displayLocale);
             }
         },
 
