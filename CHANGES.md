@@ -1,4 +1,4 @@
-= 3.1.2 (2025/07/10) =
+= 3.1.2 (2025/07/12) =
 * Added field.displayDateLocale and generic option defaultDateLocale
   If your input field is type=date and no specific datepicker is used, this can help format the layout
   Default is empty, meaning your browser locale is used (the same format as the input datepicker then)

@@ -1858,7 +1858,7 @@ THE SOFTWARE.
             if (field.inputAttributes.toLowerCase().includes("multiple") ) {
                 $input = $('<input class="' + field.inputClass + '" placeholder="' + field.placeholder + '" id="Edit-' + fieldName + '" type="' + field.type + '" name="' + fieldName + '[]"' + field.inputAttributes + '></input>');
             } else {
-                $input = $('<input class="' + field.inputClass + '" placeholder="' + field.placeholder + '" id="Edit-' + fieldName + '" type="' + field.type + '" name="' + fieldName + '[]"' + field.inputAttributes + '></input>');
+                $input = $('<input class="' + field.inputClass + '" placeholder="' + field.placeholder + '" id="Edit-' + fieldName + '" type="' + field.type + '" name="' + fieldName + field.inputAttributes + '></input>');
             }
 
             if (value != undefined) {
