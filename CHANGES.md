@@ -2,6 +2,8 @@
 * Added field.displayDateLocale and generic option defaultDateLocale
   If your input field is type=date and no specific datepicker is used, this can help format the layout
   Default is empty, meaning your browser locale is used (the same format as the input datepicker then)
+* Support fdatepicker in date-fields too (returns Y-m-d to the server)
+* Support multiple file uploads when type=file and inputAttribute contains "multiple"
 
 = 3.1.1 (2025/07/10) =
 * Revert the use of HTML dialogs and back to own modals. Reason is that the dialog blocks other modal popups ...

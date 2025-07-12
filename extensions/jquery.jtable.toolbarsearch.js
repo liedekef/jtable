@@ -54,6 +54,7 @@
                 $resetbutton = $('<input type="button" class="jtable-toolbarsearch-reset-button" value="Reset"/>').appendTo($reset);
                 $resetbutton.click(function(){
                     $('.jtable-toolbarsearch').val('');
+                    $('.jtable-toolbarsearch-extra').val('');
                     self.load({});				
                 });
                 $tr.append($reset);
@@ -77,7 +78,27 @@
                 .css('width','90%');
 
             if (field.type=="date") {
-                if (typeof $.fn.datepicker == 'function') {
+                if (typeof $.fn.fdatepicker == 'function') {
+                    let displayFormat = field.displayFormat || this.options.defaultDateFormat;
+
+		    $container = $('<div>');
+                    // Create hidden input
+                    $hiddenInput = $('<input>', { class: 'jtable-toolbarsearch-extra', id: 'jtable-toolbarsearch-extra-' + fieldName, type: 'hidden', name: fieldName });
+                    let $visibleInput = $('<input>', { class: 'jtable-toolbarsearch', id: 'jtable-toolbarsearch-' + fieldName, type: 'text', name: 'alt-' + fieldName, }).css('width','90%');
+                    $container.append($hiddenInput, $visibleInput);
+
+                    // Initialize datepicker on the visible input
+                    $visibleInput.fdatepicker({
+                        autoClose: true,
+                        todayButton: new Date(),
+                        clearButton: true,
+                        closeButton: true,
+                        dateFormat: displayFormat,
+                        altFieldDateFormat: 'Y-m-d',
+                        altField: '#jtable-toolbarsearch-extra-' + fieldName  // This should point to the hidden input's ID
+                    });
+                    $input=$container;
+                } else if (typeof $.fn.datepicker == 'function') {
                     var displayFormat = field.displayFormat || this.options.defaultDateFormat;
                     $input.datepicker({ dateFormat: displayFormat,changeMonth: true,
                         changeYear: true,yearRange: "-100:+1",numberOfMonths: 3,
@@ -110,6 +131,13 @@
 
                 $('.jtable-toolbarsearch').each(function() {
                     var fieldName = $(this).attr('id').replace('jtable-toolbarsearch-', '');
+                    if ($(this).val().trim().length >= 1) {
+                        searchOptions.push(fieldName);
+                        queries.push($(this).val());
+                    }
+                });
+                $('.jtable-toolbarsearch-extra').each(function() {
+                    var fieldName = $(this).attr('id').replace('jtable-toolbarsearch-extra-', '');
                     if ($(this).val().trim().length >= 1) {
                         searchOptions.push(fieldName);
                         queries.push($(this).val());

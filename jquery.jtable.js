@@ -886,13 +886,17 @@ THE SOFTWARE.
                 return '';
             }
 
-            if (typeof $.fn.datepicker == 'function') {
+            if (typeof $.fn.fdatepicker == 'function') {
+                let displayFormat = field.displayFormat || this.options.defaultDateFormat;
+                let date = this._parseDate(fieldValue);
+                return $.fn.fdatepicker.formatDate(date, displayFormat);
+            } else if (typeof $.fn.datepicker == 'function') {
                 let displayFormat = field.displayFormat || this.options.defaultDateFormat;
                 let date = this._parseDate(fieldValue);
                 return $.datepicker.formatDate(displayFormat, date);
             } else {
                 let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
-                return new Date(fieldValue).toLocaleDateString(displayLocale);
+                return new Date(fieldValue).toLocaleDateString(displayLocale,{ year: "numeric", month: "2-digit", day: "2-digit" });
             }
         },
 
@@ -1768,15 +1772,56 @@ THE SOFTWARE.
          *************************************************************************/
         _createDateInputForField: function (field, fieldName, value) {
             let $input = '';
-            if (typeof $.fn.datepicker == 'function') {
+            if (typeof $.fn.fdatepicker == 'function') {
+                let displayFormat = field.displayFormat || this.options.defaultDateFormat;
+                let $container = $('<div>');
+
+                // Create hidden input
+                let $hiddenInput = $('<input>', {
+                    id: 'real-' + fieldName,
+                    type: 'hidden',
+                    name: fieldName
+                });
+
+                // Create visible input
+                let $visibleInput = $('<input>', {
+                    class: field.inputClass,
+                    id: 'Edit-' + fieldName,
+                    type: 'text',
+                    name: 'alt-' + fieldName,
+                    attr: field.inputAttributes
+                });
+
+                // Append both inputs to container
+                $container.append($hiddenInput, $visibleInput);
+                $input = $container;
+
+                // Initialize datepicker on the visible input
+                $visibleInput.fdatepicker({
+                    autoClose: true,
+                    todayButton: new Date(),
+                    clearButton: true,
+                    closeButton: true,
+                    dateFormat: displayFormat,
+                    altFieldDateFormat: 'Y-m-d',
+                    altField: '#real-' + fieldName  // This should point to the hidden input's ID
+                });
+                if (value != undefined) {
+                    $hiddenInput.val(value);
+                    $visibleInput.data('fdatepicker').selectDate(value);
+                }
+            } else if (typeof $.fn.datepicker == 'function') {
                 let displayFormat = field.displayFormat || this.options.defaultDateFormat;
                 $input = $('<input class="' + field.inputClass + '" id="Edit-' + fieldName + '" type="text" name="' + fieldName + '"' + field.inputAttributes + '></input>');
                 $input.datepicker({ dateFormat: displayFormat });
+                if (value != undefined) {
+                    $input.val(value);
+                }
             } else {
                 $input = $('<input class="' + field.inputClass + '" id="Edit-' + fieldName + '" type="date" name="' + fieldName + '"' + field.inputAttributes + '></input>');
-            }
-            if (value != undefined) {
-                $input.val(value);
+                if (value != undefined) {
+                    $input.val(value);
+                }
             }
 
             let $containerDiv = $('<div />')
@@ -1808,7 +1853,13 @@ THE SOFTWARE.
         /* Creates any type input for a field (text/password/range/week/datetime-local/...).
          *************************************************************************/
         _createInputForField: function (field, fieldName, value) {
-            let $input = $('<input class="' + field.inputClass + '" placeholder="' + field.placeholder + '" id="Edit-' + fieldName + '" type="' + field.type + '" name="' + fieldName + '"' + field.inputAttributes + '></input>');
+            let $input;
+
+            if (field.inputAttributes.toLowerCase().includes("multiple") ) {
+                $input = $('<input class="' + field.inputClass + '" placeholder="' + field.placeholder + '" id="Edit-' + fieldName + '" type="' + field.type + '" name="' + fieldName + '[]"' + field.inputAttributes + '></input>');
+            } else {
+                $input = $('<input class="' + field.inputClass + '" placeholder="' + field.placeholder + '" id="Edit-' + fieldName + '" type="' + field.type + '" name="' + fieldName + '[]"' + field.inputAttributes + '></input>');
+            }
 
             if (value != undefined) {
                 $input.val(value);
@@ -2143,7 +2194,7 @@ THE SOFTWARE.
                     let dateVal = $inputElement.val();
                     if (dateVal) {
                         let displayFormat = field.displayFormat || this.options.defaultDateFormat;
-                        if (typeof $.fn.datepicker == 'function') {
+			if (typeof $.fn.datepicker == 'function') {
                             try {
                                 let date = $.datepicker.parseDate(displayFormat, dateVal);
                                 record[fieldName] = '/Date(' + date.getTime() + ')/';
@@ -2153,6 +2204,7 @@ THE SOFTWARE.
                                 record[fieldName] = undefined;
                             }
                         } else {
+                            // fdatepicker does it ok, no need to do the same as for datepicker
                             record[fieldName] = $inputElement.val();
                         }
                     } else {
@@ -3341,14 +3393,10 @@ THE SOFTWARE.
         _getValueForRecordField: function (record, fieldName) {
             let field = this.options.fields[fieldName];
             let fieldValue = record[fieldName];
-            if (field.type == 'date') {
-                return this._getDisplayTextForDateRecordField(field, fieldValue);
+            if (field.inputEscapeHTML) {
+                return this._escapeHTML(fieldValue);
             } else {
-                if (field.inputEscapeHTML) {
-                    return this._escapeHTML(fieldValue);
-                } else {
-                    return fieldValue;
-                }
+                return fieldValue;
             }
         },
 
