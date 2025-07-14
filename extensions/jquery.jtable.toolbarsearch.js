@@ -112,8 +112,12 @@
                 $input = $('<select class="" id="jtable-toolbarsearch-' + fieldName +'"></select>')
                     .addClass('jtable-toolbarsearch')
                     .css('width','90%');
-                let options = this._createCheckBoxStateArrayForField(fieldName);
-                options.unshift({ "Value": "", "DisplayText": "" });
+                // we use the spread (...) operator to force a copy of the array, so our unshift won't change the original
+                let options = [...this._createCheckBoxStateArrayForField(fieldName)];
+                // Only add empty option if first option isn't already empty
+                if (options.length === 0 || options[0].Value !== "") {
+                    options.unshift({ "Value": "", "DisplayText": "" });
+                }
                 this._fillDropDownListWithOptions($input, options, '');
             } else if (field.options) {
                 $input = $('<select class="" id="jtable-toolbarsearch-' + fieldName +'"></select>')
@@ -121,7 +125,10 @@
                     .css('width','90%');
                 // we use the spread (...) operator to force a copy of the array, so our unshift won't change the original
                 let options = [...this._getOptionsForField(fieldName, {})];
-                options.unshift({ "Value": "", "DisplayText": "" });
+                // Only add empty option if first option isn't already empty
+                if (options.length === 0 || options[0].Value !== "") {
+                    options.unshift({ "Value": "", "DisplayText": "" });
+                }
                 this._fillDropDownListWithOptions($input, options, '');
             };
 
