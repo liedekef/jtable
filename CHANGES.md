@@ -1,3 +1,29 @@
+= 3.1.3 (2025//) =
+* When getting options via ajax, you can now provide a data-array next to DisplayText and Value
+  The elements of this data array will be added to each select-option or radiobutton
+  PHP example that will add data attributes `extra_attr1` and `extra_attr2`
+  ```
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $enhancedRows = array_map(function($row) {
+        return [
+            'Value' => $row['Value'],
+            'DisplayText' => $row['DisplayText'],
+            'Data' => [
+                'extra_attr1' => $row['extra_attr1'],
+                'extra_attr2' => $row['extra_attr2']
+            ]
+        ];
+    }, $rows);
+
+    header('Content-Type: application/json');
+    echo json_encode([
+        'Result' => 'OK',
+        'Options' => $enhancedRows
+    ]);
+  ```
+
 = 3.1.2 (2025/07/14) =
 * Added field.displayDateLocale and generic option defaultDateLocale
   If your input field is type=date and no specific datepicker is used, this can help format the layout

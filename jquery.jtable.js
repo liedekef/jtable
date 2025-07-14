@@ -846,7 +846,7 @@ THE SOFTWARE.
             }
         },
 
-        /* Creates and returns an object which properties are depended values of a record.
+        /* Creates and returns an object that's properties are dependent values of a record.
          *************************************************************************/
         _createDependedValuesUsingRecord: function (record, dependsOn) {
             if (!dependsOn) {
@@ -1972,9 +1972,23 @@ THE SOFTWARE.
         _fillDropDownListWithOptions: function ($select, options, value) {
             $select.empty();
             for (let i = 0; i < options.length; i++) {
-                $('<option' + (options[i].Value == value ? ' selected="selected"' : '') + '>' + options[i].DisplayText + '</option>')
+                let $option = $('<option>')
                     .val(options[i].Value)
-                    .appendTo($select);
+                    .text(options[i].DisplayText);
+                
+                // Voeg data-attributen toe als ze bestaan
+                if (options[i].Data) {
+                    for (let key in options[i].Data) {
+                        $option.attr('data-' + key, options[i].Data[key]);
+                    }
+                }
+                
+                // Selecteer de juiste optie
+                if (options[i].Value == value) {
+                    $option.prop('selected', true);
+                }
+                
+                $select.append($option);
             }
         },
 
@@ -2048,14 +2062,22 @@ THE SOFTWARE.
                 source: source
             });
 
-            $.each(options, function(i, option) {
+TTT
+            for (let i = 0; i < options.length; i++) {
                 let $radioButtonDiv = $('<div class=""></div>')
                     .addClass('jtable-radio-input')
                     .appendTo($containerDiv);
 
-                let $radioButton = $('<input type="radio" id="Edit-' + fieldName + '-' + i + '" class="' + field.inputClass + '" name="' + fieldName + '"' + field.inputAttributes + ((option.Value == (value + '')) ? ' checked="true"' : '') + ' />')
-                    .val(option.Value)
+                let $radioButton = $('<input type="radio" id="Edit-' + fieldName + '-' + i + '" class="' + field.inputClass + '" name="' + fieldName + '"' + field.inputAttributes + ((options[i].Value == (value + '')) ? ' checked="true"' : '') + ' />')
+                    .val(options[i].Value)
                     .appendTo($radioButtonDiv);
+
+                // Voeg data-attributen toe als ze bestaan
+                if (options[i].Data) {
+                    for (let key in options[i].Data) {
+                        $radioButton.attr('data-' + key, options[i].Data[key]);
+                    }
+                }
 
                 let $textSpan = $('<span></span>')
                     .html(option.DisplayText)
@@ -2070,7 +2092,7 @@ THE SOFTWARE.
                             }
                         });
                 }
-            });
+            }
 
             return $containerDiv;
         },
