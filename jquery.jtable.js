@@ -846,7 +846,7 @@ THE SOFTWARE.
             }
         },
 
-        /* Creates and returns an object that's properties are depended values of a record.
+        /* Creates and returns an object which properties are depended values of a record.
          *************************************************************************/
         _createDependedValuesUsingRecord: function (record, dependsOn) {
             if (!dependsOn) {

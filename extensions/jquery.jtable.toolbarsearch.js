@@ -47,7 +47,9 @@
                 .addClass('jtable-toolbarsearch-reset');
             if ($actioncount) {
                 $reset.attr('colspan',$actioncount);
-            }
+            } else {
+                $reset.addClass('jtable-command-column-header');
+	    }
 
             if (this.options.toolbarreset) {
                 // we add the reset button if wanted, even if no other actions are defined (so $actioncount=0)
