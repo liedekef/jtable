@@ -2826,6 +2826,7 @@ THE SOFTWARE.
                 // Create a container div for this input field and add to form
                 let $fieldContainer = $('<div />')
                     .addClass('jtable-input-field-container')
+                    .attr('id', 'jtable-input-field-container-div-' + fieldName)
                     .appendTo($addRecordForm);
 
                 // Create a label for input
@@ -2855,7 +2856,7 @@ THE SOFTWARE.
             self._setEnabledOfDialogButton($saveButton, true, self.options.messages.save);
 
             // Show the form
-	    self._$addRecordDialog.find('#addRecordDialogTitle').first().after($addRecordForm);
+            self._$addRecordDialog.find('#addRecordDialogTitle').first().after($addRecordForm);
             self._$addRecordOverlay.show();
             self._$mainContainer.trigger("formCreated", { form: $addRecordForm, formType: 'create' });
         },
@@ -3276,7 +3277,10 @@ THE SOFTWARE.
                 }
 
                 // Create a container div for this input field and add to form
-                let $fieldContainer = $('<div class="jtable-input-field-container"></div>').appendTo($editRecordForm);
+                let $fieldContainer = $('<div />')
+                    .addClass('jtable-input-field-container')
+                    .attr('id', 'jtable-input-field-container-div-' + fieldName)
+                    .appendTo($editRecordForm);
 
                 // Create a label for input
                 $fieldContainer.append(self._createInputLabelForRecordField(fieldName));
@@ -3586,6 +3590,7 @@ THE SOFTWARE.
 
                 let $fieldContainer = $('<div />')
                     .addClass('jtable-input-field-container')
+                    .attr('id', 'jtable-input-field-container-div-' + fieldName)
                     .appendTo($cloneRecordForm);
 
                 $fieldContainer.append(self._createInputLabelForRecordField(fieldName));
@@ -3614,7 +3619,7 @@ THE SOFTWARE.
             self._setEnabledOfDialogButton($saveButton, true, self.options.messages.save);
 
             // Show the form
-	    self._$cloneRecordDialog.find('#cloneRecordDialogTitle').first().after($cloneRecordForm);
+            self._$cloneRecordDialog.find('#cloneRecordDialogTitle').first().after($cloneRecordForm);
             self._$cloneRecordOverlay.show();
             self._$mainContainer.trigger("formCreated", { form: $cloneRecordForm, formType: 'clone', record: record, row: $tableRow });
         },
