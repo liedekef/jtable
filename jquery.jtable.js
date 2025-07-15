@@ -2110,7 +2110,6 @@ THE SOFTWARE.
                 source: source
             });
 
-TTT
             for (let i = 0; i < options.length; i++) {
                 let $radioButtonDiv = $('<div class=""></div>')
                     .addClass('jtable-radio-input')
@@ -3732,6 +3731,8 @@ TTT
                     self._logError('Server must return the created Record object.');
                     return;
                 }
+
+                self._onRecordAdded(data);
                 self._addRowToTable(
                     self._createRowFromRecord(data.Record), {
                         isNewRow: true

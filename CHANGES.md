@@ -1,4 +1,5 @@
 = 3.1.3 (2025//) =
+* the toolbarsearch extension is now in the main plugin
 * the add/edit/delete Actions now accept also Message when the result is OK, this message will then be shown via popup
   (only when add/edit/deleting 1 row via the add/edit/delete button, not API)
 * When getting options via ajax, you can now provide a data-array next to DisplayText and Value
