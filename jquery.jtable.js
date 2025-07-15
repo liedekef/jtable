@@ -140,6 +140,7 @@ THE SOFTWARE.
             this._createTableDiv();
             this._createTable();
             this._createBusyDialog();
+            this._createInfoDialog();
             this._createErrorDialog();
             this._addNoDataRow();
         },
@@ -212,6 +213,7 @@ THE SOFTWARE.
 
             this._$busyDialog = null; // Reference to the div that is used to block UI while busy (jQuery object)
             this._$errorDialog = null; // Reference to the error dialog div (jQuery object)
+            this._$infoDialog = null; // Reference to the info dialog div (jQuery object)
 
             this._columnList = []; // Name of all data columns in the table (select column and command columns are not included) (string array)
             this._fieldList = []; // Name of all fields of a record (defined in fields option) (string array)
@@ -417,6 +419,45 @@ THE SOFTWARE.
                 .appendTo(self._$busyDialog);
         },
 
+        /* Creates and prepares info dialog
+         *************************************************************************/
+        _createInfoDialog: function() {
+            let self = this;
+
+            // Create overlay
+            self._$infoOverlay = $('<div class="jtable-modal-overlay"></div>')
+                .prependTo(self._$mainContainer);
+
+            // Create modal
+            self._$infoDialog = $('<div class="jtable-modal jtable-info-modal"></div>')
+                .appendTo(self._$infoOverlay);
+
+            // Add content
+            $('<h2 class="jtable-modal-header"></h2>')
+                .html(self.options.messages.info)
+                .appendTo(self._$infoDialog);
+
+            $('<div class="jtable-modal-body"><p><span class="jtable-info-message"></span></p></div>')
+                .appendTo(self._$infoDialog);
+
+            $('<div class="jtable-modal-footer"></div>')
+                .append(
+                    $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button>')
+                    .html('<span>' + self.options.messages.close + '</span>')
+                    .on('click', function() {
+                        self._closeInfoDialog();
+                    })
+                )
+                .appendTo(self._$infoDialog);
+
+            // initially closed
+            self._closeInfoDialog();
+        },
+
+        _closeInfoDialog: function() {
+            this._$infoOverlay.hide();
+        },
+
         /* Creates and prepares error dialog
          *************************************************************************/
         _createErrorDialog: function() {
@@ -455,7 +496,7 @@ THE SOFTWARE.
                 })
                 .appendTo(self._$errorDialog);
 
-	    // initially closed
+            // initially closed
             self._closeErrorDialog();
         },
 
@@ -1191,6 +1232,13 @@ THE SOFTWARE.
         _showError: function(message) {
             this._$errorDialog.find(".jtable-error-message").html(message);
             this._$errorOverlay.show();
+        },
+
+        /* Shows info message dialog with given message.
+         *************************************************************************/
+        _showInfo: function(message) {
+            this._$infoDialog.find(".jtable-info-message").html(message);
+            this._$infoOverlay.show();
         },
 
         /* BUSY PANEL ***********************************************************/
@@ -2725,7 +2773,7 @@ TTT
             this._showAddRecordForm();
         },
 
-        /* Adds a new record to the table (optionally to the server also)
+        /* Public API: Adds a new record to the table (optionally to the server also)
          *************************************************************************/
         addRecord: function (options) {
             let self = this;
@@ -2943,6 +2991,9 @@ TTT
         },
 
         _onRecordAdded: function (data) {
+            if (data.Message) {
+                this._showInfo(data.Message);
+            }
             this._$mainContainer.trigger("recordAdded", { record: data.Record, serverResponse: data });
         }
 
@@ -3463,6 +3514,9 @@ TTT
         },
 
         _onRecordUpdated: function ($row, data) {
+            if (data.Message) {
+                this._showInfo(data.Message);
+            }
             this._$mainContainer.trigger("recordUpdated", { record: $row.data('record'), row: $row, serverResponse: data });
         }
 
@@ -3820,9 +3874,12 @@ TTT
                     self._setEnabledOfDialogButton($deleteButton, false, self.options.messages.deleting);
                     self._deleteRecordFromServer(
                         self._$deletingRow,
-                        function () {
+                        function (data) {
                             self._removeRowsFromTableWithAnimation(self._$deletingRow);
                             self._closeDeleteDialog();
+                            if (data.Message) {
+                                self._showInfo(data.Message);
+                            }
                         },
                         function (message) {
                             self._showError(message);
@@ -4050,8 +4107,11 @@ TTT
                 // No confirmation
                 self._deleteRecordFromServer(
                     $row,
-                    function () { // success
+                    function (data) { // success
                         self._removeRowsFromTableWithAnimation($row);
+                        if (data.Message) {
+                            self._showInfo(data.Message);
+                        }
                     },
                     function (message) { // error
                         self._showError(message);

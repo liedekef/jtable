@@ -1,4 +1,6 @@
 = 3.1.3 (2025//) =
+* the add/edit/delete Actions now accept also Message when the result is OK, this message will then be shown via popup
+  (only when add/edit/deleting 1 row via the add/edit/delete button, not API)
 * When getting options via ajax, you can now provide a data-array next to DisplayText and Value
   The elements of this data array will be added to each select-option or radiobutton
   PHP example that will add data attributes `extra_attr1` and `extra_attr2`
