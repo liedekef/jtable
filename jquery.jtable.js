@@ -1954,7 +1954,7 @@ THE SOFTWARE.
 
             // This method sets checkbox's value and text according to state of the checkbox
             let refreshCheckBoxValueAndText = function () {
-                let checkboxProps = self._getCheckBoxPropertiesForFieldByState(fieldName, $checkBox.is(':checked'));
+                let checkboxProps = self._getCheckBoxPropertiesForFieldByState(fieldName, $checkBox.prop('checked'));
                 $checkBox.attr('value', checkboxProps.Value);
                 $textSpan.html(field.formText || checkboxProps.DisplayText);
             };
@@ -1969,7 +1969,7 @@ THE SOFTWARE.
                 $textSpan
                     .addClass('jtable-option-text-clickable')
                     .on("click", function () {
-                        if ($checkBox.is(':checked')) {
+                        if ($checkBox.prop('checked')) {
                             $checkBox.prop('checked', false);
                         } else {
                             $checkBox.prop('checked', true);
@@ -2134,7 +2134,7 @@ THE SOFTWARE.
                     $textSpan
                         .addClass('jtable-option-text-clickable')
                         .on("click", function () {
-                            if (!$radioButton.is(':checked')) {
+                            if (!$radioButton.prop('checked')) {
                                 $radioButton.prop('checked', true);
                             }
                         });
@@ -4445,7 +4445,7 @@ THE SOFTWARE.
                     }
 
                     let allRows = self._$tableBody.find('>tr.jtable-data-row');
-                    if (self._$selectAllCheckbox.is(':checked')) {
+                    if (self._$selectAllCheckbox.prop('checked')) {
                         self._selectRows(allRows);
                     } else {
                         self._deselectRows(allRows);
@@ -5948,7 +5948,7 @@ THE SOFTWARE.
                                 // you can't hide a field on which a sort is done, but you can show it if it was hidden
                                 return;
                             }
-                            self.changeColumnVisibility(clickedColumnName, $(this).is(':checked') ? 'visible' : 'hidden');
+                            self.changeColumnVisibility(clickedColumnName, $(this).prop('checked') ? 'visible' : 'hidden');
                         });
 
                     // Check, if column if shown
