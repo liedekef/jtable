@@ -442,7 +442,7 @@ THE SOFTWARE.
 
             $('<div class="jtable-modal-footer"></div>')
                 .append(
-                    $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button>')
+                    $('<button class="jtable-dialog-button jtable-dialog-closebutton"></button>')
                     .html('<span>' + self.options.messages.close + '</span>')
                     .on('click', function() {
                         self._closeInfoDialog();
@@ -481,7 +481,7 @@ THE SOFTWARE.
 
             $('<div class="jtable-modal-footer"></div>')
                 .append(
-                    $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button>')
+                    $('<button class="jtable-dialog-button jtable-dialog-closebutton"></button>')
                     .html('<span>' + self.options.messages.close + '</span>')
                     .on('click', function() {
                         self._closeErrorDialog();
