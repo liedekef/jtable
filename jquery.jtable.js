@@ -943,9 +943,10 @@ THE SOFTWARE.
 
         /* Gets options for a field according to user preferences.
          *************************************************************************/
-        _getOptionsForField: function (fieldName, funcParams) {
+        _getOptionsForField: function (fieldName, funcParams, fieldSource='options') {
             let field = this.options.fields[fieldName];
-            let optionsSource = field.options;
+            //let optionsSource = field.options;
+            let optionsSource = field[fieldSource];
 
             if (typeof optionsSource === "function") {
                 // prepare parameter to the function
@@ -6491,6 +6492,17 @@ THE SOFTWARE.
                     .css('width','90%');
                 // we use the spread (...) operator to force a copy of the array, so our unshift won't change the original
                 let options = [...this._getOptionsForField(fieldName, {})];
+                // Only add empty option if first option isn't already empty
+                if (options.length === 0 || options[0].Value !== "") {
+                    options.unshift({ "Value": "", "DisplayText": "" });
+                }
+                this._fillDropDownListWithOptions($input, options, '');
+            } else if (field.toolbaroptions) {
+                $input = $('<select class="" id="jtable-toolbarsearch-' + fieldName +'"></select>')
+                    .addClass('jtable-toolbarsearch')
+                    .css('width','90%');
+                // we use the spread (...) operator to force a copy of the array, so our unshift won't change the original
+                let options = [...this._getOptionsForField(fieldName, {}, 'toolbaroptions')];
                 // Only add empty option if first option isn't already empty
                 if (options.length === 0 || options[0].Value !== "") {
                     options.unshift({ "Value": "", "DisplayText": "" });

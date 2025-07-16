@@ -1,3 +1,6 @@
+= 3.1.4 (2025//) =
+* Added new field option "toolbaroptions". Works like "options", but only for the toolbar (in case you want the regular fields to be just the supplied text)
+
 = 3.1.3 (2025/07/15) =
 * the toolbarsearch extension is now in the main plugin
 * the add/edit/delete Actions now accept also Message when the result is OK, this message will then be shown via popup
