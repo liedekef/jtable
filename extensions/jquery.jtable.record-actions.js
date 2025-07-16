@@ -1,120 +1,101 @@
 ﻿/************************************************************************
-* RECORD-ACTIONS extension for jTable                                          *
+* RECORD-ACTIONS extension for jTable                                   *
 *************************************************************************/
 (function ($) {
 
-    //Reference to base object members
+    // Reference to base object members
     var base = {
         _initializeFields: jTable.prototype._initializeFields,
         _onRecordsLoaded: jTable.prototype._onRecordsLoaded
     };
 
-    //extension members
+    // Extension members
     $.extend(true, jTable.prototype, {
 
-        /************************************************************************
-        * OVERRIDED METHODS                                                     *
-        *************************************************************************/
+        /*********************************************************************
+        * OVERRIDED METHODS                                                  *
+        **********************************************************************/
 
-        /* Overrides base method to create record-actions field type.
-        *************************************************************************/
         _initializeFields: function () {
             base._initializeFields.apply(this, arguments);
             
             var self = this;
-
             self._extraFieldTypes.push({
-                type:'record-actions',
-                creator: function(record, field){
+                type: 'record-actions',
+                creator: function(record, field) {
                     return self._createRecordActionsDropdown(record, field);
                 }
             });
         },
 
-        /* Overrides base method to handle dropdown menu overflow.
-        *************************************************************************/
         _onRecordsLoaded: function () {
             base._onRecordsLoaded.apply(this, arguments);
-
+            
+            // Initialize dropdown behavior
             var self = this;
-            self._$tableBody.find('div.dropdown').on('show.bs.dropdown', function (e) {
-                    var $this = $(this);
-
-                    if (!$this.data('_tether')) {
-                        var $dropdownButton = $this.find('.dropdown-toggle');
-                        var $dropdownMenu = $this.find('.dropdown-menu');
-
-                        $dropdownMenu.css({
-                            'display': 'block'
-                        });
-
-                        $this.data('_tether', new Tether({
-                            element: $dropdownMenu[0],
-                            target: $dropdownButton[0],
-                            attachment: 'top left',
-                            targetAttachment: 'bottom left',
-                            constraints: [{
-                                to: 'window',
-                                attachment: 'together',
-                                pin: true
-                            }]
-                        }));
-                    }
-
-                    var $dropdownMenu = $($this.data('_tether').element);
-                    $dropdownMenu.css({
-                        'display': 'block'
-                    });
-                }).on('hidden.bs.dropdown', function (e) {
-                    var $this = $(this);
-                    var $dropdownMenu = $($this.data('_tether').element);
-                    $dropdownMenu.css({
-                        'display': 'none'
-                    });
-                });
+            self._$tableBody.find('.jtable-dropdown-toggle').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                var $toggle = $(this);
+                var $menu = $toggle.siblings('.jtable-dropdown-menu');
+                var isOpen = $toggle.hasClass('is-open');
+                
+                // Close all other open menus
+                $('.jtable-dropdown-toggle.is-open').not($toggle).removeClass('is-open')
+                    .siblings('.jtable-dropdown-menu').removeClass('is-visible');
+                
+                // Toggle this menu
+                $toggle.toggleClass('is-open', !isOpen);
+                $menu.toggleClass('is-visible', !isOpen);
+            });
+            
+            // Close menus when clicking outside
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.jtable-dropdown').length) {
+                    $('.jtable-dropdown-toggle.is-open').removeClass('is-open')
+                        .siblings('.jtable-dropdown-menu').removeClass('is-visible');
+                }
+            });
         },
         
-        /************************************************************************
-        * PRIVATE METHODS                                                       *
-        *************************************************************************/
+        /*********************************************************************
+        * PRIVATE METHODS                                                    *
+        **********************************************************************/
 
-        /* Builds the dropdown actions button according to field definition
-        *************************************************************************/
-        _createRecordActionsDropdown: function(record, field){
+        _createRecordActionsDropdown: function(record, field) {
             var self = this;
-            var $dropdownContainer = $('<div></div>')
-                                        .addClass('btn-group')
-                                        .addClass('dropdown');
+            var $dropdownContainer = $('<div class="jtable-dropdown"></div>');
     
-            var $dropdownButton = $('<button></button>')
-                                        .html(field.text)
-                                        .addClass('dropdown-toggle')
-                                        .attr('data-toggle','dropdown')
-                                        .attr('aria-haspopup','true')
-                                        .attr('aria-expanded','true');
-                                        
-            if(field.cssClass){
+            var $dropdownButton = $('<button class="jtable-dropdown-toggle"></button>')
+                .html(field.text || 'Actions')
+                .attr({
+                    'aria-haspopup': 'true',
+                    'aria-expanded': 'false'
+                });
+                
+            if (field.cssClass) {
                 $dropdownButton.addClass(field.cssClass);
             }
 
-            var $dropdownItemsContainer = $('<ul></ul>').addClass('dropdown-menu');
-            for (var i = 0; i < field.items.length; i++) {
-                var fieldItem = field.items[i];
-                                
-                if(fieldItem.visible && !fieldItem.visible({record: record})){
-                    continue;
+            var $dropdownItemsContainer = $('<ul class="jtable-dropdown-menu"></ul>');
+            var hasVisibleItems = false;
+            
+            field.items.forEach(function(fieldItem) {
+                if (fieldItem.visible && !fieldItem.visible({record: record})) {
+                    return;
                 }
-
+                
                 var $dropdownItem = self._createDropdownItem(record, fieldItem);
-
-                if(fieldItem.enabled && !fieldItem.enabled({ record: record })){
-                    $dropdownItem.addClass('disabled');
+                if (fieldItem.enabled && !fieldItem.enabled({ record: record })) {
+                    $dropdownItem.addClass('is-disabled');
                 }
-
+                
                 $dropdownItem.appendTo($dropdownItemsContainer);
-            }
+                hasVisibleItems = true;
+            });
 
-            if($dropdownItemsContainer.find('li').length > 0){
+            if (hasVisibleItems) {
                 $dropdownItemsContainer.appendTo($dropdownContainer);
                 $dropdownButton.appendTo($dropdownContainer);
             }
@@ -122,30 +103,31 @@
             return $dropdownContainer;
         },
 
-        _createDropdownItem: function(record, fieldItem){
-            var $li = $('<li></li>');
-            var $a = $('<a></a>');
-
-            if(fieldItem.text){
-                $a.html(fieldItem.text);
+        _createDropdownItem: function(record, fieldItem) {
+            var $li = $('<li class="jtable-dropdown-item"></li>');
+            var $a = $('<a href="#" role="button"></a>').html(fieldItem.text || '');
+            
+            if (fieldItem.cssClass) {
+                $a.addClass(fieldItem.cssClass);
             }
 
             if (fieldItem.action) {
-                $a.click(function (e) {
+                $a.on('click', function(e) {
                     e.preventDefault();
                     
-                    if (!$(this).closest('li').hasClass('disabled')) {
-                        fieldItem.action({
-                            record: record
-                        });
+                    if (!$li.hasClass('is-disabled')) {
+                        fieldItem.action({ record: record });
+                        // Close menu after action
+                        $li.closest('.jtable-dropdown').find('.jtable-dropdown-toggle')
+                            .removeClass('is-open')
+                            .attr('aria-expanded', 'false');
+                        $li.closest('.jtable-dropdown-menu').removeClass('is-visible');
                     }
                 });
             }
-
-            $a.appendTo($li);
-            return $li;
+            
+            return $li.append($a);
         }
-
     });
 
 })(jQuery);

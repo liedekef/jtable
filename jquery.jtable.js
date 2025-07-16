@@ -1613,9 +1613,9 @@ THE SOFTWARE.
         },
 
         _roundNumber: function (number) {
+            //const roundedNumber = Math.round(number*1000)/1000;
+            //return roundedNumber;
             return number;
-            const roundedNumber = Math.round(number*1000)/1000;
-            return roundedNumber;
         },
 
         /* Formats a string just like string.format in c#.

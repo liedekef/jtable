@@ -1,0 +1,60 @@
+.jtable-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.jtable-dropdown-toggle {
+    cursor: pointer;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 4px;
+}
+
+.jtable-dropdown-toggle:hover {
+    background: #f5f5f5;
+}
+
+.jtable-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 160px;
+    padding: 5px 0;
+    margin: 2px 0 0;
+    list-style: none;
+    background-color: #fff;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: 4px;
+    box-shadow: 0 6px 12px rgba(0,0,0,.175);
+}
+
+.jtable-dropdown-menu.is-visible {
+    display: block;
+}
+
+.jtable-dropdown-item {
+    display: block;
+}
+
+.jtable-dropdown-item a {
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    color: #333;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.jtable-dropdown-item a:hover {
+    background-color: #f5f5f5;
+}
+
+.jtable-dropdown-item.is-disabled a {
+    color: #999;
+    cursor: not-allowed;
+    background-color: transparent;
+}
