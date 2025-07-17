@@ -1,6 +1,7 @@
 = 3.1.4 (2025//) =
 * Added new field option "toolbaroptions". Works like "options", but only for the toolbar (in case you want the regular fields to be just the supplied text)
 * dependsOn can now refer to any field, not just another dropdown. So you can create a dropdown depending on a text field too (as an example)
+* Added trigger "toolbarsearch", so you can hook into this if need be
 
 = 3.1.3 (2025/07/15) =
 * the toolbarsearch extension is now in the main plugin

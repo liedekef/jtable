@@ -6530,6 +6530,7 @@ THE SOFTWARE.
                 });
 
                 self.load({ 'q[]': queries, 'opt[]': searchOptions });
+                self._$mainContainer.trigger("toolbarsearch", { 'q[]': queries, 'opt[]': searchOptions });
             });
 
             let $headerContainerDiv = $('<div />')
