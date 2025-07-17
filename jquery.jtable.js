@@ -542,8 +542,17 @@ THE SOFTWARE.
         /* Completely removes the table from it's container.
          *************************************************************************/
         destroy: function () {
+            this._$table.off;
             this.element.empty();
-            $.Widget.prototype.destroy.call(this);
+            //$.Widget.prototype.destroy.call(this);
+        },
+
+        /* Reset table to original state
+         *************************************************************************/
+        resetTable: function () {
+            this.destroy();
+            this._create();
+            this.load();
         },
 
         /************************************************************************
@@ -4658,6 +4667,7 @@ THE SOFTWARE.
     // Reference to base object members
     let base = {
         load: jTable.prototype.load,
+        resetTable: jTable.prototype.resetTable,
         _initializeSettings: jTable.prototype._initializeSettings,
         _create: jTable.prototype._create,
         _setOption: jTable.prototype._setOption,
@@ -4705,6 +4715,7 @@ THE SOFTWARE.
             this._$gotoPageInput = null; // Reference to 'Go to page' input in to bottom panel (jQuery object)
             this._totalRecordCount = 0; // Total count of records on all pages
             this._currentPageNo = 1; // Current page number
+            this._originalPageSize = 0;
         },
 
         /* Overrides base method to do paging-specific constructions.
@@ -4718,6 +4729,7 @@ THE SOFTWARE.
                 this._createGotoPageInput();
                 this._createPageSizeSelection();
             }
+            this._originalPageSize = this.options.pageSize;
         },
 
         /* Loads user preferences for paging.
@@ -4916,6 +4928,16 @@ THE SOFTWARE.
         load: function() {
             this._currentPageNo = 1;
             base.load.apply(this, arguments);
+        },
+
+        /* reset te pagesize when resetting the table
+         *************************************************************************/
+        resetTable: function() {
+            if (this.options.saveUserPreferences) {
+                this._removeUserPref('page-size');
+            }
+            this.options.pageSize = this._originalPageSize;
+            base.resetTable.apply(this, arguments);
         },
 
         /* Used to change options dynamically after initialization.
@@ -5256,6 +5278,7 @@ THE SOFTWARE.
 
     // Reference to base object members
     let base = {
+        resetTable: jTable.prototype.resetTable,
         _initializeSettings: jTable.prototype._initializeSettings,
         _normalizeFieldOptions: jTable.prototype._normalizeFieldOptions,
         _doExtraActions: jTable.prototype._doExtraActions,
@@ -5279,6 +5302,7 @@ THE SOFTWARE.
             defaultSorting: '',
             sortingInfoSelector: '',
             sortingInfoReset: true,
+            tableReset: false,
             // Localization
             messages: {
                 sortingInfoPrefix: 'Sorting applied: ',
@@ -5287,6 +5311,7 @@ THE SOFTWARE.
                 descending: 'Descending',
                 sortingInfoNone: 'No sorting applied',
                 resetSorting: 'Reset sorting',
+                resetTable: 'Reset table'
             }
 
         },
@@ -5294,6 +5319,15 @@ THE SOFTWARE.
         /************************************************************************
          * CONSTRUCTOR AND INITIALIZING METHODS                                  *
          *************************************************************************/
+
+        /* reset te pagesize when resetting the table
+         *************************************************************************/
+        resetTable: function() {
+            if (this.options.saveUserPreferences) {
+                this._removeUserPref('column-sortsettings');
+            }
+            base.resetTable.apply(this, arguments);
+        },
 
         /* Overrides _initializeSettings method
          *************************************************************************/
@@ -5346,6 +5380,14 @@ THE SOFTWARE.
                         .html('<span>' + self.options.messages.resetSorting + '</span>')
                         .on('click', function () {
                             self.resetSorting();
+                        })
+                        .appendTo(self.options.sortingInfoSelector);
+                }
+                if (self.options.tableReset) {
+                    $('<button class="jtable-dialog-button jtable-resettable-button"></button>')
+                        .html('<span>' + self.options.messages.resetTable + '</span>')
+                        .on('click', function () {
+                            self.resetTable();
                         })
                         .appendTo(self.options.sortingInfoSelector);
                 }
@@ -5608,31 +5650,15 @@ THE SOFTWARE.
          *********************************************************************************/
         resetSorting: function() {
             let self = this;
-            self._lastSorting = []; // clear previous sorting
-            self._buildDefaultSortingArray();
-            if (self.options.saveUserPreferences) {
-                self._saveColumnSortSettings();
-            }
-            //let headerCells = self._$table.find('>thead th');
-            // only the sortable headers are of interest (the toolbar extension adds a row with the same data info ...)
-            const headerCells = self._$table.find('>thead th:is(.jtable-column-header-sortable)');
-            headerCells.each(function () {
-                let $columnHeader = $(this);
-                let fieldName = $columnHeader.data('fieldName');
-                $columnHeader.removeClass('jtable-column-header-sorted-asc jtable-column-header-sorted-desc');
 
-                // Set default sorting
-                $.each(self._lastSorting, function (sortIndex, sortField) {
-                    if (sortField.fieldName == fieldName) {
-                        if (sortField.sortOrder == 'DESC') {
-                            $columnHeader.addClass('jtable-column-header-sorted-desc');
-                        } else {
-                            $columnHeader.addClass('jtable-column-header-sorted-asc');
-                        }
-                    }
-                });
-            });
-            this._reloadTable();
+            if (self.options.saveUserPreferences) {
+                self._removeUserPref('column-sortsettings');
+            }
+            self.destroy();
+            self._create();
+            self.load();
+            //$container.jtable('_create');
+            //$container.jtable(options);
         },
 
     });
@@ -5647,6 +5673,7 @@ THE SOFTWARE.
 
     // Reference to base object members
     let base = {
+        resetTable: jTable.prototype.resetTable,
         _initializeSettings: jTable.prototype._initializeSettings,
         _create: jTable.prototype._create,
         _loadExtraSettings: jTable.prototype._loadExtraSettings,
@@ -5672,6 +5699,23 @@ THE SOFTWARE.
          * CONSTRUCTOR AND INITIALIZING METHODS                                  *
          *************************************************************************/
 
+        /* reset te pagesize when resetting the table
+         *************************************************************************/
+        resetTable: function() {
+            const self = this;
+
+            if (self.options.saveUserPreferences) {
+                self._removeUserPref('column-settings');
+            }
+            for (let i = 0; i < self._columnList.length; i++) {
+                let columnName = self._columnList[i];
+                const originalVisibility = self._originalColumnVisibility[columnName];
+                self._changeColumnVisibilityInternal(columnName, originalVisibility);
+            }
+
+            base.resetTable.apply(self, arguments);
+        },
+
         /* Overrides _initializeSettings method
          *************************************************************************/
         _initializeSettings: function () {
@@ -5679,6 +5723,7 @@ THE SOFTWARE.
             this._$columnSelectionDiv = null;
             this._$columnResizeBar = null;
             this._$_currentResizeArgs = null;
+            this._originalColumnVisibility = {};
         },
 
         /* Overrides _create method.
@@ -5719,6 +5764,8 @@ THE SOFTWARE.
             if (!props.visibility) {
                 props.visibility = 'visible';
             }
+            // store the original visibility, so we can restore too
+            this._originalColumnVisibility[fieldName] = props.visibility;
         },
 
         /* Overrides _createHeaderCellForField to make columns dynamic.

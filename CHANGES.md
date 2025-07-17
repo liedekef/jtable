@@ -2,6 +2,7 @@
 * Added new field option "toolbaroptions". Works like "options", but only for the toolbar (in case you want the regular fields to be just the supplied text)
 * dependsOn can now refer to any field, not just another dropdown. So you can create a dropdown depending on a text field too (as an example)
 * Added trigger "toolbarsearch", so you can hook into this if need be
+* Added general option resetTable, can be used if sortingInfoSelector is used, to set an extra button to reset the table to its original state (paging, sorting, visibility)
 
 = 3.1.3 (2025/07/15) =
 * the toolbarsearch extension is now in the main plugin
