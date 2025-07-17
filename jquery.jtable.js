@@ -2053,7 +2053,7 @@ THE SOFTWARE.
             for (let i = 0; i < dependsOn.length; i++) {
                 let dependedField = dependsOn[i];
 
-                let $dependsOn = $form.find('select[name=' + dependedField + ']');
+                let $dependsOn = $form.find('[name=' + dependedField + ']');
                 if ($dependsOn.length <= 0) {
                     continue;
                 }
@@ -2217,9 +2217,9 @@ THE SOFTWARE.
                     // for each dependency
                     $.each(field.dependsOn, function (index, dependsOnField) {
                         // find the depended combobox
-                        let $dependsOnDropdown = $form.find('select[name=' + dependsOnField + ']');
+                        let $dependsOnField = $form.find('[name=' + dependsOnField + ']');
                         // when depended combobox changes
-                        $dependsOnDropdown.change(function () {
+                        $dependsOnField.change(function () {
 
                             // Refresh options
                             let funcParams = {
