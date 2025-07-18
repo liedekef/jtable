@@ -2392,6 +2392,7 @@ THE SOFTWARE.
                 self._addToolBarItem({
                     icon: false,
                     cssClass: 'jtable-toolbar-item-csv-table',
+                    id: 'jtable-toolbar-item-csv-table',
                     text: self.options.messages.csvExport,
                     click: function () {
                         self._csvExportTable();
@@ -2541,6 +2542,7 @@ THE SOFTWARE.
                 self._addToolBarItem({
                     icon: false,
                     cssClass: 'jtable-toolbar-item-print-table',
+                    id: 'jtable-toolbar-item-print-table',
                     text: self.options.messages.printTable,
                     click: function () {
                         self._printTable();
@@ -2740,6 +2742,7 @@ THE SOFTWARE.
 			self._addToolBarItem({
 				icon: true,
 				cssClass: 'jtable-toolbar-item-add-record',
+				id: 'jtable-toolbar-item-add-record',
 				text: self.options.messages.addNewRecord,
 				click: function () {
 					self._showAddRecordForm();
@@ -4668,6 +4671,7 @@ THE SOFTWARE.
     let base = {
         load: jTable.prototype.load,
         resetTable: jTable.prototype.resetTable,
+        _normalizeFieldOptions: jTable.prototype._normalizeFieldOptions,
         _initializeSettings: jTable.prototype._initializeSettings,
         _create: jTable.prototype._create,
         _setOption: jTable.prototype._setOption,
@@ -4718,6 +4722,13 @@ THE SOFTWARE.
             this._originalPageSize = 0;
         },
 
+        _normalizeFieldOptions: function (fieldName, props) {
+            base._normalizeFieldOptions.apply(this, arguments);
+            if (!this._originalPageSize) {
+                this._originalPageSize = this.options.pageSize;
+            }
+        },
+
         /* Overrides base method to do paging-specific constructions.
          *************************************************************************/
         _create: function() {
@@ -4729,7 +4740,6 @@ THE SOFTWARE.
                 this._createGotoPageInput();
                 this._createPageSizeSelection();
             }
-            this._originalPageSize = this.options.pageSize;
         },
 
         /* Loads user preferences for paging.
@@ -5765,7 +5775,9 @@ THE SOFTWARE.
                 props.visibility = 'visible';
             }
             // store the original visibility, so we can restore too
-            this._originalColumnVisibility[fieldName] = props.visibility;
+            if (!this._originalColumnVisibility[fieldName]) {
+                this._originalColumnVisibility[fieldName] = props.visibility;
+            }
         },
 
         /* Overrides _createHeaderCellForField to make columns dynamic.
