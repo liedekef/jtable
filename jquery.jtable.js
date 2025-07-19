@@ -938,8 +938,9 @@ THE SOFTWARE.
 
             if (typeof $.fn.fdatepicker == 'function') {
                 let displayFormat = field.displayFormat || this.options.defaultDateFormat;
+                let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
                 let date = this._parseDate(fieldValue);
-                return $.fn.fdatepicker.formatDate(date, displayFormat);
+                return $.fn.fdatepicker.formatDate(date, displayFormat, {language: displayLocale});
             } else if (typeof $.fn.flatpickr == 'function') {
                 let displayFormat = field.displayFormat || this.options.defaultDateFormat;
                 let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
@@ -1833,10 +1834,11 @@ THE SOFTWARE.
         /* Creates a date input for a field.
          *************************************************************************/
         _createDateInputForField: function (field, fieldName, value) {
-            let $input = '';
+            let $input;
             if (typeof $.fn.fdatepicker == 'function') {
                 let displayFormat = field.displayFormat || this.options.defaultDateFormat;
-                let $container = $('<div>');
+                let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
+                $input = $('<div>');
 
                 // Create hidden input
                 let $hiddenInput = $('<input>', {
@@ -1855,8 +1857,7 @@ THE SOFTWARE.
                 });
 
                 // Append both inputs to container
-                $container.append($hiddenInput, $visibleInput);
-                $input = $container;
+                $input.append($hiddenInput, $visibleInput);
 
                 // Initialize datepicker on the visible input
                 $visibleInput.fdatepicker({
@@ -1864,6 +1865,7 @@ THE SOFTWARE.
                     todayButton: new Date(),
                     clearButton: true,
                     closeButton: true,
+                    language: displayLocale,
                     dateFormat: displayFormat,
                     altFieldDateFormat: 'Y-m-d',
                     altField: '#real-' + fieldName  // This should point to the hidden input's ID
@@ -1877,7 +1879,7 @@ THE SOFTWARE.
                 let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
 
                 // Create a container to ensure Flatpickr has a parent to work with
-                let $container = $('<div>');
+                $input = $('<div>');
 
                 // Single input (Flatpickr will convert this to hidden and create its own altInput)
                 let $mainInput = $('<input>', {
@@ -1888,8 +1890,7 @@ THE SOFTWARE.
                     attr: field.inputAttributes
                 });
 
-                $container.append($mainInput);
-                $input = $container;
+                $input.append($mainInput);
 
                 // Initialize Flatpickr
                 let fp = flatpickr($mainInput, {
@@ -1905,10 +1906,36 @@ THE SOFTWARE.
 
             } else if (typeof $.fn.datepicker == 'function') {
                 let displayFormat = field.displayFormat || this.options.defaultDateFormat;
-                $input = $('<input class="' + field.inputClass + '" id="Edit-' + fieldName + '" type="text" name="' + fieldName + '"' + field.inputAttributes + '></input>');
-                $input.datepicker({ dateFormat: displayFormat });
+                $input = $('<div>');
+
+                // Create hidden input
+                let $hiddenInput = $('<input>', {
+                    id: 'real-' + fieldName,
+                    type: 'hidden',
+                    name: fieldName
+                });
+
+                // Create visible input
+                let $visibleInput = $('<input>', {
+                    class: field.inputClass,
+                    id: 'Edit-' + fieldName,
+                    type: 'text',
+                    name: 'alt-' + fieldName,
+                    attr: field.inputAttributes
+                });
+
+                // Append both inputs to container
+                $input.append($hiddenInput, $visibleInput);
+
+                // Initialize datepicker on the visible input
+                $visibleInput.datepicker({
+                    dateFormat: displayFormat,
+                    altFormat: 'Y-m-d',
+                    altField: '#real-' + fieldName  // This should point to the hidden input's ID
+                });
                 if (value != undefined) {
-                    $input.val(value);
+                    $hiddenInput.val(value);
+                    $visibleInput.val(new Date(value));
                 }
             } else {
                 $input = $('<input class="' + field.inputClass + '" id="Edit-' + fieldName + '" type="date" name="' + fieldName + '"' + field.inputAttributes + '></input>');
@@ -2304,28 +2331,7 @@ THE SOFTWARE.
                 }
 
                 // Update field in record according to it's type
-                if (field.type == 'date') {
-                    let dateVal = $inputElement.val();
-                    if (dateVal) {
-                        if (typeof $.fn.datepicker == 'function') {
-                            let displayFormat = field.displayFormat || this.options.defaultDateFormat;
-                            try {
-                                let date = $.datepicker.parseDate(displayFormat, dateVal);
-                                record[fieldName] = '/Date(' + date.getTime() + ')/';
-                            } catch (e) {
-                                // TODO: Handle incorrect/different date formats
-                                this._logWarn('Date format is incorrect for field ' + fieldName + ': ' + dateVal);
-                                record[fieldName] = undefined;
-                            }
-                        } else {
-                            // fdatepicker/flatpickr does it ok, no need to do the same as for datepicker
-                            record[fieldName] = dateVal;
-                        }
-                    } else {
-                        this._logDebug('Date is empty for ' + fieldName);
-                        record[fieldName] = undefined; // TODO: undefined, null or empty string?
-                    }
-                } else if (field.options && field.type == 'radiobutton') {
+                if (field.options && field.type == 'radiobutton') {
                     let $checkedElement = $inputElement.filter(':checked');
                     if ($checkedElement.length) {
                         record[fieldName] = $checkedElement.val();
@@ -6542,12 +6548,13 @@ THE SOFTWARE.
             if (field.type=="date") {
                 if (typeof $.fn.fdatepicker == 'function') {
                     let displayFormat = field.displayFormat || this.options.defaultDateFormat;
+                    let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
 
-                    $container = $('<div>');
+                    $input = $('<div>');
                     // Create hidden input
                     $realInput = $('<input>', { class: 'jtable-toolbarsearch-extra', id: 'jtable-toolbarsearch-extra-' + fieldName, type: 'hidden', name: fieldName });
                     let $visibleInput = $('<input>', { class: 'jtable-toolbarsearch', id: 'jtable-toolbarsearch-' + fieldName, type: 'text', name: 'alt-' + fieldName, }).css('width','90%');
-                    $container.append($realInput, $visibleInput);
+                    $input.append($realInput, $visibleInput);
 
                     // Initialize datepicker on the visible input
                     $visibleInput.fdatepicker({
@@ -6555,16 +6562,16 @@ THE SOFTWARE.
                         todayButton: new Date(),
                         clearButton: true,
                         closeButton: true,
+                        language: displayLocale,
                         dateFormat: displayFormat,
                         altFieldDateFormat: 'Y-m-d',
                         altField: '#jtable-toolbarsearch-extra-' + fieldName  // This should point to the hidden input's ID
                     });
-                    $input=$container;
                 } else if (typeof $.fn.flatpickr == 'function') {
                     let displayFormat = field.displayFormat || this.options.defaultDateFormat;
                     let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
 
-                    let $container = $('<div>');
+                    $input = $('<div>');
                     // Single input (Flatpickr will convert this to hidden and create its own altInput)
                     $realInput = $('<input>', {
                         id: 'jtable-toolbarsearch-extra-' + fieldName,
@@ -6573,7 +6580,7 @@ THE SOFTWARE.
                         class: 'jtable-toolbarsearch-extra'
                     });
 
-                    $container.append($realInput);
+                    $input.append($realInput);
                     // Initialize Flatpickr
                     let fp = flatpickr($realInput, {
                         dateFormat: 'Y-m-d',
@@ -6581,14 +6588,22 @@ THE SOFTWARE.
                         altFormat: displayFormat,
                         locale: displayLocale
                     });
-                    $input = $container;
 
                 } else if (typeof $.fn.datepicker == 'function') {
                     let displayFormat = field.displayFormat || this.options.defaultDateFormat;
-                    $input.datepicker({ dateFormat: displayFormat,changeMonth: true,
-                        changeYear: true,yearRange: "-100:+1",numberOfMonths: 3,
-                        showButtonPanel: true});
-                    $realInput = $input;
+                    $input = $('<div>');
+                    // Create hidden input
+                    $realInput = $('<input>', { class: 'jtable-toolbarsearch-extra', id: 'jtable-toolbarsearch-extra-' + fieldName, type: 'hidden', name: fieldName });
+                    let $visibleInput = $('<input>', { class: 'jtable-toolbarsearch', id: 'jtable-toolbarsearch-' + fieldName, type: 'text', name: 'alt-' + fieldName, }).css('width','90%');
+                    $input.append($realInput, $visibleInput);
+
+                    // Initialize datepicker on the visible input
+                    $visibleInput.datepicker({
+                        changeYear: true,yearRange: "-100:+1",numberOfMonths: 3, showButtonPanel: true,
+                        dateFormat: displayFormat,
+                        altFormat: 'Y-m-d',
+                        altField: '#jtable-toolbarsearch-extra-' + fieldName  // This should point to the hidden input's ID
+                    });
                 } else {
                     $input = $('<input id="jtable-toolbarsearch-' + fieldName + '" type="date"/>')
                         .addClass('jtable-toolbarsearch')
