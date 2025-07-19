@@ -940,6 +940,11 @@ THE SOFTWARE.
                 let displayFormat = field.displayFormat || this.options.defaultDateFormat;
                 let date = this._parseDate(fieldValue);
                 return $.fn.fdatepicker.formatDate(date, displayFormat);
+            } else if (typeof $.fn.flatpickr == 'function') {
+                let displayFormat = field.displayFormat || this.options.defaultDateFormat;
+                let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
+                let date = this._parseDate(fieldValue);
+                return flatpickr.formatDate(date, displayFormat, { locale: displayLocale });
             } else if (typeof $.fn.datepicker == 'function') {
                 let displayFormat = field.displayFormat || this.options.defaultDateFormat;
                 let date = this._parseDate(fieldValue);
@@ -1732,11 +1737,10 @@ THE SOFTWARE.
                 data: formData,
                 success: success,
                 error: error,
-		                contentType: false,
-            processData: false,
-            type: 'POST',
-            dataType: 'json'
-
+                contentType: false,
+                processData: false,
+                type: 'POST',
+                dataType: 'json'
             });
         },
 
@@ -1868,6 +1872,37 @@ THE SOFTWARE.
                     $hiddenInput.val(value);
                     $visibleInput.data('fdatepicker').selectDate(value);
                 }
+            } else if (typeof $.fn.flatpickr == 'function') {
+                let displayFormat = field.displayFormat || this.options.defaultDateFormat;
+                let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
+
+                // Create a container to ensure Flatpickr has a parent to work with
+                let $container = $('<div>');
+
+                // Single input (Flatpickr will convert this to hidden and create its own altInput)
+                let $mainInput = $('<input>', {
+                    id: 'real-' + fieldName,
+                    name: fieldName,
+                    class: field.inputClass,
+                    type: 'text',  // Flatpickr will change this to 'hidden'
+                    attr: field.inputAttributes
+                });
+
+                $container.append($mainInput);
+                $input = $container;
+
+                // Initialize Flatpickr
+                let fp = flatpickr($mainInput, {
+                    dateFormat: 'Y-m-d',  // Actual format stored in the input
+                    altInput: true,       // Enables the alternate visible input
+                    altFormat: displayFormat,
+                    locale: displayLocale
+                });
+
+                if (value != undefined) {
+                    fp.setDate(value);
+                }
+
             } else if (typeof $.fn.datepicker == 'function') {
                 let displayFormat = field.displayFormat || this.options.defaultDateFormat;
                 $input = $('<input class="' + field.inputClass + '" id="Edit-' + fieldName + '" type="text" name="' + fieldName + '"' + field.inputAttributes + '></input>');
@@ -2272,8 +2307,8 @@ THE SOFTWARE.
                 if (field.type == 'date') {
                     let dateVal = $inputElement.val();
                     if (dateVal) {
-                        let displayFormat = field.displayFormat || this.options.defaultDateFormat;
-			if (typeof $.fn.datepicker == 'function') {
+                        if (typeof $.fn.datepicker == 'function') {
+                            let displayFormat = field.displayFormat || this.options.defaultDateFormat;
                             try {
                                 let date = $.datepicker.parseDate(displayFormat, dateVal);
                                 record[fieldName] = '/Date(' + date.getTime() + ')/';
@@ -2283,8 +2318,8 @@ THE SOFTWARE.
                                 record[fieldName] = undefined;
                             }
                         } else {
-                            // fdatepicker does it ok, no need to do the same as for datepicker
-                            record[fieldName] = $inputElement.val();
+                            // fdatepicker/flatpickr does it ok, no need to do the same as for datepicker
+                            record[fieldName] = dateVal;
                         }
                     } else {
                         this._logDebug('Date is empty for ' + fieldName);
@@ -6502,16 +6537,17 @@ THE SOFTWARE.
             let $input = $('<input id="jtable-toolbarsearch-' + fieldName + '" type="text"/>')
                 .addClass('jtable-toolbarsearch')
                 .css('width','90%');
+            let $realInput = $input;
 
             if (field.type=="date") {
                 if (typeof $.fn.fdatepicker == 'function') {
                     let displayFormat = field.displayFormat || this.options.defaultDateFormat;
 
-		    $container = $('<div>');
+                    $container = $('<div>');
                     // Create hidden input
-                    $hiddenInput = $('<input>', { class: 'jtable-toolbarsearch-extra', id: 'jtable-toolbarsearch-extra-' + fieldName, type: 'hidden', name: fieldName });
+                    $realInput = $('<input>', { class: 'jtable-toolbarsearch-extra', id: 'jtable-toolbarsearch-extra-' + fieldName, type: 'hidden', name: fieldName });
                     let $visibleInput = $('<input>', { class: 'jtable-toolbarsearch', id: 'jtable-toolbarsearch-' + fieldName, type: 'text', name: 'alt-' + fieldName, }).css('width','90%');
-                    $container.append($hiddenInput, $visibleInput);
+                    $container.append($realInput, $visibleInput);
 
                     // Initialize datepicker on the visible input
                     $visibleInput.fdatepicker({
@@ -6524,15 +6560,40 @@ THE SOFTWARE.
                         altField: '#jtable-toolbarsearch-extra-' + fieldName  // This should point to the hidden input's ID
                     });
                     $input=$container;
+                } else if (typeof $.fn.flatpickr == 'function') {
+                    let displayFormat = field.displayFormat || this.options.defaultDateFormat;
+                    let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
+
+                    let $container = $('<div>');
+                    // Single input (Flatpickr will convert this to hidden and create its own altInput)
+                    $realInput = $('<input>', {
+                        id: 'jtable-toolbarsearch-extra-' + fieldName,
+                        name: fieldName,
+                        type: 'text',  // Flatpickr will change this to 'hidden'
+                        class: 'jtable-toolbarsearch-extra'
+                    });
+
+                    $container.append($realInput);
+                    // Initialize Flatpickr
+                    let fp = flatpickr($realInput, {
+                        dateFormat: 'Y-m-d',
+                        altInput: true,
+                        altFormat: displayFormat,
+                        locale: displayLocale
+                    });
+                    $input = $container;
+
                 } else if (typeof $.fn.datepicker == 'function') {
                     let displayFormat = field.displayFormat || this.options.defaultDateFormat;
                     $input.datepicker({ dateFormat: displayFormat,changeMonth: true,
                         changeYear: true,yearRange: "-100:+1",numberOfMonths: 3,
                         showButtonPanel: true});
+                    $realInput = $input;
                 } else {
                     $input = $('<input id="jtable-toolbarsearch-' + fieldName + '" type="date"/>')
                         .addClass('jtable-toolbarsearch')
                         .css('width','90%');
+                    $realInput = $input;
                 }
             } else if (field.type=='checkbox' && field.values) {
                 $input = $('<select class="" id="jtable-toolbarsearch-' + fieldName +'"></select>')
@@ -6545,6 +6606,7 @@ THE SOFTWARE.
                     options.unshift({ "Value": "", "DisplayText": "" });
                 }
                 this._fillDropDownListWithOptions($input, options, '');
+                $realInput = $input;
             } else if (field.options) {
                 $input = $('<select class="" id="jtable-toolbarsearch-' + fieldName +'"></select>')
                     .addClass('jtable-toolbarsearch')
@@ -6556,6 +6618,7 @@ THE SOFTWARE.
                     options.unshift({ "Value": "", "DisplayText": "" });
                 }
                 this._fillDropDownListWithOptions($input, options, '');
+                $realInput = $input;
             } else if (field.toolbaroptions) {
                 $input = $('<select class="" id="jtable-toolbarsearch-' + fieldName +'"></select>')
                     .addClass('jtable-toolbarsearch')
@@ -6567,13 +6630,17 @@ THE SOFTWARE.
                     options.unshift({ "Value": "", "DisplayText": "" });
                 }
                 this._fillDropDownListWithOptions($input, options, '');
+                $realInput = $input;
             };
 
-            $input.on('change', function() {
+            $realInput.on('change', function() {
                 let queries = [];
                 let searchOptions = [];
 
                 $('.jtable-toolbarsearch').each(function() {
+                    if (!$(this).attr('id')) {
+                        return;
+                    }
                     let fieldName = $(this).attr('id').replace('jtable-toolbarsearch-', '');
                     if ($(this).val().trim().length >= 1) {
                         searchOptions.push(fieldName);
@@ -6581,6 +6648,9 @@ THE SOFTWARE.
                     }
                 });
                 $('.jtable-toolbarsearch-extra').each(function() {
+                    if (!$(this).attr('id')) {
+                        return;
+                    }
                     let fieldName = $(this).attr('id').replace('jtable-toolbarsearch-extra-', '');
                     if ($(this).val().trim().length >= 1) {
                         searchOptions.push(fieldName);
