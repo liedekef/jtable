@@ -874,8 +874,10 @@ THE SOFTWARE.
                 displayText = field.display({ record: record });
             } else if (extraFieldType && extraFieldType.creator) {
                 displayText = extraFieldType.creator(record, field);
-            } else if (field.type == 'date' || field.type == 'dateJS') {
+            } else if (field.type == 'date') {
                 displayText = this._getDisplayTextForDateRecordField(field, fieldValue);
+            } else if (field.type == 'datetime') {
+                displayText = this._getDisplayTextForDateTimeRecordField(field, fieldValue);
             } else if (field.type == 'checkbox') {
                 displayText = this._getCheckBoxTextForFieldByValue(fieldName, fieldValue);
             } else if (field.options) { // combobox or radio button list since there are options.
@@ -936,24 +938,34 @@ THE SOFTWARE.
                 return '';
             }
 
+            let date = this._parseDate(fieldValue);
             if (typeof $.fn.fdatepicker == 'function') {
                 let displayFormat = field.displayFormat || this.options.defaultDateFormat;
                 let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
-                let date = this._parseDate(fieldValue);
                 return $.fn.fdatepicker.formatDate(date, displayFormat, {language: displayLocale});
             } else if (typeof $.fn.flatpickr == 'function') {
                 let displayFormat = field.displayFormat || this.options.defaultDateFormat;
                 let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
-                let date = this._parseDate(fieldValue);
                 return flatpickr.formatDate(date, displayFormat, { locale: displayLocale });
             } else if (typeof $.fn.datepicker == 'function') {
                 let displayFormat = field.displayFormat || this.options.defaultDateFormat;
-                let date = this._parseDate(fieldValue);
                 return $.datepicker.formatDate(displayFormat, date);
             } else {
                 let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
-                return new Date(fieldValue).toLocaleDateString(displayLocale,{ year: "numeric", month: "2-digit", day: "2-digit" });
+                return date.toLocaleDateString(displayLocale,{ year: "numeric", month: "2-digit", day: "2-digit" });
             }
+        },
+
+        /* Gets text for a date field.
+         *************************************************************************/
+        _getDisplayTextForDateTimeRecordField: function (field, fieldValue) {
+            if (!fieldValue) {
+                return '';
+            }
+
+            let date = this._parseDate(fieldValue);
+            let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
+            return date.toLocaleString(displayLocale);
         },
 
         /* Gets options for a field according to user preferences.
