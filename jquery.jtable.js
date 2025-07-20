@@ -876,7 +876,7 @@ THE SOFTWARE.
                 displayText = extraFieldType.creator(record, field);
             } else if (field.type == 'date') {
                 displayText = this._getDisplayTextForDateRecordField(field, fieldValue);
-            } else if (field.type == 'datetime') {
+            } else if (field.type == 'datetime-local') {
                 displayText = this._getDisplayTextForDateTimeRecordField(field, fieldValue);
             } else if (field.type == 'checkbox') {
                 displayText = this._getCheckBoxTextForFieldByValue(fieldName, fieldValue);
@@ -6552,7 +6552,7 @@ THE SOFTWARE.
             };
             field.width = field.width || '10%'; //default column width: 10%.
 
-            let $input = $('<input id="jtable-toolbarsearch-' + fieldName + '" type="text"/>')
+            let $input = $('<input id="jtable-toolbarsearch-' + fieldName + '" type="' + field.type  + '"/>')
                 .addClass('jtable-toolbarsearch')
                 .css('width','90%');
             let $realInput = $input;
