@@ -5,7 +5,7 @@
 * Added general option resetTable, can be used if sortingInfoSelector is used, to set an extra button to reset the table to its original state (paging, sorting, visibility)
 * flatpickr also supported as datepicker (also returns Y-m-d to the backend)
 * UI datepicker now also expects/returns in Y-m-d format, so all datepickers are now identical
-* support datetime-local in toolbarsearch too
+* support datetime-local too, with respect for displayFormat
 
 = 3.1.3 (2025/07/15) =
 * the toolbarsearch extension is now in the main plugin

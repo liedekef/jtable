@@ -964,8 +964,18 @@ THE SOFTWARE.
             }
 
             let date = this._parseDate(fieldValue);
-            let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
-            return date.toLocaleString(displayLocale);
+            if (typeof $.fn.fdatepicker == 'function') {
+                let displayFormat = field.displayFormat || this.options.defaultDateFormat;
+                let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
+                return $.fn.fdatepicker.formatDate(date, displayFormat, {language: displayLocale});
+            } else if (typeof $.fn.flatpickr == 'function') {
+                let displayFormat = field.displayFormat || this.options.defaultDateFormat;
+                let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
+                return flatpickr.formatDate(date, displayFormat, { locale: displayLocale });
+            } else {
+                let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
+                return date.toLocaleString(displayLocale);
+            }
         },
 
         /* Gets options for a field according to user preferences.
