@@ -1,6 +1,6 @@
 ﻿/* 
 
-jTable 3.1.3 (edited by Franky Van Liedekerke)
+jTable 3.1.4 (edited by Franky Van Liedekerke)
 https://www.e-dynamics.be
 
 ---------------------------------------------------------------------------
@@ -64,7 +64,7 @@ THE SOFTWARE.
             fields: {},
             animationsEnabled: true,
             defaultDateFormat: 'yy-mm-dd',
-            defaultDateLocale: '', // only used for the date presentation if no specific datepicker is present
+            defaultDateLocale: '',
             showCloseButton: false,
             loadingAnimationDelay: 500,
             saveUserPreferences: true,
@@ -186,6 +186,9 @@ THE SOFTWARE.
             }
             if (props.type == undefined) {
                 props.type = 'text';
+            }
+            if (props.dateFormat == undefined && props.displayFormat != undefined) {
+                props.dateFormat = props.displayFormat;
             }
 
             // Convert dependsOn to array if it's a comma seperated list
@@ -939,20 +942,21 @@ THE SOFTWARE.
             }
 
             let date = this._parseDate(fieldValue);
+            let dateLocale = field.dateLocale || this.options.defaultDateLocale;
             if (typeof $.fn.fdatepicker == 'function') {
-                let displayFormat = field.displayFormat || this.options.defaultDateFormat;
-                let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
-                return $.fn.fdatepicker.formatDate(date, displayFormat, {language: displayLocale});
+                let dateFormat = field.dateFormat || this.options.defaultDateFormat;
+                return $.fn.fdatepicker.formatDate(date, dateFormat, {language: dateLocale});
             } else if (typeof $.fn.flatpickr == 'function') {
-                let displayFormat = field.displayFormat || this.options.defaultDateFormat;
-                let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
-                return flatpickr.formatDate(date, displayFormat, { locale: displayLocale });
+                let dateFormat = field.dateFormat || this.options.defaultDateFormat;
+                return flatpickr.formatDate(date, dateFormat, { locale: dateLocale });
             } else if (typeof $.fn.datepicker == 'function') {
-                let displayFormat = field.displayFormat || this.options.defaultDateFormat;
-                return $.datepicker.formatDate(displayFormat, date);
+                let dateFormat = field.dateFormat || this.options.defaultDateFormat;
+                if (dateLocale && $.datepicker.regional[dateLocale]) {
+                    $.datepicker.setDefaults($.datepicker.regional[dateLocale]);
+                }
+                return $.datepicker.formatDate(dateFormat, date);
             } else {
-                let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
-                return date.toLocaleDateString(displayLocale,{ year: "numeric", month: "2-digit", day: "2-digit" });
+                return date.toLocaleDateString(dateLocale,{ year: "numeric", month: "2-digit", day: "2-digit" });
             }
         },
 
@@ -964,17 +968,21 @@ THE SOFTWARE.
             }
 
             let date = this._parseDate(fieldValue);
+            let dateLocale = field.dateLocale || this.options.defaultDateLocale;
             if (typeof $.fn.fdatepicker == 'function') {
-                let displayFormat = field.displayFormat || this.options.defaultDateFormat;
-                let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
-                return $.fn.fdatepicker.formatDate(date, displayFormat, {language: displayLocale});
+                let dateFormat = field.dateFormat || this.options.defaultDateFormat;
+                return $.fn.fdatepicker.formatDate(date, dateFormat, {language: dateLocale});
             } else if (typeof $.fn.flatpickr == 'function') {
-                let displayFormat = field.displayFormat || this.options.defaultDateFormat;
-                let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
-                return flatpickr.formatDate(date, displayFormat, { locale: displayLocale });
+                let dateFormat = field.dateFormat || this.options.defaultDateFormat;
+                return flatpickr.formatDate(date, dateFormat, { locale: dateLocale });
+            } else if (typeof $.fn.datepicker == 'function') {
+                let dateFormat = field.dateFormat || this.options.defaultDateFormat;
+                if (dateLocale && $.datepicker.regional[dateLocale]) {
+                    $.datepicker.setDefaults($.datepicker.regional[dateLocale]);
+                }
+                return $.datepicker.formatDate(dateFormat, date);
             } else {
-                let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
-                return date.toLocaleString(displayLocale);
+                return date.toLocaleString(dateLocale);
             }
         },
 
@@ -1858,8 +1866,8 @@ THE SOFTWARE.
         _createDateInputForField: function (field, fieldName, value) {
             let $input;
             if (typeof $.fn.fdatepicker == 'function') {
-                let displayFormat = field.displayFormat || this.options.defaultDateFormat;
-                let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
+                let dateFormat = field.dateFormat || this.options.defaultDateFormat;
+                let dateLocale = field.dateLocale || this.options.defaultDateLocale;
                 $input = $('<div>');
 
                 // Create hidden input
@@ -1887,8 +1895,8 @@ THE SOFTWARE.
                     todayButton: new Date(),
                     clearButton: true,
                     closeButton: true,
-                    language: displayLocale,
-                    dateFormat: displayFormat,
+                    language: dateLocale,
+                    dateFormat: dateFormat,
                     altFieldDateFormat: 'Y-m-d',
                     altField: '#real-' + fieldName  // This should point to the hidden input's ID
                 });
@@ -1897,8 +1905,8 @@ THE SOFTWARE.
                     $visibleInput.data('fdatepicker').selectDate(value);
                 }
             } else if (typeof $.fn.flatpickr == 'function') {
-                let displayFormat = field.displayFormat || this.options.defaultDateFormat;
-                let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
+                let dateFormat = field.dateFormat || this.options.defaultDateFormat;
+                let dateLocale = field.dateLocale || this.options.defaultDateLocale;
 
                 // Create a container to ensure Flatpickr has a parent to work with
                 $input = $('<div>');
@@ -1918,8 +1926,8 @@ THE SOFTWARE.
                 let fp = flatpickr($mainInput, {
                     dateFormat: 'Y-m-d',  // Actual format stored in the input
                     altInput: true,       // Enables the alternate visible input
-                    altFormat: displayFormat,
-                    locale: displayLocale
+                    altFormat: dateFormat,
+                    locale: dateLocale
                 });
 
                 if (value != undefined) {
@@ -1927,7 +1935,8 @@ THE SOFTWARE.
                 }
 
             } else if (typeof $.fn.datepicker == 'function') {
-                let displayFormat = field.displayFormat || this.options.defaultDateFormat;
+                let dateFormat = field.dateFormat || this.options.defaultDateFormat;
+                let dateLocale = field.dateLocale || this.options.defaultDateLocale;
                 $input = $('<div>');
 
                 // Create hidden input
@@ -1950,8 +1959,11 @@ THE SOFTWARE.
                 $input.append($hiddenInput, $visibleInput);
 
                 // Initialize datepicker on the visible input
+                if (dateLocale && $.datepicker.regional[dateLocale]) {
+                    $.datepicker.setDefaults($.datepicker.regional[dateLocale]);
+                }
                 $visibleInput.datepicker({
-                    dateFormat: displayFormat,
+                    dateFormat: dateFormat,
                     altFormat: 'Y-m-d',
                     altField: '#real-' + fieldName  // This should point to the hidden input's ID
                 });
@@ -6569,8 +6581,8 @@ THE SOFTWARE.
 
             if (field.type=="date") {
                 if (typeof $.fn.fdatepicker == 'function') {
-                    let displayFormat = field.displayFormat || this.options.defaultDateFormat;
-                    let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
+                    let dateFormat = field.dateFormat || this.options.defaultDateFormat;
+                    let dateLocale = field.dateLocale || this.options.defaultDateLocale;
 
                     $input = $('<div>');
                     // Create hidden input
@@ -6584,14 +6596,14 @@ THE SOFTWARE.
                         todayButton: new Date(),
                         clearButton: true,
                         closeButton: true,
-                        language: displayLocale,
-                        dateFormat: displayFormat,
+                        language: dateLocale,
+                        dateFormat: dateFormat,
                         altFieldDateFormat: 'Y-m-d',
                         altField: '#jtable-toolbarsearch-extra-' + fieldName  // This should point to the hidden input's ID
                     });
                 } else if (typeof $.fn.flatpickr == 'function') {
-                    let displayFormat = field.displayFormat || this.options.defaultDateFormat;
-                    let displayLocale = field.displayDateLocale || this.options.defaultDateLocale;
+                    let dateFormat = field.dateFormat || this.options.defaultDateFormat;
+                    let dateLocale = field.dateLocale || this.options.defaultDateLocale;
 
                     $input = $('<div>');
                     // Single input (Flatpickr will convert this to hidden and create its own altInput)
@@ -6607,12 +6619,13 @@ THE SOFTWARE.
                     let fp = flatpickr($realInput, {
                         dateFormat: 'Y-m-d',
                         altInput: true,
-                        altFormat: displayFormat,
-                        locale: displayLocale
+                        altFormat: dateFormat,
+                        locale: dateLocale
                     });
 
                 } else if (typeof $.fn.datepicker == 'function') {
-                    let displayFormat = field.displayFormat || this.options.defaultDateFormat;
+                    let dateFormat = field.dateFormat || this.options.defaultDateFormat;
+                    let dateLocale = field.dateLocale || this.options.defaultDateLocale;
                     $input = $('<div>');
                     // Create hidden input
                     $realInput = $('<input>', { class: 'jtable-toolbarsearch-extra', id: 'jtable-toolbarsearch-extra-' + fieldName, type: 'hidden', name: fieldName });
@@ -6620,9 +6633,12 @@ THE SOFTWARE.
                     $input.append($realInput, $visibleInput);
 
                     // Initialize datepicker on the visible input
+                    if (dateLocale && $.datepicker.regional[dateLocale]) {
+                        $.datepicker.setDefaults($.datepicker.regional[dateLocale]);
+                    }
                     $visibleInput.datepicker({
                         changeYear: true,yearRange: "-100:+1",numberOfMonths: 3, showButtonPanel: true,
-                        dateFormat: displayFormat,
+                        dateFormat: dateFormat,
                         altFormat: 'Y-m-d',
                         altField: '#jtable-toolbarsearch-extra-' + fieldName  // This should point to the hidden input's ID
                     });
