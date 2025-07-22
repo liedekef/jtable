@@ -1,3 +1,6 @@
+= 3.1.5 (2025//) =
+* If a clickable element in a row has the class 'norowselectonclick', the row will not be selected on click of that element
+
 = 3.1.4 (2025/07/21) =
 * Added new field option "toolbaroptions". Works like "options", but only for the toolbar (in case you want the regular fields to be just the supplied text)
 * dependsOn can now refer to any field, not just another dropdown. So you can create a dropdown depending on a text field too (as an example)

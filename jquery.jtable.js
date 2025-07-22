@@ -4600,8 +4600,10 @@ THE SOFTWARE.
 
             // Select/deselect on row click
             if (self.options.selectOnRowClick) {
-                $row.on("click", function () {
-                    self._invertRowSelection($row);
+                $row.on("click", function (e) {
+                    if (!$(e.target).hasClass('norowselectonclick')) {
+                        self._invertRowSelection($row);
+                    }
                 });
             }
 
