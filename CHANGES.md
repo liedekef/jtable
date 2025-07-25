@@ -1,11 +1,11 @@
-= 3.1.5 (2025//) =
+= 3.1.5 (2025/07/26) =
 * If a clickable element in a row has the class 'norowselectonclick', the row will not be selected on click of that element
-* text-fields are now prevented to do form submit on enter
+* text-fields are now prevented to do form submit on enter, however the "enter" triggers the change-event, so you can hook into that. This is also important if the text-field is the source for a dependsOn-field
 * buttons now have type=button, to be sure browsers don't see it as submit/reset
 
 = 3.1.4 (2025/07/21) =
 * Added new field option "toolbaroptions". Works like "options", but only for the toolbar (in case you want the regular fields to be just the supplied text)
-* dependsOn can now refer to any field, not just another dropdown. So you can create a dropdown depending on a text field too (as an example)
+* dependsOn can now refer to any field, not just another dropdown. So you can create a dropdown depending on a text field too (as an example), making it work a bit like select2
 * Added trigger "toolbarsearch", so you can hook into this if need be
 * Added general option resetTable, can be used if sortingInfoSelector is used, to set an extra button to reset the table to its original state (paging, sorting, visibility)
 * flatpickr also supported as datepicker (also returns Y-m-d to the backend)
