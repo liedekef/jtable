@@ -1,5 +1,7 @@
 = 3.1.5 (2025//) =
 * If a clickable element in a row has the class 'norowselectonclick', the row will not be selected on click of that element
+* text-fields are now prevented to do form submit on enter
+* buttons now have type=button, to be sure browsers don't see it as submit/reset
 
 = 3.1.4 (2025/07/21) =
 * Added new field option "toolbaroptions". Works like "options", but only for the toolbar (in case you want the regular fields to be just the supplied text)

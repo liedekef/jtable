@@ -445,7 +445,7 @@ THE SOFTWARE.
 
             $('<div class="jtable-modal-footer"></div>')
                 .append(
-                    $('<button class="jtable-dialog-button jtable-dialog-closebutton"></button>')
+                    $('<button type="button" class="jtable-dialog-button jtable-dialog-closebutton"></button>')
                     .html('<span>' + self.options.messages.close + '</span>')
                     .on('click', function() {
                         self._closeInfoDialog();
@@ -484,7 +484,7 @@ THE SOFTWARE.
 
             $('<div class="jtable-modal-footer"></div>')
                 .append(
-                    $('<button class="jtable-dialog-button jtable-dialog-closebutton"></button>')
+                    $('<button type="button" class="jtable-dialog-button jtable-dialog-closebutton"></button>')
                     .html('<span>' + self.options.messages.close + '</span>')
                     .on('click', function() {
                         self._closeErrorDialog();
@@ -2018,6 +2018,15 @@ THE SOFTWARE.
             if (value != undefined) {
                 $input.val(value);
             }
+            // prevent form submit on enter, but trigger change
+            $input.on("keypress", function (event) {
+                let keyPressed = event.keyCode || event.which;
+                if (keyPressed === 13) {
+                    event.preventDefault();
+                    $input.trigger('change');
+                    return false;
+                }
+            });
 
             let $containerDiv = $('<div />')
                 .addClass('jtable-input jtable-' + field.inputClass + '-input')
@@ -2780,13 +2789,13 @@ THE SOFTWARE.
                 .text(self.options.messages.addNewRecord)
                 .appendTo(self._$addRecordDialog);
 
-            const $cancelButton = $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button>')
+            const $cancelButton = $('<button type="button" class="jtable-dialog-button jtable-dialog-cancelbutton"></button>')
                 .html('<span>' + self.options.messages.cancel + '</span>')
                 .on('click', function () {
                     self._closeCreateForm();
                 });
 
-            let $saveButton = $('<button class="jtable-dialog-button jtable-dialog-savebutton"></button>')
+            let $saveButton = $('<button type="button" class="jtable-dialog-button jtable-dialog-savebutton"></button>')
                 .html('<span>' + self.options.messages.save + '</span>')
                 .on('click', function () {
                     self._onSaveClickedOnCreateForm();
@@ -3163,13 +3172,13 @@ THE SOFTWARE.
                 .text(self.options.messages.editRecord)
                 .appendTo(self._$editRecordDialog);
 
-            const $cancelButton = $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button>')
+            const $cancelButton = $('<button type="button" class="jtable-dialog-button jtable-dialog-cancelbutton"></button>')
                 .html('<span>' + self.options.messages.cancel + '</span>')
                 .on('click', function () {
                     self._closeEditForm();
                 });
 
-            let $saveButton = $('<button class="jtable-dialog-button jtable-dialog-savebutton"></button>')
+            let $saveButton = $('<button type="button" class="jtable-dialog-button jtable-dialog-savebutton"></button>')
                 .html('<span>' + self.options.messages.save + '</span>')
                 .on('click', function () {
                     self._onSaveClickedOnEditForm();
@@ -3665,13 +3674,13 @@ THE SOFTWARE.
                 .text(self.options.messages.cloneRecord)
                 .appendTo(self._$cloneRecordDialog);
 
-            const $cancelButton = $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button>')
+            const $cancelButton = $('<button type="button" class="jtable-dialog-button jtable-dialog-cancelbutton"></button>')
                 .html('<span>' + self.options.messages.cancel + '</span>')
                 .on('click', function () {
                     self._closeCloneForm();
                 });
 
-            let $saveButton = $('<button class="jtable-dialog-button jtable-dialog-savebutton"></button>')
+            let $saveButton = $('<button type="button" class="jtable-dialog-button jtable-dialog-savebutton"></button>')
                 .html('<span>' + self.options.messages.save + '</span>')
                 .on('click', function () {
                     self._onSaveClickedOnCloneForm();
@@ -3732,7 +3741,7 @@ THE SOFTWARE.
                 }
             }
 
-            // Create form
+            // Clone form
             let $cloneRecordForm = $('<form id="jtable-clone-form" class="jtable-dialog-form jtable-clone-form"></form>');
 
             for (let i = 0; i < self._fieldList.length; i++) {
@@ -3947,13 +3956,13 @@ THE SOFTWARE.
             $('<div class="jtable-modal-body"><p><span class="alert-icon"></span><span class="jtable-delete-confirm-message"></span></p></div>')
                 .appendTo(self._$deleteDialog);
 
-            const $cancelButton = $('<button class="jtable-dialog-button jtable-dialog-cancelbutton"></button>')
+            const $cancelButton = $('<button type="button" class="jtable-dialog-button jtable-dialog-cancelbutton"></button>')
                 .html('<span>' + self.options.messages.cancel + '</span>')
                 .on('click', function () {
                     self._closeDeleteDialog();
                 });
 
-            let $deleteButton = $('<button class="jtable-dialog-button jtable-dialog-deletebutton"></button>')
+            let $deleteButton = $('<button type="button" class="jtable-dialog-button jtable-dialog-deletebutton"></button>')
                 .html('<span>' + self.options.messages.deleteText + '</span>')
                 .on('click', function () {
                     if (self._$deletingRow.hasClass('jtable-row-removed')) {
@@ -5463,7 +5472,7 @@ THE SOFTWARE.
                 }
                 $(self.options.sortingInfoSelector).text(sortingInfoString);
                 if (self.options.sortingInfoReset) {
-                    $('<button class="jtable-dialog-button jtable-resetsorting-button"></button>')
+                    $('<button type="button" class="jtable-dialog-button jtable-resetsorting-button"></button>')
                         .html('<span>' + self.options.messages.resetSorting + '</span>')
                         .on('click', function () {
                             self.resetSorting();
@@ -5471,7 +5480,7 @@ THE SOFTWARE.
                         .appendTo(self.options.sortingInfoSelector);
                 }
                 if (self.options.tableReset) {
-                    $('<button class="jtable-dialog-button jtable-resettable-button"></button>')
+                    $('<button type="button" class="jtable-dialog-button jtable-resettable-button"></button>')
                         .html('<span>' + self.options.messages.resetTable + '</span>')
                         .on('click', function () {
                             self.resetTable();
