@@ -5999,7 +5999,8 @@ THE SOFTWARE.
             // Create a div for dialog and add to container element
             this._$columnSelectionDiv = $('<div />')
                 .addClass('jtable-column-selection-container')
-                .appendTo(self._$mainContainer);
+                .appendTo(self._$mainContainer)
+                .hide();
 
             this._$table.children('thead').on('contextmenu', function (e) {
                 e.preventDefault();
